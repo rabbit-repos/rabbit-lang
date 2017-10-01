@@ -1,9 +1,6 @@
 #pragma once
 
-template <typename T>
-using null = decltype(static_cast<T*>(nullptr));
-
-using null_v = null<void>;
+constexpr decltype(nullptr) null = nullptr;
 
 using i32 = int;
 using u32 = unsigned int;
@@ -11,7 +8,7 @@ using u64 = unsigned long long;
 
 using Char = wchar_t;
 
-// TODO: Replace these two with classes with nullptr checking etc
+// TODO: Replace these two with classes with null checking etc
 template <typename T>
 using Ptr = T*;
 template <typename T>

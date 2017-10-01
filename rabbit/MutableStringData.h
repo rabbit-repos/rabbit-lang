@@ -3,14 +3,14 @@
 #include "Types.h"
 #include "ResizableArray.h"
 
-class MutableStringBlob
+class MutableStringData
 {
 public:
-	MutableStringBlob();
-	MutableStringBlob(const Char * aString);
-	MutableStringBlob(const size aExpectedLength);
+	MutableStringData();
+	MutableStringData(const Char * aString);
+	MutableStringData(const size aExpectedLength);
 	
-	static MutableStringBlob FromASCII(const char * aString);
+	static MutableStringData FromASCII(const char * aString);
 
 	// TODO: Test if this can only be reached  by literal strings
 	// template <size_t N>

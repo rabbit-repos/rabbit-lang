@@ -21,10 +21,13 @@
     <ClCompile Include="Config.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MutableStringBlob.cpp">
+    <ClCompile Include="ResizableArray.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ResizableArray.cpp">
+    <ClCompile Include="MutableStringData.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="String.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -38,13 +41,16 @@
     <ClInclude Include="Types.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="MutableStringBlob.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Array.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ResizableArray.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MutableStringData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="String.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

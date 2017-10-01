@@ -1,10 +1,13 @@
 #include <iostream>
 #include "json.h"
-#include "MutableStringBlob.h"
+#include "MutableStringData.h"
+#include "String.h"
+
+void CompileProject(String ProjectPath);
 
 int main(int aArgNum, const char * aArgs[])
 {
-	MutableStringBlob Text(L"Apor äter gröna legofigurer!");
+	MutableStringData Text(L"Apor äter gröna legofigurer!");
 
 	std::cout << "Rabbit Language v.0" << std::endl;
 

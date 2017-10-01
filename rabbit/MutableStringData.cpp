@@ -1,33 +1,33 @@
-#include "MutableStringBlob.h"
+#include "MutableStringData.h"
 #include <cstring>
 
-MutableStringBlob::MutableStringBlob()
+MutableStringData::MutableStringData()
 {
 }
 
-MutableStringBlob::MutableStringBlob(const Char * aString)
+MutableStringData::MutableStringData(const Char * aString)
 	: myData(wcslen(aString) + 1, false)
 {
 	memcpy(*myData, aString, (Length() + 1) * sizeof Char);
 }
 
-MutableStringBlob::MutableStringBlob(const size aExpectedLength)
+MutableStringData::MutableStringData(const size aExpectedLength)
 	: myData(aExpectedLength + 1, false)
 {
 	*myData[0] = L'\0';
 }
 
-MutableStringBlob MutableStringBlob::FromASCII(const char * aString)
+MutableStringData MutableStringData::FromASCII(const char * aString)
 {
 	i32 length = static_cast<i32>(strlen(aString));
-	MutableStringBlob string;
+	MutableStringData string;
 	string.Resize(length);
 	for (i32 i = 0; i < length; ++i)
 		*string[i] = static_cast<Char>(aString[i]);
 	return string;
 }
 
-void MutableStringBlob::Resize(const i32 aLength)
+void MutableStringData::Resize(const i32 aLength)
 {
 #ifdef _DEBUG
 	if (aLength < 0)
@@ -36,27 +36,27 @@ void MutableStringBlob::Resize(const i32 aLength)
 	myData.Resize(aLength);
 }
 
-i32 MutableStringBlob::Length() const
+i32 MutableStringData::Length() const
 {
 	return static_cast<i32>(myData.Length()) - 1;
 }
 
-Ptr<Char> MutableStringBlob::operator[](const i32 aIndex)
+Ptr<Char> MutableStringData::operator[](const i32 aIndex)
 {
 	return myData[aIndex];
 }
 
-ConstPtr<Char> MutableStringBlob::operator[](const i32 aIndex) const
+ConstPtr<Char> MutableStringData::operator[](const i32 aIndex) const
 {
 	return myData[aIndex];
 }
 
-Ptr<Char> MutableStringBlob::operator*()
+Ptr<Char> MutableStringData::operator*()
 {
 	return *myData;
 }
 
-ConstPtr<Char> MutableStringBlob::operator*() const
+ConstPtr<Char> MutableStringData::operator*() const
 {
 	return *myData;
 }

@@ -4,7 +4,7 @@
 
 ResizableArrayBase::ResizableArrayBase()
 {
-	myData = nullptr;
+	myData = null;
 	mySize = 0;
 }
 
@@ -26,7 +26,7 @@ ResizableArrayBase::~ResizableArrayBase()
 	free(myData);
 
 #ifdef _DEBUG
-	myData = nullptr;
+	myData = null;
 	mySize = 0;
 #endif
 }
