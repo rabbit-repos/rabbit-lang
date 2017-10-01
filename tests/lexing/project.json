@@ -1,0 +1,14 @@
+{
+    "projectName" : "lexing",
+    "projectType" : "executable",
+
+    // Maybe turn into a benchmarking tool? (But that should probably be a compiler flag)
+    "outputExecutionTime" : true,
+
+    "outputDirectory" : "/bin",
+    "workingDirectory" : "/",
+    
+    // Will be totally optional, just for reference
+    "sourceFiles" : "**.rbt"
+
+}

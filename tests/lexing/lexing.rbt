@@ -1,0 +1,26 @@
+#include <SFML/Graphics.hpp>
+
+using std = cpp::std;
+
+class Object
+{
+private:
+
+}
+
+virtual Type * Object::GetType() const
+{
+
+}
+
+class Derived : Object
+{
+
+}
+
+i32 Main(const std::vector<std::string> * aArgs)
+{
+	Console::WriteLine("Hello World!", );
+
+	return 0;
+}
