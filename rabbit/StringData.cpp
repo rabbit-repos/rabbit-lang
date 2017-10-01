@@ -10,8 +10,8 @@ StringData::StringData()
 }
 
 StringData::StringData(ConstPtr<Char> aString)
-	: myData(static_cast<i32>(wcslen(aString) + 1), false)
 {
+	myData.Resize(static_cast<i32>(wcslen(aString) + 1), false);
 	memcpy(myData.GetAddress(), aString, (Length() + 1) * sizeof Char);
 #ifdef _DEBUG
 	myNumReferences = 0;

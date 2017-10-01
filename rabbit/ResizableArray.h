@@ -20,11 +20,11 @@ public:
 	void Resize(const size aSize, const bool aClearMemory = true);
 	void Reserve(const size aSize, const bool aClearMemory = true);
 
-	Ptr_v GetAddress();
+	RawPtr GetAddress();
 	ConstPtr_v GetAddress() const;
 
 private:
-	Ptr_v myData;
+	RawPtr myData;
 	size myLength; // : sizeof Ptr; ?
 };
 
@@ -153,6 +153,7 @@ ConstRef<T> ResizableArray<T>::operator[](const u64 aIndex) const
 template <typename T>
 ResizableArray<T>::ResizableArray()
 {
+	myLength = 0;
 }
 
 template <typename T>

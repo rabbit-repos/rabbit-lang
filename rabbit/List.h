@@ -7,7 +7,12 @@ class List
 public:
 	List();
 	List(Const<i32> aLength, Const<bool> aClearMemory = true);
+	List(ConstRef<List> aOther);
+	List(RValue<List> aOther);
 	~List();
+
+	Ref<List> operator=(ConstRef<List> aOther);
+	Ref<List> operator=(RValue<List> aOther);
 
 	void Add(const T & aItem);
 
@@ -34,6 +39,36 @@ private:
 
 	size myLength;
 };
+
+template <typename T>
+Ref<List<T>> List<T>::operator=(RValue<List> aOther)
+{
+	myData = std::move(aOther.myData);
+	myLength = aOther.myLength;
+	return *this;
+}
+
+template <typename T>
+Ref<List<T>> List<T>::operator=(ConstRef<List> aOther)
+{
+	myData = aOther.myData;
+	myLength = aOther.myLength;
+	return *this;
+}
+
+template <typename T>
+List<T>::List(RValue<List> aOther)
+	: List()
+{
+	*this = std::move(aOther);
+}
+
+template <typename T>
+List<T>::List(ConstRef<List> aOther)
+	: List()
+{
+	*this = aOther;
+}
 
 template <typename T>
 Ref<T> List<T>::operator[](Const<i32> aIndex)
@@ -81,6 +116,7 @@ template <typename T>
 List<T>::List(Const<i32> aLength, Const<bool> aClearMemory /*= true*/)
 	: myData(aLength, aClearMemory)
 {
+	myLength = 0;
 }
 
 template <typename T>

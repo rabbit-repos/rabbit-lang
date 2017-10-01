@@ -6,7 +6,7 @@ class String
 {
 public:
 	String();
-	String(const String & aString, const i32 aNumberOfCharacters);
+	String(ConstRef<String> aString, Const<i32> aNumberOfCharacters);
 	String(ConstRef<StringData> aString);
 	String(ConstPtr<Char> aString);
 	~String();
@@ -17,21 +17,21 @@ public:
 	std::string ToASCII() const;
 	std::wstring ToWideString() const;
 
-	ConstRef<Char> operator[](const i32 aIndex) const;
+	ConstRef<Char> operator[](Const<i32> aIndex) const;
 
-	String SubString(const i32 aStart, const i32 aLength) const;
+	String SubString(Const<i32> aStart, Const<i32> aLength) const;
 	String Trim() const;
 
 	bool BeginsWith(ConstRef<String> aString) const;
 	bool EndsWith(ConstRef<String> aString) const;
 
-	bool operator==(const char * aOther) const;
-	bool operator!=(const char * aOther) const;
-	bool operator==(const wchar_t * aOther) const;
-	bool operator!=(const wchar_t * aOther) const;
+	bool operator==(ConstPtr<char> aOther) const;
+	bool operator!=(ConstPtr<char> aOther) const;
+	bool operator==(ConstPtr<wchar_t> aOther) const;
+	bool operator!=(ConstPtr<wchar_t> aOther) const;
 
-	bool operator==(const String & aOther) const;
-	bool operator!=(const String & aOther) const;
+	bool operator==(ConstRef<String> aOther) const;
+	bool operator!=(ConstRef<String> aOther) const;
 
 private:
 	explicit String(ConstPtr<StringData> aOwner, ConstPtr<Char> aDataPoint, const i32 aLength);

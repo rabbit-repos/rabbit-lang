@@ -14,6 +14,7 @@ public:
 	ProjectType GetProjectType() const;
 
 private:
-	ProjectType myProjectType;
 	void ReadProject(ConstRef<json> aDocument);
+
+	ProjectType myProjectType;
 };

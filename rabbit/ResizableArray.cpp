@@ -43,7 +43,7 @@ ResizableArrayBase::~ResizableArrayBase()
 
 void ResizableArrayBase::Resize(const size aSize, const bool aClearMemory/* = true*/)
 {
-	const Ptr_v oldData = myData;
+	const RawPtr oldData = myData;
 	
 	if (aClearMemory && aSize > myLength)
 		myData = calloc(1, aSize);
@@ -68,7 +68,7 @@ void ResizableArrayBase::Reserve(const size aSize, const bool aClearMemory /*= t
 		Resize(aSize, aClearMemory);
 }
 
-Ptr_v ResizableArrayBase::GetAddress()
+RawPtr ResizableArrayBase::GetAddress()
 {
 	return myData;
 }
@@ -90,6 +90,8 @@ Ref<ResizableArrayBase> ResizableArrayBase::operator=(RValue<ResizableArrayBase>
 
 Ref<ResizableArrayBase> ResizableArrayBase::operator=(ConstRef<ResizableArrayBase> aOther)
 {
+	free(myData);
+
 	if (aOther.myData)
 	{
 		myData = malloc(aOther.myLength);

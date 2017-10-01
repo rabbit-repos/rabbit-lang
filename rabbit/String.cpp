@@ -24,7 +24,7 @@ String::String(ConstRef<StringData> aString)
 #endif
 }
 
-String::String(const String & aString, const i32 aNumberOfCharacters)
+String::String(ConstRef<String> aString, Const<i32> aNumberOfCharacters)
 	: String()
 {
 	if (aNumberOfCharacters > aString.Length())
@@ -32,7 +32,7 @@ String::String(const String & aString, const i32 aNumberOfCharacters)
 	myData = aString.GetAddress();
 }
 
-String::String(ConstPtr<StringData> aOwner, ConstPtr<Char> aDataPoint, const i32 aLength)
+String::String(ConstPtr<StringData> aOwner, ConstPtr<Char> aDataPoint, Const<i32> aLength)
 	: String()
 {
 #ifdef _DEBUG
@@ -122,7 +122,7 @@ std::wstring String::ToWideString() const
 	return str;
 }
 
-ConstRef<Char> String::operator[](const i32 aIndex) const
+ConstRef<Char> String::operator[](Const<i32> aIndex) const
 {
 #ifdef _DEBUG
 	if (aIndex < 0 || aIndex >= myLength)
@@ -131,7 +131,7 @@ ConstRef<Char> String::operator[](const i32 aIndex) const
 	return myData[aIndex];
 }
 
-String String::SubString(const i32 aStart, const i32 aLength) const
+String String::SubString(Const<i32> aStart, Const<i32> aLength) const
 {
 #ifdef _DEBUG
 	if (aStart < 0 || aStart + aLength > myLength)
@@ -184,7 +184,7 @@ bool String::EndsWith(ConstRef<String> aString) const
 	return true;
 }
 
-bool String::operator==(const char * aOther) const
+bool String::operator==(ConstPtr<char> aOther) const
 {
 	Const<i32> length = static_cast<i32>(strlen(aOther));
 	if (length != Length())
@@ -195,29 +195,29 @@ bool String::operator==(const char * aOther) const
 	return true;
 }
 
-bool String::operator!=(const char * aOther) const
+bool String::operator!=(ConstPtr<char> aOther) const
 {
 	return !(*this == aOther);
 }
 
-bool String::operator==(const wchar_t * aOther) const
+bool String::operator==(ConstPtr<wchar_t> aOther) const
 {
 	return wcscmp(static_cast<ConstPtr<Char>>(aOther), myData) == 0;
 }
 
-bool String::operator!=(const wchar_t * aOther) const
+bool String::operator!=(ConstPtr<wchar_t> aOther) const
 {
 	return !(*this == aOther);
 }
 
-bool String::operator==(const String & aOther) const
+bool String::operator==(ConstRef<String> aOther) const
 {
 	if (Length() != aOther.Length())
 		return false;
 	return memcmp(GetAddress(), aOther.GetAddress(), Length() * sizeof Char) == 0;
 }
 
-bool String::operator!=(const String & aOther) const
+bool String::operator!=(ConstRef<String> aOther) const
 {
 	return !(*this == aOther);
 }

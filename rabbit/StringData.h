@@ -50,7 +50,7 @@ private:
 #ifdef _DEBUG
 	// me me bad boy (x2)
 	friend String;
-	mutable size myNumReferences;
+	mutable int32_t myNumReferences;
 #endif
 };
 

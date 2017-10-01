@@ -5,7 +5,7 @@ class ArrayBase
 {
 public:
 	ArrayBase();
-	Ptr_v operator*();
+	RawPtr operator*();
 	ConstPtr_v operator*() const;
 
 	constexpr size Count() const;
@@ -34,7 +34,7 @@ constexpr size ArrayBase<S, N>::SizeInBytes() const
 }
 
 template <size S, size N>
-Ptr_v ArrayBase<S, N>::operator*()
+RawPtr ArrayBase<S, N>::operator*()
 {
 	return &myData;
 }

@@ -30,7 +30,8 @@ void Config::OpenProject(ConstRef<String> aPath)
 
 void Config::ReadProject(ConstRef<json> aDocument)
 {
-	std::cout << aDocument["projectType"].get<StringData>() << std::endl;
+	StringData projectType = aDocument.value<StringData>("hej", L"apor");
+	
 }
 
 ProjectType Config::GetProjectType() const

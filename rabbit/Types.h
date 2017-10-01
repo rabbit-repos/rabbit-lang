@@ -22,7 +22,7 @@ using Ptr = T*;
 template <typename T>
 using ConstPtr = const T*;
 
-using Ptr_v = Ptr<void>;
+using RawPtr = Ptr<void>;
 using ConstPtr_v = ConstPtr<void>;
 
 template <typename T>

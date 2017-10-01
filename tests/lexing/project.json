@@ -8,5 +8,4 @@
     "workingDirectory" : "/",
     
     "sourceFiles" : "**.rbt"
-
 }
