@@ -1,24 +1,32 @@
+#include "pch.h"
 #include "StringData.h"
 #include <cstring>
 #include <iostream>
+#include "String.h"
 
 StringData::StringData()
 {
+#ifdef _DEBUG
 	myNumReferences = 0;
+#endif
 }
 
 StringData::StringData(ConstPtr<Char> aString)
 	: myData(wcslen(aString) + 1, false)
 {
-	memcpy(&*myData, aString, (Length() + 1) * sizeof Char);
+	memcpy(myData.GetAddress(), aString, (Length() + 1) * sizeof Char);
+#ifdef _DEBUG
 	myNumReferences = 0;
+#endif
 }
 
 StringData::StringData(const size aExpectedLength)
 	: myData(aExpectedLength + 1, false)
 {
 	myData[0] = L'\0';
+#ifdef _DEBUG
 	myNumReferences = 0;
+#endif
 }
 
 StringData::StringData(RValue<StringData> aOther)
@@ -31,6 +39,26 @@ StringData::StringData(ConstRef<StringData> aOther)
 	: StringData()
 {
 	*this = aOther;
+}
+
+StringData::StringData(ConstPtr<Char> aString, const i32 aLength)
+	: myData(aLength + 1, false)
+{
+	memcpy(&*myData, aString, aLength * sizeof Char);
+	myData[aLength] = L'\0';
+#ifdef _DEBUG
+	myNumReferences = 0;
+#endif
+}
+
+StringData::StringData(ConstRef<String> aString)
+	: myData(aString.Length() + 1, false)
+{
+	memcpy(&*myData, aString.GetAddress(), Length() * sizeof Char);
+	myData[Length()] = L'\0';
+#ifdef _DEBUG
+	myNumReferences = 0;
+#endif
 }
 
 StringData::~StringData()
@@ -64,7 +92,9 @@ Ref<StringData> StringData::operator=(RValue<StringData> aOther)
 Ref<StringData> StringData::operator=(ConstRef<StringData> aOther)
 {
 	myData = aOther.myData;
+#ifdef _DEBUG
 	myNumReferences = 0;
+#endif
 	return *this;
 }
 
@@ -84,11 +114,12 @@ void StringData::Resize(const i32 aLength)
 	if (aLength < 0)
 		abort();
 #endif
-	myData.Resize(aLength);
+	myData.Resize(aLength + 1);
 }
 
 i32 StringData::Length() const
 {
+	// PERF: Maybe move to own variable?
 	return static_cast<i32>(myData.Length()) - 1;
 }
 
@@ -110,4 +141,37 @@ Ref<Char> StringData::operator*()
 ConstRef<Char> StringData::operator*() const
 {
 	return *myData;
+}
+
+Ptr<Char> StringData::GetAddress()
+{
+	return myData.GetAddress();
+}
+
+ConstPtr<Char> StringData::GetAddress() const
+{
+	return myData.GetAddress();
+}
+
+std::wostream & operator<<(Ref<std::wostream> aOut, ConstRef<StringData> aString)
+{
+	aOut << *aString;
+	return aOut;
+}
+
+std::ostream & operator<<(Ref<std::ostream> aOut, ConstRef<StringData> aString)
+{
+	for (i32 i = 0; i < aString.Length(); ++i)
+		aOut.write(reinterpret_cast<ConstPtr<char>>(&aString[i]), 1);
+	return aOut;
+}
+
+void from_json(ConstRef<json> aNode, Ref<StringData> aString)
+{
+	aString = StringData::FromASCII(aNode.get<std::string>().data());
+}
+
+void to_json(Ref<json> aNode, ConstRef<StringData> aString)
+{
+	aNode = *aString;
 }

@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "ResizableArray.h"
 #include <cstdlib>
 #include <cstring>
@@ -6,7 +7,7 @@
 ResizableArrayBase::ResizableArrayBase()
 {
 	myData = null;
-	mySize = 0;
+	myLength = 0;
 }
 
 ResizableArrayBase::ResizableArrayBase(const size aSize, const bool aClearMemory/* = true*/)
@@ -20,7 +21,7 @@ ResizableArrayBase::ResizableArrayBase(const size aSize, const bool aClearMemory
 	if (!myData)
 		abort();
 
-	mySize = aSize;
+	myLength = aSize;
 }
 
 ResizableArrayBase::ResizableArrayBase(RValue<ResizableArrayBase> aOther)
@@ -44,7 +45,7 @@ void ResizableArrayBase::Resize(const size aSize, const bool aClearMemory/* = tr
 {
 	const Ptr_v oldData = myData;
 	
-	if (aClearMemory && aSize > mySize)
+	if (aClearMemory && aSize > myLength)
 		myData = calloc(1, aSize);
 	else
 		myData = malloc(aSize);
@@ -52,15 +53,15 @@ void ResizableArrayBase::Resize(const size aSize, const bool aClearMemory/* = tr
 	if (!myData)
 		abort();
 
-	memcpy(myData, oldData, Min(mySize, aSize));
-	mySize = aSize;
+	memcpy(myData, oldData, Min(myLength, aSize));
+	myLength = aSize;
 
 	free(oldData);
 }
 
 void ResizableArrayBase::Reserve(const size aSize, const bool aClearMemory /*= true*/)
 {
-	if (aSize > mySize)
+	if (aSize > myLength)
 		Resize(aSize, aClearMemory);
 }
 
@@ -79,8 +80,8 @@ Ref<ResizableArrayBase> ResizableArrayBase::operator=(RValue<ResizableArrayBase>
 	free(myData);
 	myData = std::move(aOther.myData);
 	aOther.myData = null;
-	aOther.mySize = 0;
-	mySize = aOther.mySize;
+	aOther.myLength = 0;
+	myLength = aOther.myLength;
 	return *this;
 }
 
@@ -88,19 +89,19 @@ Ref<ResizableArrayBase> ResizableArrayBase::operator=(ConstRef<ResizableArrayBas
 {
 	if (aOther.myData)
 	{
-		myData = malloc(aOther.mySize);
+		myData = malloc(aOther.myLength);
 		if (!myData)
 			abort();
-		memcpy(myData, aOther.myData, aOther.mySize);
+		memcpy(myData, aOther.myData, aOther.myLength);
 	}
 	else
 		myData = null;
 
-	mySize = aOther.mySize;
+	myLength = aOther.myLength;
 	return *this;
 }
 
-size ResizableArrayBase::Size() const
+size ResizableArrayBase::Length() const
 {
-	return mySize;
+	return myLength;
 }

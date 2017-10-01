@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?> 
+<AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
+  <Type Name="String">
+    <DisplayString>{myData,[myLength]su}[{myLength}]</DisplayString>
+    <StringView>myData,[myLength]</StringView>
+
+    <Expand>
+      <Synthetic Name="String">
+        <DisplayString>{myData,[myLength]su}[{myLength}]</DisplayString>
+        <StringView>myData,[myLength]</StringView>
+      </Synthetic>
+      <Item Name="Length">myLength</Item>
+      <Item Name="Data Source">*myOwner</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="StringData">
+    <DisplayString>{myData.myData.myData,[myData.myLength]su}[{myData.myLength}]</DisplayString>
+    
+    <Expand>
+      <Item Name="Data">myData</Item>
+      <Item Name="Length">myData.myLength</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="ResizableArray&lt;*&gt;">
+    <DisplayString>{{ Length = {myLength} }}</DisplayString>
+
+    <Expand>
+      <Item Name="Length">myLength</Item>
+      
+      <ArrayItems>
+        <Size>myLength</Size>
+        <ValuePointer>(T*)myData.myData</ValuePointer>
+      </ArrayItems>
+    </Expand>
+  </Type>
+
+  <Type Name="ResizableArrayBase">
+    <DisplayString>{{{myLength} Bytes}}</DisplayString>
+
+    <Expand>
+      <Item Name="Address">myData</Item>
+    </Expand>
+  </Type>
+</AutoVisualizer>

@@ -1,5 +1,4 @@
 #pragma once
-#include "Types.h"
 
 class StringData;
 
@@ -9,15 +8,23 @@ public:
 	String();
 	String(const String & aString, const i32 aNumberOfCharacters);
 	String(ConstRef<StringData> aString);
+	String(ConstPtr<Char> aString);
 	~String();
 
 	i32 Length() const;
 	ConstPtr<Char> GetAddress() const;
 	
+	std::string ToASCII() const;
+	std::wstring ToWideString() const;
+
 	ConstRef<Char> operator[](const i32 aIndex) const;
 
-	String SubString(const i32 aStart, const i32 aLength);
-	
+	String SubString(const i32 aStart, const i32 aLength) const;
+	String Trim() const;
+
+	bool BeginsWith(ConstRef<String> aString) const;
+	bool EndsWith(ConstRef<String> aString) const;
+
 	bool operator==(const char * aOther) const;
 	bool operator!=(const char * aOther) const;
 	bool operator==(const wchar_t * aOther) const;
@@ -36,3 +43,6 @@ private:
 	ConstPtr<StringData> myOwner;
 #endif
 };
+
+Ref<std::wostream> operator<<(Ref<std::wostream> aOut, ConstRef<String> aString);
+Ref<std::ostream> operator<<(Ref<std::ostream> aOut, ConstRef<String> aString);

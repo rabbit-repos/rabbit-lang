@@ -26,6 +26,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE  OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+#pragma warning ( push )
+#pragma warning ( disable : 4706 )
+
 #ifndef NLOHMANN_JSON_HPP
 #define NLOHMANN_JSON_HPP
 
@@ -14732,3 +14735,5 @@ inline nlohmann::json::json_pointer operator "" _json_pointer(const char* s, std
 using json = nlohmann::json;
 
 #endif
+
+#pragma warning ( pop )

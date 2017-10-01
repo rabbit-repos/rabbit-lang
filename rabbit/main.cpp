@@ -1,29 +1,11 @@
+#include "pch.h"
 #include <iostream>
-#include "json.h"
 #include "StringData.h"
 #include "String.h"
-#include "List.h"
-
-void CompileProject(String ProjectPath);
+#include "Config.h"
 
 int main(int aArgNum, const char * aArgs[])
 {
-	{
-		List<i32> list;
-		list.Add(10);
-		list.Add(15);
-		list.Add(5);
-
-		for (i32 i = 0; i < list.Length(); ++i)
-		{
-			std::cout << list[i] << std::endl;
-		}
-	}
-
-	{
-		StringData Text(L"Apor äter gröna legofigurer!");
-	}
-
 	std::cout << "Rabbit Language v.0" << std::endl;
 
 	if (aArgNum > 1)
@@ -41,13 +23,17 @@ int main(int aArgNum, const char * aArgs[])
 				else
 				{
 					std::cout << "Building and running directory \"" << aArgs[2] << "\"..." << std::endl;
-					CompileProject(StringData::FromASCII(aArgs[2]));
+					
+					StringData data = StringData::FromASCII(aArgs[2]);
+					String s = data;
+
+					gConfig.OpenProject(s);
 				}
 			}
 			else
 			{
 				std::cout << "Building and running the current directory..." << std::endl;
-				CompileProject(StringData::FromASCII(aArgs[0]));
+				gConfig.OpenProject(StringData::FromASCII(aArgs[0]));
 			}
 		}
 		else
