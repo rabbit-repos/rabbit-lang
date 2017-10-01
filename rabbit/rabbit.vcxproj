@@ -138,15 +138,16 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="String.cpp" />
     <ClCompile Include="ResizableArray.cpp" />
-    <ClCompile Include="MutableStringData.cpp" />
+    <ClCompile Include="StringData.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Config.h" />
     <ClInclude Include="json.h" />
     <ClInclude Include="Array.h" />
+    <ClInclude Include="List.h" />
     <ClInclude Include="String.h" />
     <ClInclude Include="ResizableArray.h" />
-    <ClInclude Include="MutableStringData.h" />
+    <ClInclude Include="StringData.h" />
     <ClInclude Include="Types.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -24,10 +24,10 @@
     <ClCompile Include="ResizableArray.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MutableStringData.cpp">
+    <ClCompile Include="String.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="String.cpp">
+    <ClCompile Include="StringData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -47,10 +47,13 @@
     <ClInclude Include="ResizableArray.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="MutableStringData.h">
+    <ClInclude Include="String.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="String.h">
+    <ClInclude Include="StringData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="List.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

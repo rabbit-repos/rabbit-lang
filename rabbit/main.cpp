@@ -1,13 +1,13 @@
 #include <iostream>
 #include "json.h"
-#include "MutableStringData.h"
+#include "StringData.h"
 #include "String.h"
 
 void CompileProject(String ProjectPath);
 
 int main(int aArgNum, const char * aArgs[])
 {
-	MutableStringData Text(L"Apor äter gröna legofigurer!");
+	StringData Text(L"Apor äter gröna legofigurer!");
 
 	std::cout << "Rabbit Language v.0" << std::endl;
 
@@ -26,11 +26,13 @@ int main(int aArgNum, const char * aArgs[])
 				else
 				{
 					std::cout << "Building and running directory \"" << aArgs[2] << "\"..." << std::endl;
+					CompileProject(StringData::FromASCII(aArgs[2]));
 				}
 			}
 			else
 			{
 				std::cout << "Building and running the current directory..." << std::endl;
+				CompileProject(StringData::FromASCII(aArgs[0]));
 			}
 		}
 		else
@@ -43,4 +45,9 @@ int main(int aArgNum, const char * aArgs[])
 	std::cin.get();
 
 	return 0;
+}
+
+void CompileProject(String ProjectPath)
+{
+
 }

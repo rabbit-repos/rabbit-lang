@@ -3,14 +3,20 @@
 #include "Types.h"
 #include "ResizableArray.h"
 
-class MutableStringData
+class StringData
 {
 public:
-	MutableStringData();
-	MutableStringData(const Char * aString);
-	MutableStringData(const size aExpectedLength);
-	
-	static MutableStringData FromASCII(const char * aString);
+	StringData();
+	StringData(ConstPtr<Char> aString);
+	StringData(const size aExpectedLength);
+	StringData(RValue<StringData> aOther);
+	StringData(ConstRef<StringData> aOther);
+	~StringData();
+
+	Ref<StringData> operator=(RValue<StringData> aOther);
+	Ref<StringData> operator=(ConstRef<StringData> aOther);
+
+	static StringData FromASCII(const char * aString);
 
 	// TODO: Test if this can only be reached  by literal strings
 	// template <size_t N>
@@ -26,7 +32,11 @@ public:
 	ConstPtr<Char> operator*() const;
 
 private:
-	List<Char> myData;
+	ResizableArray<Char> myData;
+
+	// me me bad boy
+	friend class String;
+	mutable size myNumReferences;
 };
 
 // template <size_t N>

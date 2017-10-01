@@ -1,6 +1,7 @@
 #include "ResizableArray.h"
 #include <cstdlib>
 #include <cstring>
+#include <xutility>
 
 ResizableArrayBase::ResizableArrayBase()
 {
@@ -21,21 +22,26 @@ ResizableArrayBase::ResizableArrayBase(const size aSize, const bool aClearMemory
 	mySize = aSize;
 }
 
+ResizableArrayBase::ResizableArrayBase(RValue<ResizableArrayBase> aOther)
+{
+	*this = std::move(aOther);
+}
+
+ResizableArrayBase::ResizableArrayBase(ConstRef<ResizableArrayBase> aOther)
+{
+	*this = aOther;
+}
+
 ResizableArrayBase::~ResizableArrayBase()
 {
 	free(myData);
-
-#ifdef _DEBUG
-	myData = null;
-	mySize = 0;
-#endif
 }
 
 void ResizableArrayBase::Resize(const size aSize, const bool aClearMemory/* = true*/)
 {
 	const Ptr_v oldData = myData;
 	
-	if (aClearMemory)
+	if (aClearMemory && aSize > mySize)
 		myData = calloc(1, aSize);
 	else
 		myData = malloc(aSize);
@@ -45,6 +51,8 @@ void ResizableArrayBase::Resize(const size aSize, const bool aClearMemory/* = tr
 
 	memcpy(myData, oldData, Min(mySize, aSize));
 	mySize = aSize;
+
+	free(oldData);
 }
 
 void ResizableArrayBase::Reserve(const size aSize, const bool aClearMemory /*= true*/)
@@ -61,6 +69,30 @@ Ptr_v ResizableArrayBase::GetAddress()
 const ConstPtr_v ResizableArrayBase::GetAddress() const
 {
 	return myData;
+}
+
+ResizableArrayBase & ResizableArrayBase::operator=(RValue<ResizableArrayBase> aOther)
+{
+	myData = std::move(aOther.myData);
+	aOther.myData = null;
+	mySize = aOther.mySize;
+	return *this;
+}
+
+ResizableArrayBase & ResizableArrayBase::operator=(ConstRef<ResizableArrayBase> aOther)
+{
+	if (aOther.myData)
+	{
+		myData = malloc(aOther.mySize);
+		if (!myData)
+			abort();
+		memcpy(myData, aOther.myData, aOther.mySize);
+	}
+	else
+		myData = null;
+
+	mySize = aOther.mySize;
+	return *this;
 }
 
 size ResizableArrayBase::Size() const

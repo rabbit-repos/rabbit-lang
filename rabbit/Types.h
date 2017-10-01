@@ -21,6 +21,11 @@ template <typename T>
 using Ref = T&;
 template <typename T>
 using ConstRef = const T&;
+template <typename T>
+using RValue = T&&;
+
+template <typename T>
+using Out = Ref<T>;
 
 using size = size_t;
 using byte = char;
