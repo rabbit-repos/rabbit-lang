@@ -53,10 +53,13 @@ void ResizableArrayBase::Resize(const size aSize, const bool aClearMemory/* = tr
 	if (!myData)
 		abort();
 
-	memcpy(myData, oldData, Min(myLength, aSize));
-	myLength = aSize;
+	if (oldData)
+	{
+		memcpy(myData, oldData, Min(myLength, aSize));
+		free(oldData);
+	}
 
-	free(oldData);
+	myLength = aSize;
 }
 
 void ResizableArrayBase::Reserve(const size aSize, const bool aClearMemory /*= true*/)

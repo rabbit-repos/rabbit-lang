@@ -56,3 +56,8 @@ int main(int aArgNum, const char * aArgs[])
 
 	return 0;
 }
+
+void CompileProject(String ProjectPath)
+{
+
+}

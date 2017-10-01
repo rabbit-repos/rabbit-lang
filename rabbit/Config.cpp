@@ -3,10 +3,6 @@
 #include "StringData.h"
 #include "String.h"
 #include "ResizableArray.h"
-#include <fstream>
-#include <iostream>
-
-Config gConfig;
 
 void Config::OpenProject(ConstRef<String> aPath)
 {
@@ -21,6 +17,7 @@ void Config::OpenProject(ConstRef<String> aPath)
 	else
 	{
 		// TODO: Find suitable project file within directory
+		std::cout << "Not implemented" << std::endl;
 		abort();
 	}
 

@@ -1,7 +1,5 @@
 #pragma once
-#include "Types.h"
 #include "ProjectType.h"
-#include "json.h"
 
 class String;
 
@@ -19,5 +17,3 @@ private:
 	ProjectType myProjectType;
 	void ReadProject(ConstRef<json> aDocument);
 };
-
-extern Config gConfig;

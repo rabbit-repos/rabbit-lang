@@ -1,7 +1,5 @@
 #pragma once
 
-#include "Types.h"
-
 template <size S, size N = 1>
 class ArrayBase
 {

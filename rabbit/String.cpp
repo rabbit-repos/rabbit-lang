@@ -1,9 +1,7 @@
 #include "pch.h"
 #include "String.h"
 #include "StringData.h"
-#include "Types.h"
 #include "CharUtility.h"
-#include <cstring>
 
 String::String()
 {
@@ -102,9 +100,10 @@ std::string String::ToASCII() const
 	std::string str;
 	if (Length() > 0)
 	{
-		str.resize(Length());
+		Const<i32> n = Length();
+		str.resize(n);
 		
-		for (i32 i=0; i<str.size(); ++i)
+		for (i32 i=0; i<n; ++i)
 		{
 			str[i] = static_cast<char>((*this)[i]);
 		}

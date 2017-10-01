@@ -170,7 +170,7 @@ ResizableArray<T>::~ResizableArray()
 template <typename T>
 void ResizableArray<T>::Resize(const size aLength, const bool aClearMemory /*= true*/)
 {
-	myData.Resize((aLength + 1) * sizeof T, aClearMemory);
+	myData.Resize(sizeof T * aLength, aClearMemory);
 	myLength = aLength;
 }
 

@@ -15,7 +15,7 @@
   </Type>
 
   <Type Name="StringData">
-    <DisplayString>{myData.myData.myData,[myData.myLength]su}[{myData.myLength}]</DisplayString>
+    <DisplayString>{myData.myData.myData.myData,[myData.myLength - 1]su}[{myData.myLength - 1}]</DisplayString>
     
     <Expand>
       <Item Name="Data">myData</Item>
