@@ -10,23 +10,25 @@ StringData::StringData()
 StringData::StringData(ConstPtr<Char> aString)
 	: myData(wcslen(aString) + 1, false)
 {
-	memcpy(*myData, aString, (Length() + 1) * sizeof Char);
+	memcpy(&*myData, aString, (Length() + 1) * sizeof Char);
 	myNumReferences = 0;
 }
 
 StringData::StringData(const size aExpectedLength)
 	: myData(aExpectedLength + 1, false)
 {
-	*myData[0] = L'\0';
+	myData[0] = L'\0';
 	myNumReferences = 0;
 }
 
 StringData::StringData(RValue<StringData> aOther)
+	: StringData()
 {
 	*this = std::move(aOther);
 }
 
 StringData::StringData(ConstRef<StringData> aOther)
+	: StringData()
 {
 	*this = aOther;
 }
@@ -52,7 +54,6 @@ Ref<StringData> StringData::operator=(RValue<StringData> aOther)
 	}
 
 	myNumReferences = 0;
-	aOther.myNumReferences = 0;
 #endif
 
 	myData = std::move(aOther.myData);
@@ -73,7 +74,7 @@ StringData StringData::FromASCII(const char * aString)
 	StringData string;
 	string.Resize(length);
 	for (i32 i = 0; i < length; ++i)
-		*string[i] = static_cast<Char>(aString[i]);
+		string[i] = static_cast<Char>(aString[i]);
 	return string;
 }
 
@@ -91,22 +92,22 @@ i32 StringData::Length() const
 	return static_cast<i32>(myData.Length()) - 1;
 }
 
-Ptr<Char> StringData::operator[](const i32 aIndex)
+Ref<Char> StringData::operator[](const i32 aIndex)
 {
 	return myData[aIndex];
 }
 
-ConstPtr<Char> StringData::operator[](const i32 aIndex) const
+ConstRef<Char> StringData::operator[](const i32 aIndex) const
 {
 	return myData[aIndex];
 }
 
-Ptr<Char> StringData::operator*()
+Ref<Char> StringData::operator*()
 {
 	return *myData;
 }
 
-ConstPtr<Char> StringData::operator*() const
+ConstRef<Char> StringData::operator*() const
 {
 	return *myData;
 }

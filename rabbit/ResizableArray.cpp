@@ -10,6 +10,7 @@ ResizableArrayBase::ResizableArrayBase()
 }
 
 ResizableArrayBase::ResizableArrayBase(const size aSize, const bool aClearMemory/* = true*/)
+	: ResizableArrayBase()
 {
 	if (aClearMemory)
 		myData = calloc(1, aSize);
@@ -23,11 +24,13 @@ ResizableArrayBase::ResizableArrayBase(const size aSize, const bool aClearMemory
 }
 
 ResizableArrayBase::ResizableArrayBase(RValue<ResizableArrayBase> aOther)
+	: ResizableArrayBase()
 {
 	*this = std::move(aOther);
 }
 
 ResizableArrayBase::ResizableArrayBase(ConstRef<ResizableArrayBase> aOther)
+	: ResizableArrayBase()
 {
 	*this = aOther;
 }
@@ -66,20 +69,22 @@ Ptr_v ResizableArrayBase::GetAddress()
 	return myData;
 }
 
-const ConstPtr_v ResizableArrayBase::GetAddress() const
+ConstPtr_v ResizableArrayBase::GetAddress() const
 {
 	return myData;
 }
 
-ResizableArrayBase & ResizableArrayBase::operator=(RValue<ResizableArrayBase> aOther)
+Ref<ResizableArrayBase> ResizableArrayBase::operator=(RValue<ResizableArrayBase> aOther)
 {
+	free(myData);
 	myData = std::move(aOther.myData);
 	aOther.myData = null;
+	aOther.mySize = 0;
 	mySize = aOther.mySize;
 	return *this;
 }
 
-ResizableArrayBase & ResizableArrayBase::operator=(ConstRef<ResizableArrayBase> aOther)
+Ref<ResizableArrayBase> ResizableArrayBase::operator=(ConstRef<ResizableArrayBase> aOther)
 {
 	if (aOther.myData)
 	{

@@ -11,8 +11,9 @@ String::String()
 }
 
 String::String(ConstRef<StringData> aString)
+	: String()
 {
-	myData = *aString;
+	myData = &*aString.myData;
 	myLength = aString.Length();
 
 #ifdef _DEBUG
@@ -22,6 +23,7 @@ String::String(ConstRef<StringData> aString)
 }
 
 String::String(const String & aString, const i32 aNumberOfCharacters)
+	: String()
 {
 	if (aNumberOfCharacters > aString.Length())
 		abort();
@@ -29,6 +31,7 @@ String::String(const String & aString, const i32 aNumberOfCharacters)
 }
 
 String::String(ConstPtr<StringData> aOwner, ConstPtr<Char> aDataPoint, const i32 aLength)
+	: String()
 {
 	myOwner = aOwner;
 	myData = aDataPoint;

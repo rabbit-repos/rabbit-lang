@@ -2,12 +2,27 @@
 #include "json.h"
 #include "StringData.h"
 #include "String.h"
+#include "List.h"
 
 void CompileProject(String ProjectPath);
 
 int main(int aArgNum, const char * aArgs[])
 {
-	StringData Text(L"Apor äter gröna legofigurer!");
+	{
+		List<i32> list;
+		list.Add(10);
+		list.Add(15);
+		list.Add(5);
+
+		for (i32 i = 0; i < list.Length(); ++i)
+		{
+			std::cout << list[i] << std::endl;
+		}
+	}
+
+	{
+		StringData Text(L"Apor äter gröna legofigurer!");
+	}
 
 	std::cout << "Rabbit Language v.0" << std::endl;
 

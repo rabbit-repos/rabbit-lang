@@ -25,11 +25,11 @@ public:
 	void Resize(const i32 aLength);
 	i32 Length() const;
 
-	Ptr<Char> operator[](const i32 aIndex);
-	ConstPtr<Char> operator[](const i32 aIndex) const;
+	Ref<Char> operator[](const i32 aIndex);
+	ConstRef<Char> operator[](const i32 aIndex) const;
 
-	Ptr<Char> operator*();
-	ConstPtr<Char> operator*() const;
+	Ref<Char> operator*();
+	ConstRef<Char> operator*() const;
 
 private:
 	ResizableArray<Char> myData;

@@ -2,7 +2,7 @@
 
 #include "Types.h"
 
-template <size S, size C = 1>
+template <size S, size N = 1>
 class ArrayBase
 {
 public:
@@ -11,44 +11,44 @@ public:
 	ConstPtr_v operator*() const;
 
 	constexpr size Count() const;
-	constexpr size Size() const;
+	constexpr size SizeInBytes() const;
 
 private:
-	byte myData[S][C];
+	byte myData[S][N];
 };
 
-template <size S, size C>
-ArrayBase<S, C>::ArrayBase()
+template <size S, size N>
+ArrayBase<S, N>::ArrayBase()
 {
 	memset(&myData, 0, N);
 }
 
-template <size S, size C>
-constexpr size ArrayBase<S, C>::Count() const
+template <size S, size N>
+constexpr size ArrayBase<S, N>::Count() const
 {
-	return C;
+	return N;
 }
 
-template <size S, size C>
-constexpr size ArrayBase<S, C>::Size() const
+template <size S, size N>
+constexpr size ArrayBase<S, N>::SizeInBytes() const
 {
-	return S * C;
+	return S * N;
 }
 
-template <size S, size C>
-Ptr_v ArrayBase<S, C>::operator*()
-{
-	return &myData;
-}
-
-template <size S, size C>
-ConstPtr_v ArrayBase<S, C>::operator*() const
+template <size S, size N>
+Ptr_v ArrayBase<S, N>::operator*()
 {
 	return &myData;
 }
 
-template <typename T, size C = 1>
-class DataBlob : public ArrayBase<sizeof T, C>
+template <size S, size N>
+ConstPtr_v ArrayBase<S, N>::operator*() const
+{
+	return &myData;
+}
+
+template <typename T, size N = 1>
+class Array : public ArrayBase<sizeof T, N>
 {
 public:
 	Ref<T> operator->();
@@ -58,26 +58,26 @@ public:
 	ConstRef<T> operator[](const i32 aIndex) const;
 };
 
-template <typename T, size C>
-T & DataBlob<T, C>::operator->()
+template <typename T, size N>
+T & Array<T, N>::operator->()
 {
 	return *static_cast<Ptr<T>>(operator*());
 }
 
-template <typename T, size C>
-const T & DataBlob<T, C>::operator->() const
+template <typename T, size N>
+const T & Array<T, N>::operator->() const
 {
 	return *static_cast<ConstPtr<T>>(*this);
 }
 
-template <typename T, size C /*= 1*/>
-Ref<T> DataBlob<T, C>::operator[](const i32 aIndex)
+template <typename T, size N /*= 1*/>
+Ref<T> Array<T, N>::operator[](const i32 aIndex)
 {
 	return *static_cast<Ptr<T>>((*this)[aIndex]);
 }
 
-template <typename T, size C /*= 1*/>
-ConstRef<T> DataBlob<T, C>::operator[](const i32 aIndex) const
+template <typename T, size N /*= 1*/>
+ConstRef<T> Array<T, N>::operator[](const i32 aIndex) const
 {
 	return *static_cast<ConstPtr<T>>((*this)[aIndex]);
 }
