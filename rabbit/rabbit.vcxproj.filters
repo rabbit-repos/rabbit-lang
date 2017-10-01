@@ -21,10 +21,10 @@
     <ClCompile Include="Config.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="DataBlob.cpp">
+    <ClCompile Include="MutableStringBlob.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="StringBlob.cpp">
+    <ClCompile Include="ResizableArray.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -38,13 +38,13 @@
     <ClInclude Include="Types.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="DataBlob.h">
+    <ClInclude Include="MutableStringBlob.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="StringBlob.h">
+    <ClInclude Include="Array.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ResizableDataBlob.h">
+    <ClInclude Include="ResizableArray.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

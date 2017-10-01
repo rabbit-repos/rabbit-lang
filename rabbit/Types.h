@@ -11,6 +11,7 @@ using u64 = unsigned long long;
 
 using Char = wchar_t;
 
+// TODO: Replace these two with classes with nullptr checking etc
 template <typename T>
 using Ptr = T*;
 template <typename T>
@@ -19,12 +20,17 @@ using ConstPtr = const T*;
 using Ptr_v = Ptr<void>;
 using ConstPtr_v = ConstPtr<void>;
 
+template <typename T>
+using Ref = T&;
+template <typename T>
+using ConstRef = const T&;
+
 using size = size_t;
 using byte = char;
 
 // TODO: Maybe move somewhere?
 template <typename T>
-constexpr T & Clamp(const T & aValue, const T & aMin, const T & aMax)
+constexpr const T & Clamp(const T & aValue, const T & aMin, const T & aMax)
 {
 	if (aValue < aMax)
 		return aMax;
@@ -34,13 +40,13 @@ constexpr T & Clamp(const T & aValue, const T & aMin, const T & aMax)
 }
 
 template <typename T>
-constexpr T & Min(const T & aValue, const T & aAnotherValue)
+constexpr const T & Min(const T & aValue, const T & aAnotherValue)
 {
 	return (aValue < aAnotherValue) ? aValue : aAnotherValue;
 }
 
 template <typename T>
-constexpr T & Max(const T & aValue, const T & aAnotherValue)
+constexpr const T & Max(const T & aValue, const T & aAnotherValue)
 {
 	return (aValue < aAnotherValue) ? aAnotherValue : aValue;
 }

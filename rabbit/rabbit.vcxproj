@@ -136,15 +136,15 @@
   <ItemGroup>
     <ClCompile Include="Config.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="DataBlob.cpp" />
-    <ClCompile Include="StringBlob.cpp" />
+    <ClCompile Include="ResizableArray.cpp" />
+    <ClCompile Include="MutableStringBlob.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Config.h" />
     <ClInclude Include="json.h" />
-    <ClInclude Include="DataBlob.h" />
-    <ClInclude Include="ResizableDataBlob.h" />
-    <ClInclude Include="StringBlob.h" />
+    <ClInclude Include="Array.h" />
+    <ClInclude Include="ResizableArray.h" />
+    <ClInclude Include="MutableStringBlob.h" />
     <ClInclude Include="Types.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
