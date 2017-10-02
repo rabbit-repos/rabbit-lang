@@ -6,6 +6,8 @@
 
     "outputDirectory" : "/bin",
     "workingDirectory" : "/",
+
+    "outputLexResult" : true,
     
     "sourceFiles" : "**.rbt"
 }

@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "Interpreter.h"
 #include "Config.h"
+#include "SymbolFilter.h"
 
 Interpreter::Interpreter(ConstRef<Config> aConfiguration)
 {

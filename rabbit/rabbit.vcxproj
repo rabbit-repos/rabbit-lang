@@ -182,6 +182,7 @@
     <ClInclude Include="String.h" />
     <ClInclude Include="ResizableArray.h" />
     <ClInclude Include="StringData.h" />
+    <ClInclude Include="SymbolFilter.h" />
     <ClInclude Include="Types.h" />
   </ItemGroup>
   <ItemGroup>

@@ -21,7 +21,7 @@ public:
 	void Reserve(const size aSize, const bool aClearMemory = true);
 
 	RawPtr GetAddress();
-	ConstPtr_v GetAddress() const;
+	ConstRawPtr GetAddress() const;
 
 private:
 	RawPtr myData;

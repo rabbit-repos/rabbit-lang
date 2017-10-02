@@ -73,6 +73,33 @@ String::String(ConstPtr<Char> aString)
 	}
 }
 
+String String::MakeView(Const<i32> aStart, Const<i32> aLength) const
+{
+#ifdef _DEBUG
+	return String(myOwner, &myData[aStart], aLength);
+#else
+	return String(null, myData[aStart], aLength);
+#endif
+}
+
+String String::ChopLeft(Const<i32> aEnd) const
+{
+#ifdef _DEBUG
+	if (aEnd < 0 || aEnd > myLength)
+		abort();
+#endif
+	return MakeView(0, aEnd);
+}
+
+String String::ChopRight(Const<i32> aBegin) const
+{
+#ifdef _DEBUG
+	if (aBegin < 0 || aBegin > myLength)
+		abort();
+#endif
+	return MakeView(aBegin, myLength - aBegin);
+}
+
 String::~String()
 {
 #ifdef _DEBUG
@@ -138,11 +165,7 @@ String String::SubString(Const<i32> aStart, Const<i32> aLength) const
 		abort();
 #endif
 
-#ifdef _DEBUG
-	return String(myOwner, &myData[aStart], aLength);
-#else
-	return String(null, &myData[aStart], aLength);
-#endif
+	return MakeView(aStart, aLength);
 }
 
 String String::Trim() const
@@ -156,11 +179,8 @@ String String::Trim() const
 	i32 end = myLength - 1;
 	while (end > 0 && CharUtility::IsWhiteSpace(myData[end]))
 		--end;
-#ifdef _DEBUG
-	return String(myOwner, &myData[start], end - start + 1);
-#else
-	return String(null, &myData[start], end - start + 1);
-#endif
+
+	return MakeView(start, end - start + 1);
 }
 
 bool String::BeginsWith(ConstRef<String> aString) const
@@ -180,6 +200,21 @@ bool String::EndsWith(ConstRef<String> aString) const
 	Const<i32> start = myLength - aString.Length();
 	for (i32 i = 0; i < aString.Length(); ++i)
 		if ((*this)[start + i] != aString[i])
+			return false;
+	return true;
+}
+
+bool String::Equals(ConstRef<String> aOther) const
+{
+	return *this == aOther;
+}
+
+bool String::EqualsIgnoreCase(ConstRef<String> aOther) const
+{
+	if (Length() != aOther.Length())
+		return false;
+	for (i32 i = 0, n = Length(); i < n; ++i)
+		if (myData[i] != aOther[i] && CharUtility::ToLower(myData[i]) != CharUtility::ToLower(aOther[i]))
 			return false;
 	return true;
 }

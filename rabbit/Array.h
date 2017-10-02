@@ -4,21 +4,25 @@ template <size S, size N = 1>
 class ArrayBase
 {
 public:
-	ArrayBase();
-	RawPtr operator*();
-	ConstPtr_v operator*() const;
+	ArrayBase(Const<bool> aClearMemory = true);
+	
+	Ptr<byte> GetAddress();
+	ConstPtr<byte> GetAddress() const;
 
 	constexpr size Count() const;
 	constexpr size SizeInBytes() const;
 
 private:
-	byte myData[S][N];
+	byte myData[S * N];
 };
 
 template <size S, size N>
-ArrayBase<S, N>::ArrayBase()
+ArrayBase<S, N>::ArrayBase(Const<bool> aClearMemory/* = true*/)
 {
-	memset(&myData, 0, N);
+	if (aClearMemory)
+	{
+		memset(&myData, 0, S * N);
+	}
 }
 
 template <size S, size N>
@@ -34,48 +38,33 @@ constexpr size ArrayBase<S, N>::SizeInBytes() const
 }
 
 template <size S, size N>
-RawPtr ArrayBase<S, N>::operator*()
+Ptr<byte> ArrayBase<S, N>::GetAddress()
 {
-	return &myData;
+	return static_cast<Ptr<byte>>(myData);
 }
 
 template <size S, size N>
-ConstPtr_v ArrayBase<S, N>::operator*() const
+ConstPtr<byte> ArrayBase<S, N>::GetAddress() const
 {
-	return &myData;
+	return static_cast<ConstPtr<byte>>(myData);
 }
 
 template <typename T, size N = 1>
 class Array : public ArrayBase<sizeof T, N>
 {
 public:
-	Ref<T> operator->();
-	ConstRef<T> operator->() const;
-
-	Ref<T> operator[](const i32 aIndex);
-	ConstRef<T> operator[](const i32 aIndex) const;
+	Ptr<T> operator[](const i32 aIndex);
+	ConstPtr<T> operator[](const i32 aIndex) const;
 };
 
-template <typename T, size N>
-T & Array<T, N>::operator->()
+template <typename T, size N /*= 1*/>
+Ptr<T> Array<T, N>::operator[](const i32 aIndex)
 {
-	return *static_cast<Ptr<T>>(operator*());
-}
-
-template <typename T, size N>
-const T & Array<T, N>::operator->() const
-{
-	return *static_cast<ConstPtr<T>>(*this);
+	return reinterpret_cast<Ptr<T>>(ArrayBase::GetAddress() + sizeof T * aIndex);
 }
 
 template <typename T, size N /*= 1*/>
-Ref<T> Array<T, N>::operator[](const i32 aIndex)
+ConstPtr<T> Array<T, N>::operator[](const i32 aIndex) const
 {
-	return *static_cast<Ptr<T>>((*this)[aIndex]);
-}
-
-template <typename T, size N /*= 1*/>
-ConstRef<T> Array<T, N>::operator[](const i32 aIndex) const
-{
-	return *static_cast<ConstPtr<T>>((*this)[aIndex]);
+	return reinterpret_cast<ConstPtr<T>>(ArrayBase::GetAddress() + sizeof T * aIndex);
 }

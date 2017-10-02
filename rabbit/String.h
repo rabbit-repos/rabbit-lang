@@ -33,9 +33,17 @@ public:
 	bool operator==(ConstRef<String> aOther) const;
 	bool operator!=(ConstRef<String> aOther) const;
 
+	// Equivalent to operator==
+	bool Equals(ConstRef<String> aOther) const;
+	bool EqualsIgnoreCase(ConstRef<String> aOther) const;
+
+	String ChopLeft(Const<i32> aEnd) const;
+	String ChopRight(Const<i32> aBegin) const;
+
 private:
 	explicit String(ConstPtr<StringData> aOwner, ConstPtr<Char> aDataPoint, const i32 aLength);
-	
+	String MakeView(const i32 aStart, const i32 aLength) const;
+
 	ConstPtr<Char> myData;
 	i32 myLength;
 

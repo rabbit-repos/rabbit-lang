@@ -1,6 +1,6 @@
 #pragma once
 
-constexpr decltype(nullptr) null = nullptr;
+constexpr nullptr_t null = nullptr;
 
 using i8 = signed char;
 using u8 = unsigned char;
@@ -14,6 +14,15 @@ using u64 = unsigned long long;
 using f32 = float;
 using f64 = double;
 
+template <typename T>
+constexpr T MinOf = std::numeric_limits<T>::min();
+
+template <typename T>
+constexpr T MaxOf = std::numeric_limits<T>::max();
+
+template <typename T>
+constexpr T DefaultOf = T();
+
 using Char = wchar_t;
 
 // TODO: Replace these two with classes with null checking etc
@@ -23,7 +32,7 @@ template <typename T>
 using ConstPtr = const T*;
 
 using RawPtr = Ptr<void>;
-using ConstPtr_v = ConstPtr<void>;
+using ConstRawPtr = ConstPtr<void>;
 
 template <typename T>
 using Const = const T;
@@ -64,3 +73,24 @@ constexpr const T & Max(const T & aValue, const T & aAnotherValue)
 	return (aValue < aAnotherValue) ? aAnotherValue : aValue;
 }
 
+inline Ref<std::wostream> operator<<(Ref<std::wostream> aOut, ConstRef<u8> aValue)
+{
+	aOut << static_cast<u16>(aValue);
+	return aOut;
+}
+inline Ref<std::ostream> operator<<(Ref<std::ostream> aOut, ConstRef<u8> aValue)
+{
+	aOut << static_cast<u16>(aValue);
+	return aOut;
+}
+
+inline Ref<std::wostream> operator<<(Ref<std::wostream> aOut, ConstRef<i8> aValue)
+{
+	aOut << static_cast<u16>(aValue);
+	return aOut;
+}
+inline Ref<std::ostream> operator<<(Ref<std::ostream> aOut, ConstRef<i8> aValue)
+{
+	aOut << static_cast<u16>(aValue);
+	return aOut;
+}

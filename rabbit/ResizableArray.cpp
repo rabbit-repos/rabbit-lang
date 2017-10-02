@@ -73,7 +73,7 @@ RawPtr ResizableArrayBase::GetAddress()
 	return myData;
 }
 
-ConstPtr_v ResizableArrayBase::GetAddress() const
+ConstRawPtr ResizableArrayBase::GetAddress() const
 {
 	return myData;
 }
