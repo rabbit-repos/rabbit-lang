@@ -22,11 +22,11 @@ private:
 	static u8 Map(Const<Char> aChar, Const<bool> aIsFirstCharacter);
 	
 	static constexpr u8 MinValue = static_cast<u8>(SymbolID::FirstValid);
-	static constexpr u8 MaxValue = static_cast<u8>(SymbolID::Count) - 1;
-	static constexpr u8 CharRange = MaxValue - MinValue;
+	static constexpr u8 MaxValue = static_cast<u8>(SymbolID::Count);
+	static constexpr u8 ArraySize = MaxValue - MinValue + 1;
 
 	TType myValue;
-	Ptr<Array<SymbolFilter, CharRange>> myNextLayer;
+	Ptr<Array<SymbolFilter, ArraySize>> myNextLayer;
 };
 
 template <typename TType>
@@ -95,16 +95,17 @@ Ref<TType> SymbolFilter<TType>::GetOrCreateValue(String aString)
 
 		if (!current->myNextLayer)
 		{
-			current->myNextLayer = new Array<SymbolFilter, CharRange>();
+			current->myNextLayer = new Array<SymbolFilter, ArraySize>();
 
+			// TODO: Look into, can probably only happen will malloc
 			if (!current->myNextLayer)
 				abort();
 		}
 
 		Const<u8> mappedCharacter = Map(aString[0], isFirstCharacter);
 		aString = aString.ChopRight(1);
-
-		current = (*current->myNextLayer)[mappedCharacter];
+		
+		current = &(*current->myNextLayer)[mappedCharacter];
 		isFirstCharacter = false;
 	}
 }
@@ -125,7 +126,7 @@ SymbolFilter<TType>::~SymbolFilter()
 template <typename TType>
 u8 SymbolFilter<TType>::Map(Const<Char> aChar, Const<bool> aIsFirstCharacter)
 {
-	static_assert(CharRange <= MaxValue, "SymbolFilter only works on u8s");
+	static_assert(ArraySize <= MaxValue, "SymbolFilter only works on u8s");
 	Const<SymbolID> mappedValue = CharUtility::GetCharacterSymbolID(aChar, aIsFirstCharacter);
 	if (mappedValue == SymbolID::None)
 	{

@@ -78,7 +78,7 @@ String String::MakeView(Const<i32> aStart, Const<i32> aLength) const
 #ifdef _DEBUG
 	return String(myOwner, &myData[aStart], aLength);
 #else
-	return String(null, myData[aStart], aLength);
+	return String(null, &myData[aStart], aLength);
 #endif
 }
 

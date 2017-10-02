@@ -94,3 +94,14 @@ inline Ref<std::ostream> operator<<(Ref<std::ostream> aOut, ConstRef<i8> aValue)
 	aOut << static_cast<u16>(aValue);
 	return aOut;
 }
+
+inline Ref<std::wostream> operator<<(Ref<std::wostream> aOut, ConstRef<byte> aValue)
+{
+	aOut << static_cast<u16>(aValue);
+	return aOut;
+}
+inline Ref<std::ostream> operator<<(Ref<std::ostream> aOut, ConstRef<byte> aValue)
+{
+	aOut << static_cast<u16>(aValue);
+	return aOut;
+}

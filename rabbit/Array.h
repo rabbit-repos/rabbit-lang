@@ -53,18 +53,26 @@ template <typename T, size N = 1>
 class Array : public ArrayBase<sizeof T, N>
 {
 public:
-	Ptr<T> operator[](const i32 aIndex);
-	ConstPtr<T> operator[](const i32 aIndex) const;
+	Ref<T> operator[](const i32 aIndex);
+	ConstRef<T> operator[](const i32 aIndex) const;
 };
 
 template <typename T, size N /*= 1*/>
-Ptr<T> Array<T, N>::operator[](const i32 aIndex)
+Ref<T> Array<T, N>::operator[](const i32 aIndex)
 {
-	return reinterpret_cast<Ptr<T>>(ArrayBase::GetAddress() + sizeof T * aIndex);
+#ifdef _DEBUG
+	if (aIndex < 0 || aIndex >= N)
+		abort();
+#endif
+	return *reinterpret_cast<Ptr<T>>(ArrayBase::GetAddress() + sizeof T * aIndex);
 }
 
 template <typename T, size N /*= 1*/>
-ConstPtr<T> Array<T, N>::operator[](const i32 aIndex) const
+ConstRef<T> Array<T, N>::operator[](const i32 aIndex) const
 {
-	return reinterpret_cast<ConstPtr<T>>(ArrayBase::GetAddress() + sizeof T * aIndex);
+#ifdef _DEBUG
+	if (aIndex < 0 || aIndex >= N)
+		abort();
+#endif
+	return *reinterpret_cast<ConstPtr<T>>(ArrayBase::GetAddress() + sizeof T * aIndex);
 }

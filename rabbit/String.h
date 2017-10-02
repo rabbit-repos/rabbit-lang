@@ -42,7 +42,7 @@ public:
 
 private:
 	explicit String(ConstPtr<StringData> aOwner, ConstPtr<Char> aDataPoint, const i32 aLength);
-	String MakeView(const i32 aStart, const i32 aLength) const;
+	String MakeView(Const<i32> aStart, Const<i32> aLength) const;
 
 	ConstPtr<Char> myData;
 	i32 myLength;

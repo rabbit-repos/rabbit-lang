@@ -18,8 +18,8 @@ public:
 
 	void RemoveAtIndex(const i32 aIndex);
 
-	size Length() const;
-	size Capacity() const;
+	i32 Length() const;
+	i32 Capacity() const;
 	
 	void SetLength(Const<i32> aLength);
 	void Resize(Const<i32> aLength, Const<bool> aClearMemory = true);
@@ -37,7 +37,7 @@ private:
 	// TODO: Store initial X items on "stack", like so:
 	// Array<T, N> myStackCache;
 
-	size myLength;
+	i32 myLength;
 };
 
 template <typename T>
@@ -154,15 +154,15 @@ List<T>::~List()
 }
 
 template <typename T>
-size List<T>::Length() const
+i32 List<T>::Length() const
 {
 	return myLength;
 }
 
 template <typename T>
-size List<T>::Capacity() const
+i32 List<T>::Capacity() const
 {
-	return myData.Length();
+	return static_cast<i32>(myData.Length());
 }
 
 template <typename T>

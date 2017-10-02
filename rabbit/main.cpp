@@ -7,14 +7,22 @@
 #include "Interpreter.h"
 #include "SymbolFilter.h"
 
-int main(int /*aArgNum*/, const char * /*aArgs*/[])
+i32 main(Const<i32> aArgNum, ConstPtr<char> aArgs[])
 {
-	SymbolFilter<int> symbolFilter;
-	symbolFilter.GetOrCreateValue(L"apor-_aaa") = 100;
-	symbolFilter.GetOrCreateValue(L"apor-_aaa2") = 200;
-	symbolFilter.GetOrCreateValue(L"opa") = 300;
+	// for (;;)
+	// {
+	// 	SymbolFilter<int> symbolFilter;
+	// 	symbolFilter.GetOrCreateValue(L"apor-_aaa") = 100;
+	// 	symbolFilter.GetOrCreateValue(L"apor-_aaa2") = 200;
+	// 	symbolFilter.GetOrCreateValue(L"opa") = 300;
+	// 
+	// 	std::cout << symbolFilter[L"apor-_aaa"] << std::endl;
+	// 	std::cout << symbolFilter[L"inget"] << std::endl;
+	// 	std::cout << symbolFilter[L"opa"] << std::endl;
+	// }
+	// 
+	// std::cin.get();
 
-	/*
 	std::cout << "Rabbit Language v.0" << std::endl;
 
 	if (aArgNum > 1)
@@ -57,7 +65,7 @@ int main(int /*aArgNum*/, const char * /*aArgs*/[])
 			std::cout << "Unknown parameter: " << aArgs[1] << std::endl;
 		}
 	}
-	*/
+	
 	
 	std::cout << "Press Return to quit" << std::endl;
 	std::cin.get();

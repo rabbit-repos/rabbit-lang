@@ -19,7 +19,7 @@ bool CharUtility::IsWhiteSpace(Const<Char> aChar)
 
 SymbolID CharUtility::GetDigitSymbolID(Const<Char> aChar, Const<bool> aIsFirstCharacter)
 {
-	if (!aIsFirstCharacter && static_cast<u8>(aChar) >= static_cast<u8>(SymbolIDValues::FirstDigit) && static_cast<u8>(aChar) <= static_cast<u8>(SymbolIDValues::LastDigit))
+	if (!aIsFirstCharacter && IsDigit(aChar))
 		return static_cast<SymbolID>(static_cast<u8>(SymbolIDValues::FirstDigit) + (aChar - L'0'));
 	return SymbolID::None;
 }

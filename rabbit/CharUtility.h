@@ -1,19 +1,6 @@
 #pragma once
 
-enum class SymbolID : u8
-{
-	None,
-	FirstValid,
-	// 1 - XXX is the alphabet
-	Alphabet = FirstValid,
-	// XXX - XXX is the digits
-	Digits,
-	Underscore,
-	Hyphen,
-	
-	Count
-	// Space ??? TODO: Figure out if this is actually necessary/possibly etc.
-};
+enum class SymbolID : u8;
 
 class CharUtility
 {
@@ -51,5 +38,17 @@ private:
 	CharUtility() { }
 };
 
-// template<>
-// constexpr CharUtility::LetterID MaxOf<CharUtility::LetterID> = MaxOf<u8>;
+enum class SymbolID : u8
+{
+	None,
+	FirstValid,
+	// 1 - XXX is the alphabet
+	Alphabet = FirstValid,
+	// XXX - XXX is the digits
+	Digits = static_cast<u8>(CharUtility::SymbolIDValues::FirstDigit),
+	Underscore,
+	Hyphen,
+
+	Count
+	// Space ??? TODO: Figure out if this is actually necessary/possibly etc.
+};
