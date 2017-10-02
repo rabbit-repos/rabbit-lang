@@ -1,5 +1,9 @@
 #pragma once
 
+#ifdef _MSC_VER
+	#define USE_LOOP_HINT
+#endif
+
 #include <string>
 #include <cstring>
 #include <fstream>

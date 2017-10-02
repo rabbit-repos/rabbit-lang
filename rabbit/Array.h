@@ -12,7 +12,7 @@ public:
 	constexpr size Count() const;
 	constexpr size SizeInBytes() const;
 
-private:
+protected:
 	byte myData[S * N];
 };
 
@@ -50,12 +50,37 @@ ConstPtr<byte> ArrayBase<S, N>::GetAddress() const
 }
 
 template <typename T, size N = 1>
-class Array : public ArrayBase<sizeof T, N>
+class Array : protected ArrayBase<sizeof T, N>
 {
 public:
+	Array();
+	~Array();
+
 	Ref<T> operator[](const i32 aIndex);
 	ConstRef<T> operator[](const i32 aIndex) const;
 };
+
+template <typename T, size N /*= 1*/>
+Array<T, N>::Array()
+	: ArrayBase(false)
+{
+	for (size i = 0; i < N; ++i)
+	{
+		new (myData[i]) T();
+	}
+}
+
+template <typename T, size N /*= 1*/>
+Array<T, N>::~Array()
+{
+	for (size i = 0; i < N; ++i)
+	{
+		myData[i]::~T();
+	}
+#ifdef _DEBUG
+	memset(myData, Min<i32>, sizeof myData);
+#endif
+}
 
 template <typename T, size N /*= 1*/>
 Ref<T> Array<T, N>::operator[](const i32 aIndex)
