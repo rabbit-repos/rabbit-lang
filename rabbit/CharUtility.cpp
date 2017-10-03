@@ -17,11 +17,11 @@ bool CharUtility::IsWhiteSpace(Const<Char> aChar)
 	return false;
 }
 
-SymbolID CharUtility::GetDigitSymbolID(Const<Char> aChar, Const<bool> aIsFirstCharacter)
+SymbolCharacterID CharUtility::GetDigitLexemeID(Const<Char> aChar, Const<bool> aIsFirstCharacter)
 {
 	if (!aIsFirstCharacter && IsDigit(aChar))
-		return static_cast<SymbolID>(static_cast<u8>(SymbolIDValues::FirstDigit) + (aChar - L'0'));
-	return SymbolID::None;
+		return static_cast<SymbolCharacterID>(static_cast<u8>(SymbolIDValues::FirstDigit) + (aChar - L'0'));
+	return SymbolCharacterID::None;
 }
 
 bool CharUtility::IsDigit(Const<Char> aChar)
@@ -29,30 +29,30 @@ bool CharUtility::IsDigit(Const<Char> aChar)
 	return aChar >= L'0' && aChar <= L'9';
 }
 
-bool CharUtility::IsSymbolCharacter(Const<Char> aChar, Const<bool> aIsFirstCharacter)
+bool CharUtility::IsValidLexemeCharacter(Const<Char> aChar, Const<bool> aIsFirstCharacter)
 {
-	return GetCharacterSymbolID(aChar, aIsFirstCharacter) >= SymbolID::None;
+	return GetSymbolCharacterID(aChar, aIsFirstCharacter) > SymbolCharacterID::None;
 }
 
-SymbolID CharUtility::GetCharacterSymbolID(Const<Char> aChar, Const<bool> aIsFirstCharacter)
+SymbolCharacterID CharUtility::GetSymbolCharacterID(Const<Char> aChar, Const<bool> aIsFirstCharacter)
 {
-	Const<SymbolID> letterID = GetLetterSymbolID(aChar);
-	if (letterID > SymbolID::None)
+	Const<SymbolCharacterID> letterID = GetLetterSymbolCharacterID(aChar);
+	if (letterID > SymbolCharacterID::None)
 		return letterID;
 
-	Const<SymbolID> digitID = GetDigitSymbolID(aChar, aIsFirstCharacter);
-	if (digitID > SymbolID::None)
+	Const<SymbolCharacterID> digitID = GetDigitLexemeID(aChar, aIsFirstCharacter);
+	if (digitID > SymbolCharacterID::None)
 		return digitID;
 	
 	switch (aChar)
 	{
 	case L'_':
-		return SymbolID::Underscore;
+		return SymbolCharacterID::Underscore;
 	case L'-':
-		return SymbolID::Hyphen;
+		return aIsFirstCharacter ? SymbolCharacterID::None : SymbolCharacterID::Hyphen;
 	}
 
-	return SymbolID::None;
+	return SymbolCharacterID::None;
 }
 
 bool CharUtility::IsControl(Const<Char> aChar)
@@ -61,22 +61,22 @@ bool CharUtility::IsControl(Const<Char> aChar)
 	return iswcntrl(aChar);
 }
 
-SymbolID CharUtility::GetLetterSymbolID(Const<Char> aChar)
+SymbolCharacterID CharUtility::GetLetterSymbolCharacterID(Const<Char> aChar)
 {
 	if (aChar >= FirstUpperCaseLetter && aChar <= LastUpperCaseLetter)
 	{
-		return static_cast<SymbolID>(aChar - FirstUpperCaseLetter);
+		return static_cast<SymbolCharacterID>(aChar - FirstUpperCaseLetter + 1);
 	}
 	if (aChar >= FirstLowerCaseLetter && aChar <= LastLowerCaseLetter)
 	{
-		return static_cast<SymbolID>((LastUpperCaseLetter - FirstUpperCaseLetter + 1) + aChar - FirstLowerCaseLetter);
+		return static_cast<SymbolCharacterID>((LastUpperCaseLetter - FirstUpperCaseLetter + 2) + aChar - FirstLowerCaseLetter);
 	}
-	return static_cast<SymbolID>(0);
+	return static_cast<SymbolCharacterID>(0);
 }
 
 bool CharUtility::IsLetter(Const<Char> aChar)
 {
-	return GetLetterSymbolID(aChar) > SymbolID::None;
+	return GetLetterSymbolCharacterID(aChar) > SymbolCharacterID::None;
 }
 
 Char CharUtility::ToLower(Const<Char> aChar)

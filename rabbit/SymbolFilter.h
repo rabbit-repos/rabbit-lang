@@ -7,7 +7,12 @@ class SymbolFilter
 {
 public:
 	SymbolFilter();
+	SymbolFilter(RValue<SymbolFilter> aOther);
+	SymbolFilter(ConstRef<SymbolFilter> aOther);
 	~SymbolFilter();
+
+	Ref<SymbolFilter> operator=(ConstRef<SymbolFilter> aOther);
+	Ref<SymbolFilter> operator=(RValue<SymbolFilter> aOther);
 
 	Ptr<TType> TryGetValue(String aString);
 	ConstPtr<TType> TryGetValue(String aString) const;
@@ -21,13 +26,63 @@ public:
 private:
 	static u8 Map(Const<Char> aChar, Const<bool> aIsFirstCharacter);
 	
-	static constexpr u8 MinValue = static_cast<u8>(SymbolID::FirstValid);
-	static constexpr u8 MaxValue = static_cast<u8>(SymbolID::Count);
+	static constexpr u8 MinValue = static_cast<u8>(SymbolCharacterID::FirstValid);
+	static constexpr u8 MaxValue = static_cast<u8>(SymbolCharacterID::Count);
 	static constexpr u8 ArraySize = MaxValue - MinValue + 1;
 
 	TType myValue;
 	Ptr<Array<SymbolFilter, ArraySize>> myNextLayer;
 };
+
+template <typename TType>
+SymbolFilter<TType>::SymbolFilter()
+	: myValue()
+{
+	myNextLayer = null;
+}
+
+template <typename TType>
+SymbolFilter<TType>::SymbolFilter(ConstRef<SymbolFilter> aOther)
+	: myValue(), myNextLayer(null)
+{
+	*this = aOther;
+}
+
+template <typename TType>
+SymbolFilter<TType>::SymbolFilter(RValue<SymbolFilter> aOther)
+	: myValue(), myNextLayer(null)
+{
+	*this = std::move(aOther);
+}
+
+template <typename TType>
+Ref<SymbolFilter<TType>> SymbolFilter<TType>::operator=(ConstRef<SymbolFilter> aOther)
+{
+	delete myNextLayer;
+
+	if (aOther.myNextLayer)
+		myNextLayer = new SymbolFilter(*aOther.myNextLayer);
+	else
+		myNextLayer = null;
+
+	myValue = aOther.myValue;
+
+	return *this;
+}
+
+template <typename TType>
+Ref<SymbolFilter<TType>> SymbolFilter<TType>::operator=(RValue<SymbolFilter> aOther)
+{
+	delete myNextLayer;
+
+	myNextLayer = std::move(aOther.myNextLayer);
+	aOther.myNextLayer = null;
+
+	myValue = std::move(aOther.myValue);
+	aOther.myValue = TType();
+
+	return *this;
+}
 
 template <typename TType>
 Ptr<TType> SymbolFilter<TType>::TryGetValue(String aString)
@@ -49,7 +104,7 @@ Ptr<TType> SymbolFilter<TType>::TryGetValue(String aString)
 		Const<u8> mappedCharacter = Map(aString[0], isFirstCharacter);
 		aString = aString.ChopRight(1);
 
-		current = (*current->myNextLayer)[mappedCharacter];
+		current = &(*current->myNextLayer)[mappedCharacter];
 		isFirstCharacter = false;
 	}
 }
@@ -71,7 +126,7 @@ ConstPtr<TType> SymbolFilter<TType>::TryGetValue(String aString) const
 		Const<u8> mappedCharacter = Map(aString[0], isFirstCharacter);
 		aString = aString.ChopRight(1);
 
-		current = (*current->myNextLayer)[mappedCharacter];
+		current = &(*current->myNextLayer)[mappedCharacter];
 		isFirstCharacter = false;
 	}
 }
@@ -97,7 +152,7 @@ Ref<TType> SymbolFilter<TType>::GetOrCreateValue(String aString)
 		{
 			current->myNextLayer = new Array<SymbolFilter, ArraySize>();
 
-			// TODO: Look into, can probably only happen will malloc
+			// TODO: Look into, can probably only happen will malloc, new probably throws
 			if (!current->myNextLayer)
 				abort();
 		}
@@ -111,24 +166,20 @@ Ref<TType> SymbolFilter<TType>::GetOrCreateValue(String aString)
 }
 
 template <typename TType>
-SymbolFilter<TType>::SymbolFilter()
-	: myValue()
-{
-	myNextLayer = null;
-}
-
-template <typename TType>
 SymbolFilter<TType>::~SymbolFilter()
 {
 	delete myNextLayer;
+#ifdef _DEBUG
+	myNextLayer = null;
+#endif
 }
 
 template <typename TType>
 u8 SymbolFilter<TType>::Map(Const<Char> aChar, Const<bool> aIsFirstCharacter)
 {
 	static_assert(ArraySize <= MaxValue, "SymbolFilter only works on u8s");
-	Const<SymbolID> mappedValue = CharUtility::GetCharacterSymbolID(aChar, aIsFirstCharacter);
-	if (mappedValue == SymbolID::None)
+	Const<SymbolCharacterID> mappedValue = CharUtility::GetSymbolCharacterID(aChar, aIsFirstCharacter);
+	if (mappedValue == SymbolCharacterID::None)
 	{
 #ifdef _DEBUG
 		std::cout << "This value was not able to be mapped to a symbol" << std::endl;

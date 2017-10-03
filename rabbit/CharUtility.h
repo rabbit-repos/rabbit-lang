@@ -1,22 +1,22 @@
 #pragma once
 
-enum class SymbolID : u8;
+enum class SymbolCharacterID : u8;
 
 class CharUtility
 {
 public:
 	static bool IsWhiteSpace(Const<Char> aChar);
 	
-	static SymbolID GetDigitSymbolID(Const<Char> aChar, Const<bool> aIsFirstCharacter);
+	static SymbolCharacterID GetDigitLexemeID(Const<Char> aChar, Const<bool> aIsFirstCharacter);
 	static bool IsDigit(Const<Char> aChar);
 	
 	static bool IsControl(Const<Char> aChar);
 	
 	static bool IsLetter(Const<Char> aChar);
-	static SymbolID GetLetterSymbolID(Const<Char> aChar);
+	static SymbolCharacterID GetLetterSymbolCharacterID(Const<Char> aChar);
 
-	static bool IsSymbolCharacter(Const<Char> aChar, Const<bool> aIsFirstCharacter);
-	static SymbolID GetCharacterSymbolID(Const<Char> aChar, Const<bool> aIsFirstCharacter);
+	static bool IsValidLexemeCharacter(Const<Char> aChar, Const<bool> aIsFirstCharacter);
+	static SymbolCharacterID GetSymbolCharacterID(Const<Char> aChar, Const<bool> aIsFirstCharacter);
 
 	static Char ToLower(Const<Char> aChar);
 	static Char ToUpper(Const<Char> aChar);
@@ -29,7 +29,7 @@ public:
 	enum class SymbolIDValues : u8
 	{
 		FirstLetter = 1,
-		LastLetter = FirstLetter + ('Z' - 'A' + 1) + ('z' - 'a' + 1),
+		LastLetter = FirstLetter + ('Z' - 'A') + ('z' - 'a') + 1,
 		FirstDigit = LastLetter + 1,
 		LastDigit = FirstDigit + 9
 	};
@@ -38,7 +38,7 @@ private:
 	CharUtility() { }
 };
 
-enum class SymbolID : u8
+enum class SymbolCharacterID : u8
 {
 	None,
 	FirstValid,
@@ -46,7 +46,7 @@ enum class SymbolID : u8
 	Alphabet = FirstValid,
 	// XXX - XXX is the digits
 	Digits = static_cast<u8>(CharUtility::SymbolIDValues::FirstDigit),
-	Underscore,
+	Underscore = Digits + 10,
 	Hyphen,
 
 	Count

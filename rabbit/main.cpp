@@ -5,24 +5,9 @@
 #include "Config.h"
 #include "Lexer.h"
 #include "Interpreter.h"
-#include "SymbolFilter.h"
 
 i32 main(Const<i32> aArgNum, ConstPtr<char> aArgs[])
 {
-	for (;;)
-	{
-		SymbolFilter<int> symbolFilter;
-		symbolFilter.GetOrCreateValue(L"apor-_aaa") = 100;
-		symbolFilter.GetOrCreateValue(L"apor-_aaa2") = 200;
-		symbolFilter.GetOrCreateValue(L"opa") = 300;
-	
-		std::cout << symbolFilter[L"apor-_aaa"] << std::endl;
-		std::cout << symbolFilter[L"inget"] << std::endl;
-		std::cout << symbolFilter[L"opa"] << std::endl;
-	}
-	
-	// std::cin.get();
-
 	std::cout << "Rabbit Language v.0" << std::endl;
 
 	if (aArgNum > 1)

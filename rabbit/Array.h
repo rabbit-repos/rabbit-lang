@@ -1,4 +1,5 @@
 #pragma once
+#include <type_traits>
 
 template <size S, size N = 1>
 class ArrayBase
@@ -54,31 +55,85 @@ class Array : protected ArrayBase<sizeof T, N>
 {
 public:
 	Array();
+	Array(ConstRef<Array> aArray);
+	Array(RValue<Array> aArray);
 	~Array();
+
+	Ref<Array> operator=(ConstRef<Array> aArray);
+	Ref<Array> operator=(RValue<Array> aArray);
 
 	Ref<T> operator[](const i32 aIndex);
 	ConstRef<T> operator[](const i32 aIndex) const;
 };
 
 template <typename T, size N /*= 1*/>
-Array<T, N>::Array()
+Array<T, N>::Array(ConstRef<Array> aArray)
 	: ArrayBase(false)
 {
-	for (size i = 0; i < N; ++i)
+	Const<size> num = N * sizeof T;
+	for (size i = 0; i < num; i += sizeof T)
+		new (&(*this)[i]) T(aArray[i]);
+}
+
+template <typename T, size N /*= 1*/>
+Array<T, N>::Array(RValue<Array> aArray)
+{
+	Const<size> num = N * sizeof T;
+	for (size i = 0; i < num; i += sizeof T)
 	{
-		new (myData[i]) T();
+		new (&(*this)[i]) T(std::move(aArray[i]));
+		aArray[i].~T();
 	}
+}
+
+template <typename T, size N /*= 1*/>
+Ref<Array<T, N>> Array<T, N>::operator=(ConstRef<Array> aArray)
+{
+	Const<size> num = N * sizeof T;
+	for (size i = 0; i < num; i += sizeof T)
+	{
+		(*this)[i].~T();
+		new (&(*this)[i]) T(aArray[i]);
+	}
+	return *this;
+}
+
+template <typename T, size N /*= 1*/>
+Ref<Array<T, N>> Array<T, N>::operator=(RValue<Array> aArray)
+{
+	Const<size> num = N * sizeof T;
+	for (size i = 0; i < num; i += sizeof T)
+	{
+		(*this)[i].~T();
+		new (&(*this)[i]) T(std::move(aArray[i]));
+		aArray[i ].~T();
+	}
+	return *this;
+}
+
+template <typename T, size N /*= 1*/>
+Array<T, N>::Array()
+	: ArrayBase(std::is_trivially_default_constructible_v<T>)
+{
+	Const<size> num = N * sizeof T;
+
+#pragma warning ( suppress : 4127 )
+	if (std::is_trivially_default_constructible_v<T> == false)
+		for (size i = 0; i < num; i += sizeof T)
+			new (&myData[i]) T();
 }
 
 template <typename T, size N /*= 1*/>
 Array<T, N>::~Array()
 {
-	for (size i = 0; i < N; ++i)
-	{
-		myData[i]::~T();
-	}
+	Const<size> num = N * sizeof T;
+
+#pragma warning ( suppress : 4127 )
+	if (std::is_trivially_destructible_v<T> == false)
+		for (size i = 0; i < num; i += sizeof T)
+			reinterpret_cast<T*>(&myData[i])->~T();
 #ifdef _DEBUG
-	memset(myData, Min<i32>, sizeof myData);
+	memset(myData, 0, sizeof myData);
 #endif
 }
 
