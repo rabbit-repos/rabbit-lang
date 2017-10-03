@@ -20,11 +20,11 @@ public:
 	void Resize(const size aSize, const bool aClearMemory = true);
 	void Reserve(const size aSize, const bool aClearMemory = true);
 
-	RawPtr GetAddress();
-	ConstRawPtr GetAddress() const;
+	Ptr<byte> GetAddress();
+	ConstPtr<byte> GetAddress() const;
 
 private:
-	RawPtr myData;
+	Ptr<byte> myData;
 	size myLength; // : sizeof Ptr; ?
 };
 
@@ -64,13 +64,13 @@ private:
 template <typename T>
 Ptr<T> ResizableArray<T>::GetAddress()
 {
-	return static_cast<Ptr<T>>(myData.GetAddress());
+	return reinterpret_cast<Ptr<T>>(myData.GetAddress());
 }
 
 template <typename T>
 ConstPtr<T> ResizableArray<T>::GetAddress() const
 {
-	return static_cast<ConstPtr<T>>(myData.GetAddress());
+	return reinterpret_cast<ConstPtr<T>>(myData.GetAddress());
 }
 
 template <typename T>
@@ -86,9 +86,7 @@ ResizableArray<T> & ResizableArray<T>::operator=(RValue<ResizableArray<T>> aOthe
 {
 	myData = std::move(aOther.myData);
 	myLength = aOther.myLength;
-#ifdef _DEBUG
 	aOther.myLength = 0;
-#endif
 	return *this;
 }
 
@@ -135,8 +133,7 @@ Ref<T> ResizableArray<T>::operator[](const u64 aIndex)
 	if (aIndex >= myLength)
 		abort();
 #endif
-	// TODO: Figure out why static cast won't do
-	return *reinterpret_cast<Ptr<T>>(static_cast<Ptr<byte>>(myData.GetAddress()) + sizeof T * aIndex);
+	return *reinterpret_cast<Ptr<T>>(myData.GetAddress() + sizeof T * aIndex);
 }
 
 template <typename T>
@@ -146,8 +143,7 @@ ConstRef<T> ResizableArray<T>::operator[](const u64 aIndex) const
 	if (aIndex >= myLength)
 		abort();
 #endif
-	// TODO: Figure out why static cast won't do
-	return *reinterpret_cast<ConstPtr<T>>(static_cast<ConstPtr<byte>>(myData.GetAddress()) + sizeof T * aIndex);
+	return *reinterpret_cast<ConstPtr<T>>(myData.GetAddress() + sizeof T * aIndex);
 }
 
 template <typename T>
@@ -161,6 +157,9 @@ ResizableArray<T>::ResizableArray(const size aLength, const bool aClearMemory /*
 	: myData(aLength * sizeof T, aClearMemory)
 {
 	myLength = aLength;
+
+	for (size i = 0; i < aLength; ++i)
+		new (myData.GetAddress() + sizeof T * i) T();
 }
 
 template <typename T>

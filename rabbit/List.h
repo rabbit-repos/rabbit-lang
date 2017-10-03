@@ -14,9 +14,9 @@ public:
 	Ref<List> operator=(ConstRef<List> aOther);
 	Ref<List> operator=(RValue<List> aOther);
 
-	void Add(const T & aItem);
+	void Add(ConstRef<T> aItem);
 
-	void RemoveAtIndex(const i32 aIndex);
+	void RemoveAtIndex(Const<i32> aIndex);
 
 	i32 Length() const;
 	i32 Capacity() const;
@@ -45,6 +45,7 @@ Ref<List<T>> List<T>::operator=(RValue<List> aOther)
 {
 	myData = std::move(aOther.myData);
 	myLength = aOther.myLength;
+	aOther.myLength = 0;
 	return *this;
 }
 
@@ -120,7 +121,7 @@ List<T>::List(Const<i32> aLength, Const<bool> aClearMemory /*= true*/)
 }
 
 template <typename T>
-void List<T>::RemoveAtIndex(const i32 aIndex)
+void List<T>::RemoveAtIndex(Const<i32> aIndex)
 {
 #ifdef _DEBUG
 	if (myLength <= 0)
@@ -129,16 +130,18 @@ void List<T>::RemoveAtIndex(const i32 aIndex)
 
 	for (size i = aIndex + 1; i < myLength; ++i)
 		std::move(myData[i], myData[i - 1]);
-
+	
 	--myLength;
+
+	new (&myData[myLength]) T();
 }
 
 template <typename T>
-void List<T>::Add(const T & aItem)
+void List<T>::Add(ConstRef<T> aItem)
 {
 	myLength++;
 	if (myLength >= Capacity())
-		Reserve(Capacity() * 2);
+		Reserve(Max(8, Capacity() * 2));
 	myData[myLength - 1] = aItem;
 }
 
@@ -151,6 +154,9 @@ List<T>::List()
 template <typename T>
 List<T>::~List()
 {
+	for (i32 i = 0; i < Length(); ++i)
+		myData[i].~T();
+	myLength = 0;
 }
 
 template <typename T>

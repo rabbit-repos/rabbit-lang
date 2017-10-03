@@ -7,7 +7,7 @@ class String;
 class Config
 {
 public:
-	Config() { }
+	Config();
 	~Config() { }
 
 	void OpenProject(ConstRef<String> aPath);
@@ -17,8 +17,12 @@ public:
 	bool GetOutputExecutionTime() const;
 	bool GetOutputLexResults() const;
 
+	ConstRef<List<StringData>> GetSourceFiles() const;
+
 private:
 	void ReadProject(ConstRef<json> aDocument);
+
+	List<StringData> mySourceFiles;
 
 	StringData myProjectName;
 	ProjectType myProjectType;

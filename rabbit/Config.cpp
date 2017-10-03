@@ -4,6 +4,12 @@
 #include "String.h"
 #include "ResizableArray.h"
 
+Config::Config()
+	: myProjectName(), myProjectType(ProjectType::Unknown), myOutputExecutionTime(false), myOutputLexResults(false)
+{
+
+}
+
 void Config::OpenProject(ConstRef<String> aPath)
 {
 	Const<String> trimmedPath = aPath.Trim();
@@ -35,9 +41,12 @@ String Config::GetProjectName() const
 
 template <typename T>
 T ReadValue(ConstRef<json> aNode, ConstRef<String> aProperty, ConstRef<T> aDefault);
+bool HasValue(ConstRef<json> aNode, ConstRef<String> aProperty);
 
 void Config::ReadProject(ConstRef<json> aDocument)
 {
+	*this = Config();
+
 	// Project Name
 	myProjectName = ReadValue<StringData>(aDocument, L"projectName", L"output");
 
@@ -62,6 +71,18 @@ void Config::ReadProject(ConstRef<json> aDocument)
 
 	// Output Lex Results
 	myOutputLexResults = ReadValue<bool>(aDocument, L"outputLexResult", false);
+
+	// Source Files
+	if (HasValue(aDocument, L"sourceFiles"))
+	{
+		json::array_t empty;
+		json::array_t sourceFiles = ReadValue<json::array_t>(aDocument, L"sourceFiles", empty);
+
+		for (ConstRef<json> node : sourceFiles)
+		{
+			mySourceFiles.Add(node.get<StringData>());
+		}
+	}
 }
 
 ProjectType Config::GetProjectType() const
@@ -79,6 +100,11 @@ bool Config::GetOutputLexResults() const
 	return myOutputLexResults;
 }
 
+ConstRef<List<StringData>> Config::GetSourceFiles() const
+{
+	return mySourceFiles;
+}
+
 template <typename T>
 T ReadValue(ConstRef<json> aNode, ConstRef<String> aProperty, ConstRef<T> aDefault)
 {
@@ -87,4 +113,11 @@ T ReadValue(ConstRef<json> aNode, ConstRef<String> aProperty, ConstRef<T> aDefau
 	if (it == aNode.end())
 		return aDefault;
 	return it->get<T>();
+}
+
+bool HasValue(ConstRef<json> aNode, ConstRef<String> aProperty)
+{
+	// PERF: ToASCII will allocate on the heap, would be nice to search without taking a copy (jsfmcpp uses i8 chars)
+	auto it = aNode.find(aProperty.ToASCII());
+	return it != aNode.end();
 }

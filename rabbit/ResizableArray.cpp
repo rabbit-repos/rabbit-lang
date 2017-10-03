@@ -14,9 +14,9 @@ ResizableArrayBase::ResizableArrayBase(const size aSize, const bool aClearMemory
 	: ResizableArrayBase()
 {
 	if (aClearMemory)
-		myData = calloc(1, aSize);
+		myData = static_cast<Ptr<byte>>(calloc(1, aSize));
 	else
-		myData = malloc(aSize);
+		myData = static_cast<Ptr<byte>>(malloc(aSize));
 
 	if (!myData)
 		abort();
@@ -46,9 +46,9 @@ void ResizableArrayBase::Resize(const size aSize, const bool aClearMemory/* = tr
 	const RawPtr oldData = myData;
 	
 	if (aClearMemory && aSize > myLength)
-		myData = calloc(1, aSize);
+		myData = static_cast<Ptr<byte>>(calloc(1, aSize));
 	else
-		myData = malloc(aSize);
+		myData = static_cast<Ptr<byte>>(malloc(aSize));
 
 	if (!myData)
 		abort();
@@ -68,12 +68,12 @@ void ResizableArrayBase::Reserve(const size aSize, const bool aClearMemory /*= t
 		Resize(aSize, aClearMemory);
 }
 
-RawPtr ResizableArrayBase::GetAddress()
+Ptr<byte> ResizableArrayBase::GetAddress()
 {
 	return myData;
 }
 
-ConstRawPtr ResizableArrayBase::GetAddress() const
+ConstPtr<byte> ResizableArrayBase::GetAddress() const
 {
 	return myData;
 }
@@ -81,10 +81,13 @@ ConstRawPtr ResizableArrayBase::GetAddress() const
 Ref<ResizableArrayBase> ResizableArrayBase::operator=(RValue<ResizableArrayBase> aOther)
 {
 	free(myData);
+	
 	myData = std::move(aOther.myData);
+	myLength = aOther.myLength;
+
 	aOther.myData = null;
 	aOther.myLength = 0;
-	myLength = aOther.myLength;
+
 	return *this;
 }
 
@@ -94,7 +97,7 @@ Ref<ResizableArrayBase> ResizableArrayBase::operator=(ConstRef<ResizableArrayBas
 
 	if (aOther.myData)
 	{
-		myData = malloc(aOther.myLength);
+		myData = reinterpret_cast<Ptr<byte>>(malloc(aOther.myLength));
 		if (!myData)
 			abort();
 		memcpy(myData, aOther.myData, aOther.myLength);
@@ -103,6 +106,7 @@ Ref<ResizableArrayBase> ResizableArrayBase::operator=(ConstRef<ResizableArrayBas
 		myData = null;
 
 	myLength = aOther.myLength;
+
 	return *this;
 }
 

@@ -9,5 +9,7 @@
 
     "outputLexResult" : true,
     
-    "sourceFiles" : "**.rbt"
+    "sourceFiles" : [
+        "lexing.rbt"
+    ]
 }
