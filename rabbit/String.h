@@ -40,6 +40,9 @@ public:
 	String ChopLeft(Const<i32> aEnd) const;
 	String ChopRight(Const<i32> aBegin) const;
 
+	bool FindFirst(Const<Char> aChar, Out<i32> aIndex, Const<i32> aBeginAt = 0) const;
+	bool FindLast(Const<Char> aChar, Out<i32> aIndex, Const<i32> aBeginAt = MaxOf<i32>) const;
+
 private:
 	explicit String(ConstPtr<StringData> aOwner, ConstPtr<Char> aDataPoint, const i32 aLength);
 	String MakeView(Const<i32> aStart, Const<i32> aLength) const;

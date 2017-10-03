@@ -100,6 +100,33 @@ String String::ChopRight(Const<i32> aBegin) const
 	return MakeView(aBegin, myLength - aBegin);
 }
 
+bool String::FindFirst(Const<Char> aChar, Out<i32> aIndex, Const<i32> aBeginAt /*= 0*/) const
+{
+	Const<i32> n = Length();
+	for (i32 i = aBeginAt; i < n; ++i)
+	{
+		if ((*this)[i] == aChar)
+		{
+			aIndex = i;
+			return true;
+		}
+	}
+	return false;
+}
+
+bool String::FindLast(Const<Char> aChar, Out<i32> aIndex, Const<i32> aBeginAt /*= MaxOf<i32>*/) const
+{
+	for (i32 i = Min(Length() - 1, aBeginAt); i >= 0; --i)
+	{
+		if ((*this)[i] == aChar)
+		{
+			aIndex = i;
+			return true;
+		}
+	}
+	return false;
+}
+
 String::~String()
 {
 #ifdef _DEBUG
