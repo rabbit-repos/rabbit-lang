@@ -45,7 +45,7 @@ public:
 	size SizeInBytes() const;
 
 	void Resize(const size aLength, const bool aClearMemory = true);
-	void Reserve(const size aLength, const bool aClearMemory = true);
+	bool Reserve(const size aLength, const bool aClearMemory = true);
 
 	Ptr<T> GetAddress();
 	ConstPtr<T> GetAddress() const;
@@ -117,13 +117,15 @@ size ResizableArray<T>::SizeInBytes() const
 }
 
 template <typename T>
-void ResizableArray<T>::Reserve(const size aLength, const bool aClearMemory /*= true*/)
+bool ResizableArray<T>::Reserve(const size aLength, const bool aClearMemory /*= true*/)
 {
 	if (aLength >= myLength)
 	{
 		myData.Reserve(sizeof T * aLength, aClearMemory);
 		myLength = aLength;
+		return true;
 	}
+	return false;
 }
 
 template <typename T>

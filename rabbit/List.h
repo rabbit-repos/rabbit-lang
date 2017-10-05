@@ -23,7 +23,7 @@ public:
 	
 	void SetLength(Const<i32> aLength);
 	void Resize(Const<i32> aLength, Const<bool> aClearMemory = true);
-	void Reserve(Const<i32> aLength, Const<bool> aClearMemory = true);
+	bool Reserve(Const<i32> aLength, Const<bool> aClearMemory = true);
 
 	Ptr<T> GetAddress();
 	ConstPtr<T> GetAddress() const;
@@ -108,9 +108,9 @@ void List<T>::Resize(Const<i32> aLength, Const<bool> aClearMemory /*= true*/)
 }
 
 template <typename T>
-void List<T>::Reserve(Const<i32> aLength, Const<bool> aClearMemory /*= true*/)
+bool List<T>::Reserve(Const<i32> aLength, Const<bool> aClearMemory /*= true*/)
 {
-	myData.Reserve(aLength, aClearMemory);
+	return myData.Reserve(aLength, aClearMemory);
 }
 
 template <typename T>

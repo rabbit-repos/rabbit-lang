@@ -25,7 +25,7 @@ public:
 	// MutableStringBlob(const Char aString[N]);
 
 	void Resize(Const<i32> aLength);
-	void Reserve(Const<i32> aLength);
+	bool Reserve(Const<i32> aLength);
 	
 	i32 Length() const;
 	i32 Capacity() const;
@@ -39,12 +39,14 @@ public:
 	Ptr<Char> GetAddress();
 	ConstPtr<Char> GetAddress() const;
 
-	void Append(ConstPtr<wchar_t> aString);
-	void Append(ConstPtr<wchar_t> aString, Const<i32> aLength);
+	void Append(ConstPtr<Char> aString);
+	void Append(ConstPtr<Char> aString, Const<i32> aLength);
+	void AppendChar(Const<Char> aCharacter);
 
 private:
 	List<Char> myData;
 
+	void MakeSizeFor(Const<i32> aLength);
 	void CheckForReferences() const;
 
 #ifdef _DEBUG

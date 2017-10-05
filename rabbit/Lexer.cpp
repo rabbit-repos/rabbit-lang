@@ -24,6 +24,8 @@ ResizableArray<ConstPtr<class Lexeme>> Lexer::LexFile(ConstRef<String> aFilePath
 	while (std::getline(f, line))
 	{
 		code.Append(line.data(), static_cast<i32>(line.size()));
+		// code.AppendChar(L'\r');
+		code.AppendChar(L'\n');
 	}
 
 	return LexCode(std::move(code));

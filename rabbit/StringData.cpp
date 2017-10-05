@@ -115,27 +115,28 @@ void StringData::Resize(Const<i32> aLength)
 		abort();
 #endif
 	myData.Resize(aLength + 1);
+	myData[Length()] = L'\0';
 }
 
-void StringData::Reserve(Const<i32> aLength)
+bool StringData::Reserve(Const<i32> aLength)
 {
 #ifdef _DEBUG
 	if (aLength < 0)
 		abort();
 #endif
-	myData.Reserve(aLength + 1);
+	return myData.Reserve(aLength + 1);
 }
 
 i32 StringData::Length() const
 {
 	// PERF: Maybe move to own variable?
-	return static_cast<i32>(myData.Length()) - 1;
+	return Max(0, static_cast<i32>(myData.Length()) - 1);
 }
 
 i32 StringData::Capacity() const
 {
 	// PERF: Maybe move to own variable?
-	return static_cast<i32>(myData.Capacity()) - 1;
+	return Max(0, static_cast<i32>(myData.Capacity()) - 1);
 }
 
 Ref<Char> StringData::operator[](Const<i32> aIndex)
@@ -168,20 +169,28 @@ ConstPtr<Char> StringData::GetAddress() const
 	return myData.GetAddress();
 }
 
-void StringData::Append(ConstPtr<wchar_t> aString, Const<i32> aLength)
+void StringData::Append(ConstPtr<Char> aString, Const<i32> aLength)
 {
 	CheckForReferences();
+	MakeSizeFor(Length() + aLength);
 
-	while (Length() + aLength > Capacity())
-		Reserve(Capacity() * 2);
-
-	memcpy(&myData[Length()], aString, aLength);
+	memcpy(&myData[Length()], aString, sizeof Char * aLength);
 	myData.SetLength(Length() + aLength);
+	myData[myData.Length()] = L'\0';
 }
 
-void StringData::Append(ConstPtr<wchar_t> aString)
+void StringData::Append(ConstPtr<Char> aString)
 {
 	Append(aString, static_cast<i32>(wcslen(aString)));
+}
+
+void StringData::MakeSizeFor(Const<i32> aLength)
+{
+	i32 capacity = Max(32, Capacity());
+	while (capacity < aLength)
+		capacity *= 2;
+	if (capacity != Capacity())
+		Reserve(capacity);
 }
 
 void StringData::CheckForReferences() const
@@ -193,6 +202,15 @@ void StringData::CheckForReferences() const
 		abort();
 	}
 #endif
+}
+
+void StringData::AppendChar(Const<Char> aCharacter)
+{
+	CheckForReferences();
+
+	MakeSizeFor(Length() + 1);
+	myData.Add(aCharacter);
+	myData[myData.Length()] = L'\0';
 }
 
 std::wostream & operator<<(Ref<std::wostream> aOut, ConstRef<StringData> aString)
