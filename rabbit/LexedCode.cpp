@@ -40,7 +40,7 @@ void LexedCode::MakeSizeFor(Const<i32> aAdditionalData)
 		{
 			Const<i32> offset = static_cast<i32>(reinterpret_cast<ConstPtr<byte>>(myLexemes[i]) - myLexemeData.GetAddress());
 #ifdef _DEBUG
-			if (offset < 0 || offset >= myLexemeData.Length())
+			if (offset < 0 || static_cast<size>(offset) >= myLexemeData.Length())
 				abort();
 #endif
 			myLexemes[i] = reinterpret_cast<ConstPtr<Lexeme>>(&newData[offset]);
@@ -58,7 +58,7 @@ Ref<LexedCode> LexedCode::operator=(ConstRef<LexedCode> aCopy)
 	{
 		Const<i32> offset = static_cast<i32>(reinterpret_cast<ConstPtr<byte>>(aCopy.myLexemes[i]) - aCopy.myLexemeData.GetAddress());
 #ifdef _DEBUG
-		if (offset < 0 || offset >= aCopy.myLexemeData.Length())
+		if (offset < 0 || static_cast<size>(offset) >= aCopy.myLexemeData.Length())
 			abort();
 #endif
 		myLexemes[i] = reinterpret_cast<ConstPtr<Lexeme>>(&myLexemeData[offset]);
