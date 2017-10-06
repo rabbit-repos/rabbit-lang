@@ -57,7 +57,6 @@ i32 main(Const<i32> aArgNum, ConstPtr<char> aArgs[])
 		}
 	}
 	
-	
 	std::cout << "Press Return to quit" << std::endl;
 	std::cin.get();
 	

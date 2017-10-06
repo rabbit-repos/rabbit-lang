@@ -16,4 +16,13 @@
 #include <xutility>
 #include "json.h"
 
+constexpr size_t KiloByte = 1024;
+constexpr size_t MegaByte = KiloByte * 1024;
+constexpr size_t GigaByte = MegaByte * 1024;
+constexpr size_t TeraByte = GigaByte * 1024;
+
 #include "Types.h"
+#include "ResizableArray.h"
+#include "List.h"
+#include "StringData.h"
+#include "String.h"

@@ -169,6 +169,8 @@
     <ClCompile Include="CharUtility.cpp" />
     <ClCompile Include="Config.cpp" />
     <ClCompile Include="Interpreter.cpp" />
+    <ClCompile Include="LexedCode.cpp" />
+    <ClCompile Include="Lexeme.cpp" />
     <ClCompile Include="Lexer.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="pch.cpp">
@@ -191,6 +193,8 @@
     <ClInclude Include="Interpreter.h" />
     <ClInclude Include="json.h" />
     <ClInclude Include="Array.h" />
+    <ClInclude Include="LexedCode.h" />
+    <ClInclude Include="Lexeme.h" />
     <ClInclude Include="Lexer.h" />
     <ClInclude Include="List.h" />
     <ClInclude Include="pch.h" />

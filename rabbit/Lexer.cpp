@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "Lexer.h"
+#include "Lexeme.h"
 
 Lexer::Lexer(ConstRef<class Config> aConfig)
 {
@@ -10,12 +11,14 @@ Lexer::~Lexer()
 {
 }
 
-ResizableArray<ConstPtr<class Lexeme>> Lexer::LexCode(StringData aCode)
+LexedCode Lexer::LexCode(StringData aCode)
 {
-	return ResizableArray<ConstPtr<class Lexeme>>();
+	LexedCode lexemes;
+
+	return lexemes;
 }
 
-ResizableArray<ConstPtr<class Lexeme>> Lexer::LexFile(ConstRef<String> aFilePath)
+LexedCode Lexer::LexFile(ConstRef<String> aFilePath)
 {
 	std::wifstream f(aFilePath.ToWideString());
 	

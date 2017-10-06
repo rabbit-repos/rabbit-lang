@@ -110,7 +110,12 @@ void List<T>::Resize(Const<i32> aLength, Const<bool> aClearMemory /*= true*/)
 template <typename T>
 bool List<T>::Reserve(Const<i32> aLength, Const<bool> aClearMemory /*= true*/)
 {
-	return myData.Reserve(aLength, aClearMemory);
+	if (aLength > Capacity())
+	{
+		myData.Resize(aLength, aClearMemory);
+		return true;
+	}
+	return false;
 }
 
 template <typename T>

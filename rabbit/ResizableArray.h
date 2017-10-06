@@ -42,11 +42,11 @@ public:
 	ResizableArray & operator=(ConstRef<ResizableArray<T>> aOther);
 
 	size Length() const;
+	size Capacity() const;
 	size SizeInBytes() const;
 
 	void Resize(const size aLength, const bool aClearMemory = true);
-	bool Reserve(const size aLength, const bool aClearMemory = true);
-
+	
 	Ptr<T> GetAddress();
 	ConstPtr<T> GetAddress() const;
 
@@ -111,21 +111,15 @@ size ResizableArray<T>::Length() const
 }
 
 template <typename T>
-size ResizableArray<T>::SizeInBytes() const
+size ResizableArray<T>::Capacity() const
 {
 	return myData.Length();
 }
 
 template <typename T>
-bool ResizableArray<T>::Reserve(const size aLength, const bool aClearMemory /*= true*/)
+size ResizableArray<T>::SizeInBytes() const
 {
-	if (aLength >= myLength)
-	{
-		myData.Reserve(sizeof T * aLength, aClearMemory);
-		myLength = aLength;
-		return true;
-	}
-	return false;
+	return myData.Length();
 }
 
 template <typename T>

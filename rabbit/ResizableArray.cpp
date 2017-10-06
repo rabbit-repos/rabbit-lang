@@ -62,12 +62,6 @@ void ResizableArrayBase::Resize(const size aSize, const bool aClearMemory/* = tr
 	myLength = aSize;
 }
 
-void ResizableArrayBase::Reserve(const size aSize, const bool aClearMemory /*= true*/)
-{
-	if (aSize > myLength)
-		Resize(aSize, aClearMemory);
-}
-
 Ptr<byte> ResizableArrayBase::GetAddress()
 {
 	return myData;
