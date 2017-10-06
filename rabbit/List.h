@@ -18,7 +18,7 @@ public:
 
 	void RemoveAtIndex(Const<i32> aIndex);
 
-	i32 Length() const;
+	i32 Size() const;
 	i32 Capacity() const;
 	
 	void SetLength(Const<i32> aLength);
@@ -159,13 +159,13 @@ List<T>::List()
 template <typename T>
 List<T>::~List()
 {
-	for (i32 i = 0; i < Length(); ++i)
+	for (i32 i = 0; i < Size(); ++i)
 		myData[i].~T();
 	myLength = 0;
 }
 
 template <typename T>
-i32 List<T>::Length() const
+i32 List<T>::Size() const
 {
 	return myLength;
 }
@@ -173,7 +173,7 @@ i32 List<T>::Length() const
 template <typename T>
 i32 List<T>::Capacity() const
 {
-	return static_cast<i32>(myData.Length());
+	return static_cast<i32>(myData.Size());
 }
 
 template <typename T>

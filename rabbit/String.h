@@ -11,7 +11,7 @@ public:
 	String(ConstPtr<Char> aString);
 	~String();
 
-	i32 Length() const;
+	i32 Size() const;
 	ConstPtr<Char> GetAddress() const;
 	
 	std::string ToASCII() const;

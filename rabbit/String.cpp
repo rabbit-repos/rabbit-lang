@@ -16,7 +16,7 @@ String::String(ConstRef<StringData> aString)
 	: String()
 {
 	myData = aString.GetAddress();
-	myLength = aString.Length();
+	myLength = aString.Size();
 
 #ifdef _DEBUG
 	myOwner = &aString;
@@ -27,7 +27,7 @@ String::String(ConstRef<StringData> aString)
 String::String(ConstRef<String> aString, Const<i32> aNumberOfCharacters)
 	: String()
 {
-	if (aNumberOfCharacters > aString.Length())
+	if (aNumberOfCharacters > aString.Size())
 		abort();
 	myData = aString.GetAddress();
 }
@@ -102,7 +102,7 @@ String String::ChopRight(Const<i32> aBegin) const
 
 bool String::FindFirst(Const<Char> aChar, Out<i32> aIndex, Const<i32> aBeginAt /*= 0*/) const
 {
-	Const<i32> n = Length();
+	Const<i32> n = Size();
 	for (i32 i = aBeginAt; i < n; ++i)
 	{
 		if ((*this)[i] == aChar)
@@ -116,7 +116,7 @@ bool String::FindFirst(Const<Char> aChar, Out<i32> aIndex, Const<i32> aBeginAt /
 
 bool String::FindLast(Const<Char> aChar, Out<i32> aIndex, Const<i32> aBeginAt /*= MaxOf<i32>*/) const
 {
-	for (i32 i = Min(Length() - 1, aBeginAt); i >= 0; --i)
+	for (i32 i = Min(Size() - 1, aBeginAt); i >= 0; --i)
 	{
 		if ((*this)[i] == aChar)
 		{
@@ -139,7 +139,7 @@ String::~String()
 #endif
 }
 
-i32 String::Length() const
+i32 String::Size() const
 {
 	return myLength;
 }
@@ -152,9 +152,9 @@ ConstPtr<Char> String::GetAddress() const
 std::string String::ToASCII() const
 {
 	std::string str;
-	if (Length() > 0)
+	if (Size() > 0)
 	{
-		Const<i32> n = Length();
+		Const<i32> n = Size();
 		str.resize(n);
 		
 		for (i32 i=0; i<n; ++i)
@@ -168,10 +168,10 @@ std::string String::ToASCII() const
 std::wstring String::ToWideString() const
 {
 	std::wstring str;
-	if (Length() > 0)
+	if (Size() > 0)
 	{
-		str.resize(Length());
-		memcpy(&str[0], GetAddress(), sizeof Char * Length());
+		str.resize(Size());
+		memcpy(&str[0], GetAddress(), sizeof Char * Size());
 	}
 	return str;
 }
@@ -212,9 +212,9 @@ String String::Trim() const
 
 bool String::BeginsWith(ConstRef<String> aString) const
 {
-	if (aString.Length() > myLength)
+	if (aString.Size() > myLength)
 		return false;
-	for (i32 i = 0; i < aString.Length(); ++i)
+	for (i32 i = 0; i < aString.Size(); ++i)
 		if ((*this)[i] != aString[i])
 			return false;
 	return true;
@@ -222,10 +222,10 @@ bool String::BeginsWith(ConstRef<String> aString) const
 
 bool String::EndsWith(ConstRef<String> aString) const
 {
-	if (aString.Length() > myLength)
+	if (aString.Size() > myLength)
 		return false;
-	Const<i32> start = myLength - aString.Length();
-	for (i32 i = 0; i < aString.Length(); ++i)
+	Const<i32> start = myLength - aString.Size();
+	for (i32 i = 0; i < aString.Size(); ++i)
 		if ((*this)[start + i] != aString[i])
 			return false;
 	return true;
@@ -238,9 +238,9 @@ bool String::Equals(ConstRef<String> aOther) const
 
 bool String::EqualsIgnoreCase(ConstRef<String> aOther) const
 {
-	if (Length() != aOther.Length())
+	if (Size() != aOther.Size())
 		return false;
-	for (i32 i = 0, n = Length(); i < n; ++i)
+	for (i32 i = 0, n = Size(); i < n; ++i)
 		if (myData[i] != aOther[i] && CharUtility::ToLower(myData[i]) != CharUtility::ToLower(aOther[i]))
 			return false;
 	return true;
@@ -249,7 +249,7 @@ bool String::EqualsIgnoreCase(ConstRef<String> aOther) const
 bool String::operator==(ConstPtr<char> aOther) const
 {
 	Const<i32> length = static_cast<i32>(strlen(aOther));
-	if (length != Length())
+	if (length != Size())
 		return false;
 	for (i32 i = 0; i < length; ++i)
 		if (static_cast<Char>(aOther[i]) != myData[i])
@@ -274,9 +274,9 @@ bool String::operator!=(ConstPtr<wchar_t> aOther) const
 
 bool String::operator==(ConstRef<String> aOther) const
 {
-	if (Length() != aOther.Length())
+	if (Size() != aOther.Size())
 		return false;
-	return memcmp(GetAddress(), aOther.GetAddress(), Length() * sizeof Char) == 0;
+	return memcmp(GetAddress(), aOther.GetAddress(), Size() * sizeof Char) == 0;
 }
 
 bool String::operator!=(ConstRef<String> aOther) const
@@ -286,13 +286,13 @@ bool String::operator!=(ConstRef<String> aOther) const
 
 Ref<std::wostream> operator<<(Ref<std::wostream> aOut, ConstRef<String> aString)
 {
-	aOut.write(aString.GetAddress(), aString.Length());
+	aOut.write(aString.GetAddress(), aString.Size());
 	return aOut;
 }
 
 Ref<std::ostream> operator<<(Ref<std::ostream> aOut, ConstRef<String> aString)
 {
-	for (i32 i=0; i<aString.Length(); ++i)
+	for (i32 i=0; i<aString.Size(); ++i)
 		aOut.write(reinterpret_cast<ConstPtr<char>>(&aString[i]), 1);
 	return aOut;
 }

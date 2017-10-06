@@ -104,7 +104,7 @@ Ref<ResizableArrayBase> ResizableArrayBase::operator=(ConstRef<ResizableArrayBas
 	return *this;
 }
 
-size ResizableArrayBase::Length() const
+size ResizableArrayBase::Size() const
 {
 	return myLength;
 }

@@ -15,7 +15,7 @@ public:
 	Ref<ResizableArrayBase> operator=(RValue<ResizableArrayBase> aOther);
 	Ref<ResizableArrayBase> operator=(ConstRef<ResizableArrayBase> aOther);
 
-	size Length() const;
+	size Size() const;
 
 	void Resize(const size aSize, const bool aClearMemory = true);
 	void Reserve(const size aSize, const bool aClearMemory = true);
@@ -41,7 +41,7 @@ public:
 	ResizableArray & operator=(RValue<ResizableArray<T>> aOther);
 	ResizableArray & operator=(ConstRef<ResizableArray<T>> aOther);
 
-	size Length() const;
+	size Size() const;
 	size Capacity() const;
 	size SizeInBytes() const;
 
@@ -105,7 +105,7 @@ ResizableArray<T>::ResizableArray(RValue<ResizableArray<T>> aOther)
 }
 
 template <typename T>
-size ResizableArray<T>::Length() const
+size ResizableArray<T>::Size() const
 {
 	return myLength;
 }
@@ -113,13 +113,13 @@ size ResizableArray<T>::Length() const
 template <typename T>
 size ResizableArray<T>::Capacity() const
 {
-	return myData.Length();
+	return myData.Size();
 }
 
 template <typename T>
 size ResizableArray<T>::SizeInBytes() const
 {
-	return myData.Length();
+	return myData.Size();
 }
 
 template <typename T>

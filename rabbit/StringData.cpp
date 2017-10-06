@@ -12,7 +12,7 @@ StringData::StringData()
 StringData::StringData(ConstPtr<Char> aString)
 {
 	myData.Resize(static_cast<i32>(wcslen(aString) + 1), false);
-	memcpy(myData.GetAddress(), aString, (Length() + 1) * sizeof Char);
+	memcpy(myData.GetAddress(), aString, (Size() + 1) * sizeof Char);
 #ifdef _DEBUG
 	myNumReferences = 0;
 #endif
@@ -51,11 +51,11 @@ StringData::StringData(ConstPtr<Char> aString, Const<i32> aLength)
 }
 
 StringData::StringData(ConstRef<String> aString)
-	: myData(aString.Length() + 1, false)
+	: myData(aString.Size() + 1, false)
 {
-	myData.Resize(aString.Length() + 1, false);
-	memcpy(myData.GetAddress(), aString.GetAddress(), Length() * sizeof Char);
-	myData[Length()] = L'\0';
+	myData.Resize(aString.Size() + 1, false);
+	memcpy(myData.GetAddress(), aString.GetAddress(), Size() * sizeof Char);
+	myData[Size()] = L'\0';
 #ifdef _DEBUG
 	myNumReferences = 0;
 #endif
@@ -115,7 +115,7 @@ void StringData::Resize(Const<i32> aLength)
 		abort();
 #endif
 	myData.Resize(aLength + 1);
-	myData[Length()] = L'\0';
+	myData[Size()] = L'\0';
 }
 
 bool StringData::Reserve(Const<i32> aLength)
@@ -127,10 +127,10 @@ bool StringData::Reserve(Const<i32> aLength)
 	return myData.Reserve(aLength + 1);
 }
 
-i32 StringData::Length() const
+i32 StringData::Size() const
 {
 	// PERF: Maybe move to own variable?
-	return Max(0, static_cast<i32>(myData.Length()) - 1);
+	return Max(0, static_cast<i32>(myData.Size()) - 1);
 }
 
 i32 StringData::Capacity() const
@@ -172,11 +172,11 @@ ConstPtr<Char> StringData::GetAddress() const
 void StringData::Append(ConstPtr<Char> aString, Const<i32> aLength)
 {
 	CheckForReferences();
-	MakeSizeFor(Length() + aLength);
+	MakeSizeFor(Size() + aLength);
 
-	memcpy(&myData[Length()], aString, sizeof Char * aLength);
-	myData.SetLength(Length() + aLength);
-	myData[myData.Length()] = L'\0';
+	memcpy(&myData[Size()], aString, sizeof Char * aLength);
+	myData.SetLength(Size() + aLength);
+	myData[myData.Size()] = L'\0';
 }
 
 void StringData::Append(ConstPtr<Char> aString)
@@ -208,9 +208,9 @@ void StringData::AppendChar(Const<Char> aCharacter)
 {
 	CheckForReferences();
 
-	MakeSizeFor(Length() + 1);
+	MakeSizeFor(Size() + 1);
 	myData.Add(aCharacter);
-	myData[myData.Length()] = L'\0';
+	myData[myData.Size()] = L'\0';
 }
 
 std::wostream & operator<<(Ref<std::wostream> aOut, ConstRef<StringData> aString)
@@ -221,7 +221,7 @@ std::wostream & operator<<(Ref<std::wostream> aOut, ConstRef<StringData> aString
 
 std::ostream & operator<<(Ref<std::ostream> aOut, ConstRef<StringData> aString)
 {
-	for (i32 i = 0; i < aString.Length(); ++i)
+	for (i32 i = 0; i < aString.Size(); ++i)
 		aOut.write(reinterpret_cast<ConstPtr<char>>(&aString[i]), 1);
 	return aOut;
 }

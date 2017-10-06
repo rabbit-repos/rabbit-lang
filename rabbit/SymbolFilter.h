@@ -95,7 +95,7 @@ Ptr<TType> SymbolFilter<TType>::TryGetValue(String aString)
 	for (;;)
 	{
 		// If we've reached the end of the string we're at the value we're looking for
-		if (aString.Length() == 0)
+		if (aString.Size() == 0)
 			return current->myValue;
 
 		if (!current->myNextLayer)
@@ -117,7 +117,7 @@ ConstPtr<TType> SymbolFilter<TType>::TryGetValue(String aString) const
 	for (;;)
 	{
 		// If we've reached the end of the string we're at the value we're looking for
-		if (aString.Length() == 0)
+		if (aString.Size() == 0)
 			return current->myValue;
 
 		if (!current->myNextLayer)
@@ -145,7 +145,7 @@ Ref<TType> SymbolFilter<TType>::GetOrCreateValue(String aString)
 	for (;;)
 	{
 		// If we've reached the end of the string we're at the value we're looking for
-		if (aString.Length() == 0)
+		if (aString.Size() == 0)
 			return current->myValue;
 
 		if (!current->myNextLayer)

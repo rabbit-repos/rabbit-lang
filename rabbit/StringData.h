@@ -27,7 +27,7 @@ public:
 	void Resize(Const<i32> aLength);
 	bool Reserve(Const<i32> aLength);
 	
-	i32 Length() const;
+	i32 Size() const;
 	i32 Capacity() const;
 
 	Ref<Char> operator[](Const<i32> aIndex);
