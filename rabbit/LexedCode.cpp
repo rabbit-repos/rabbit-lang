@@ -13,25 +13,27 @@ LexedCode::LexedCode()
 #endif
 }
 
-LexedCode::LexedCode(ConstRef<LexedCode> aCopy)
-{
-	*this = aCopy;
-}
-
 LexedCode::LexedCode(RValue<LexedCode> aCopy)
 {
 	*this = std::move(aCopy);
 }
 
-LexedCode::~LexedCode()
+void LexedCode::Clear()
 {
 	for (i32 i = 0; i < myLexemes.Size(); ++i)
-		delete myLexemes[i];
+		myLexemes[i]->~Lexeme();
+	myLexemes.Clear();
+	myWritePosition = 0;
+}
+
+LexedCode::~LexedCode()
+{
+	Clear();
 }
 
 void LexedCode::MakeSizeFor(Const<i32> aAdditionalData)
 {
-	if (myWritePosition + aAdditionalData >= myLexemeData.Size())
+	while (myWritePosition + aAdditionalData >= myLexemeData.Size())
 	{
 		ResizableArray<byte> newData;
 		newData.Resize(myLexemeData.Size() * 2);
@@ -43,28 +45,12 @@ void LexedCode::MakeSizeFor(Const<i32> aAdditionalData)
 			if (offset < 0 || static_cast<size>(offset) >= myLexemeData.Size())
 				abort();
 #endif
-			myLexemes[i] = reinterpret_cast<ConstPtr<Lexeme>>(&newData[offset]);
+			myMoveConstructors[i](&newData[offset], &myLexemeData[offset]);
+			myLexemes[i] = reinterpret_cast<ConstPtr<Lexeme>>(newData[offset]);
 		}
 
 		myLexemeData = std::move(newData);
 	}
-}
-
-Ref<LexedCode> LexedCode::operator=(ConstRef<LexedCode> aCopy)
-{
-	myLexemeData.Resize(aCopy.myLexemeData.Size());
-
-	for (i32 i = 0; i < aCopy.myLexemes.Size(); ++i)
-	{
-		Const<i32> offset = static_cast<i32>(reinterpret_cast<ConstPtr<byte>>(aCopy.myLexemes[i]) - aCopy.myLexemeData.GetAddress());
-#ifdef _DEBUG
-		if (offset < 0 || static_cast<size>(offset) >= aCopy.myLexemeData.Size())
-			abort();
-#endif
-		myLexemes[i] = reinterpret_cast<ConstPtr<Lexeme>>(&myLexemeData[offset]);
-	}
-
-	return *this;
 }
 
 Ref<LexedCode> LexedCode::operator=(RValue<LexedCode> aCopy)

@@ -8,24 +8,23 @@ class ResizableArrayBase
 public:
 	ResizableArrayBase();
 	ResizableArrayBase(RValue<ResizableArrayBase> aOther);
-	ResizableArrayBase(ConstRef<ResizableArrayBase> aOther);
-	ResizableArrayBase(const size aSize, const bool aClearMemory = true);
+	explicit ResizableArrayBase(ConstRef<ResizableArrayBase> aOther);
+	ResizableArrayBase(Const<size> aSize, Const<bool> aClearMemory = true);
 	~ResizableArrayBase();
 
 	Ref<ResizableArrayBase> operator=(RValue<ResizableArrayBase> aOther);
-	Ref<ResizableArrayBase> operator=(ConstRef<ResizableArrayBase> aOther);
+	Ref<ResizableArrayBase> operator=(ConstRef<ResizableArrayBase> aOther) = delete;
 
 	size Size() const;
 
-	void Resize(const size aSize, const bool aClearMemory = true);
-	void Reserve(const size aSize, const bool aClearMemory = true);
-
+	void Resize(Const<size> aSize, Const<bool> aClearMemory = true);
+	
 	Ptr<byte> GetAddress();
 	ConstPtr<byte> GetAddress() const;
 
 private:
 	Ptr<byte> myData;
-	size myLength; // : sizeof Ptr; ?
+	size mySize; // : sizeof Ptr; ?
 };
 
 template <typename T>
@@ -33,32 +32,34 @@ class ResizableArray
 {
 public:
 	ResizableArray();
-	ResizableArray(const size aLength, const bool aClearMemory = true);
+	ResizableArray(Const<size> aLength, Const<bool> aClearMemory = true);
 	ResizableArray(RValue<ResizableArray<T>> aOther);
-	ResizableArray(ConstRef<ResizableArray<T>> aOther);
+	explicit ResizableArray(ConstRef<ResizableArray<T>> aOther);
 	~ResizableArray();
-
+	
 	ResizableArray & operator=(RValue<ResizableArray<T>> aOther);
-	ResizableArray & operator=(ConstRef<ResizableArray<T>> aOther);
+	ResizableArray & operator=(ConstRef<ResizableArray<T>> aOther) = delete;
 
 	size Size() const;
-	size Capacity() const;
 	size SizeInBytes() const;
 
-	void Resize(const size aLength, const bool aClearMemory = true);
+	void Resize(Const<size> aLength, Const<bool> aClearMemory = true);
 	
+	// Resets all elements to their original state
+	void Reset();
+
 	Ptr<T> GetAddress();
 	ConstPtr<T> GetAddress() const;
 
 	Ref<T> operator*();
 	ConstRef<T> operator*() const;
 
-	Ref<T> operator[](const u64 aIndex);
-	ConstRef<T> operator[](const u64 aIndex) const;
+	Ref<T> operator[](Const<u64> aIndex);
+	ConstRef<T> operator[](Const<u64> aIndex) const;
 
 private:
 	ResizableArrayBase myData;
-	size myLength;
+	size mySize;
 };
 
 template <typename T>
@@ -73,20 +74,18 @@ ConstPtr<T> ResizableArray<T>::GetAddress() const
 	return reinterpret_cast<ConstPtr<T>>(myData.GetAddress());
 }
 
-template <typename T>
-ResizableArray<T> & ResizableArray<T>::operator=(ConstRef<ResizableArray<T>> aOther)
-{
-	myData = aOther.myData;
-	myLength = aOther.myLength;
-	return *this;
-}
+// template <typename T>
+// ResizableArray<T> & ResizableArray<T>::operator=(ConstRef<ResizableArray<T>> aOther)
+// {
+// 	return *this;
+// }
 
 template <typename T>
 ResizableArray<T> & ResizableArray<T>::operator=(RValue<ResizableArray<T>> aOther)
 {
 	myData = std::move(aOther.myData);
-	myLength = aOther.myLength;
-	aOther.myLength = 0;
+	mySize = aOther.mySize;
+	aOther.mySize = 0;
 	return *this;
 }
 
@@ -94,7 +93,8 @@ template <typename T>
 ResizableArray<T>::ResizableArray(ConstRef<ResizableArray<T>> aOther)
 	: ResizableArray()
 {
-	*this = aOther;
+	myData = ResizableArrayBase(aOther.myData);
+	mySize = aOther.mySize;
 }
 
 template <typename T>
@@ -107,13 +107,7 @@ ResizableArray<T>::ResizableArray(RValue<ResizableArray<T>> aOther)
 template <typename T>
 size ResizableArray<T>::Size() const
 {
-	return myLength;
-}
-
-template <typename T>
-size ResizableArray<T>::Capacity() const
-{
-	return myData.Size();
+	return mySize;
 }
 
 template <typename T>
@@ -123,39 +117,46 @@ size ResizableArray<T>::SizeInBytes() const
 }
 
 template <typename T>
-Ref<T> ResizableArray<T>::operator[](const u64 aIndex)
+Ref<T> ResizableArray<T>::operator[](Const<size> aIndex)
 {
 #ifdef _DEBUG
-	if (aIndex >= myLength)
+	if (aIndex >= mySize)
 		abort();
 #endif
-	return *reinterpret_cast<Ptr<T>>(myData.GetAddress() + sizeof T * aIndex);
+	return *(GetAddress() + aIndex);
 }
 
 template <typename T>
-ConstRef<T> ResizableArray<T>::operator[](const u64 aIndex) const
+ConstRef<T> ResizableArray<T>::operator[](Const<size> aIndex) const
 {
 #ifdef _DEBUG
-	if (aIndex >= myLength)
+	if (aIndex >= mySize)
 		abort();
 #endif
-	return *reinterpret_cast<ConstPtr<T>>(myData.GetAddress() + sizeof T * aIndex);
+	return *(GetAddress() + aIndex);
 }
 
 template <typename T>
 ResizableArray<T>::ResizableArray()
 {
-	myLength = 0;
+	mySize = 0;
 }
 
 template <typename T>
-ResizableArray<T>::ResizableArray(const size aLength, const bool aClearMemory /*= true*/)
+ResizableArray<T>::ResizableArray(Const<size> aLength, Const<bool> aClearMemory /*= true*/)
 	: myData(aLength * sizeof T, aClearMemory)
 {
-	myLength = aLength;
+	mySize = aLength;
 
 	for (size i = 0; i < aLength; ++i)
-		new (myData.GetAddress() + sizeof T * i) T();
+		new (myData.GetAddress() + i) T();
+}
+
+template <typename T>
+void ResizableArray<T>::Reset()
+{
+	for (size i = 0; i < mySize; ++i)
+		(*this)[i] = T();
 }
 
 template <typename T>
@@ -164,20 +165,20 @@ ResizableArray<T>::~ResizableArray()
 }
 
 template <typename T>
-void ResizableArray<T>::Resize(const size aLength, const bool aClearMemory /*= true*/)
+void ResizableArray<T>::Resize(Const<size> aLength, Const<bool> aClearMemory /*= true*/)
 {
 	myData.Resize(sizeof T * aLength, aClearMemory);
-	myLength = aLength;
+	mySize = aLength;
 }
 
 template <typename T>
 Ref<T> ResizableArray<T>::operator*()
 {
-	return *static_cast<Ptr<T>>(myData.GetAddress());
+	return *reinterpret_cast<Ptr<T>>(myData.GetAddress());
 }
 
 template <typename T>
 ConstRef<T> ResizableArray<T>::operator*() const
 {
-	return *static_cast<ConstPtr<T>>(myData.GetAddress());
+	return *reinterpret_cast<ConstPtr<T>>(myData.GetAddress());
 }

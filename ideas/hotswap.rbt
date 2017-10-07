@@ -1,0 +1,19 @@
+
+// A scope or an expression prefixed with the hotswap keyword will not be compiled down to C++ but instead a code tree that can be swapped out without recompilation/linking or even restarting the program
+
+hotswap void Function(/* Parameters may not be Hotswappable */)
+{
+    // Hotswappable code
+}
+
+void RegularFunction()
+{
+    hotswap
+    {
+        // Hotswappable code
+    }
+}
+
+i32 MagicValue = hotswap 1234;
+
+// hotswap i32 MagicValue = 1234; // ERROR

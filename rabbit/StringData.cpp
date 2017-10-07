@@ -18,6 +18,11 @@ StringData::StringData(ConstPtr<Char> aString)
 #endif
 }
 
+StringData::StringData(ConstRef<std::wstring> aString)
+	: StringData(aString.data(), static_cast<i32>(aString.length()))
+{
+}
+
 StringData::StringData(Const<i32> aExpectedLength)
 	: myData(aExpectedLength + 1, false)
 {
@@ -36,7 +41,10 @@ StringData::StringData(RValue<StringData> aOther)
 StringData::StringData(ConstRef<StringData> aOther)
 	: StringData()
 {
-	*this = aOther;
+	myData = List<Char>(aOther.myData);
+#ifdef _DEBUG
+	myNumReferences = 0;
+#endif
 }
 
 StringData::StringData(ConstPtr<Char> aString, Const<i32> aLength)
@@ -89,14 +97,14 @@ Ref<StringData> StringData::operator=(RValue<StringData> aOther)
 	return *this;
 }
 
-Ref<StringData> StringData::operator=(ConstRef<StringData> aOther)
-{
-	myData = aOther.myData;
-#ifdef _DEBUG
-	myNumReferences = 0;
-#endif
-	return *this;
-}
+// Ref<StringData> StringData::operator=(ConstRef<StringData> aOther)
+// {
+// 	myData = aOther.myData;
+// #ifdef _DEBUG
+// 	myNumReferences = 0;
+// #endif
+// 	return *this;
+// }
 
 StringData StringData::FromASCII(ConstPtr<char> aString)
 {
@@ -228,7 +236,7 @@ std::ostream & operator<<(Ref<std::ostream> aOut, ConstRef<StringData> aString)
 
 void from_json(ConstRef<json> aNode, Ref<StringData> aString)
 {
-	aString = StringData::FromASCII(aNode.get<std::string>().data());
+	aString = StringData(aNode.get<std::wstring>());
 }
 
 void to_json(Ref<json> aNode, ConstRef<StringData> aString)

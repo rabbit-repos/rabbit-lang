@@ -43,6 +43,8 @@ public:
 	bool FindFirst(Const<Char> aChar, Out<i32> aIndex, Const<i32> aBeginAt = 0) const;
 	bool FindLast(Const<Char> aChar, Out<i32> aIndex, Const<i32> aBeginAt = MaxOf<i32>) const;
 
+	bool CopyTo(Ptr<Char> aData, Const<i32> aLength) const;
+
 private:
 	explicit String(ConstPtr<StringData> aOwner, ConstPtr<Char> aDataPoint, const i32 aLength);
 	String MakeView(Const<i32> aStart, Const<i32> aLength) const;

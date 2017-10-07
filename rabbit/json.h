@@ -26,9 +26,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE  OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#pragma warning ( push )
-#pragma warning ( disable : 4706 )
-
 #ifndef NLOHMANN_JSON_HPP
 #define NLOHMANN_JSON_HPP
 
@@ -54,7 +51,7 @@ SOFTWARE.
 #include <memory> // addressof, allocator, allocator_traits, unique_ptr
 #include <numeric> // accumulate
 #include <sstream> // stringstream
-#include <string> // getline, stoi, string, to_string
+#include <string> // getline, stoi, string, to_wstring
 #include <type_traits> // add_pointer, conditional, decay, enable_if, false_type, integral_constant, is_arithmetic, is_base_of, is_const, is_constructible, is_convertible, is_default_constructible, is_enum, is_floating_point, is_integral, is_nothrow_move_assignable, is_nothrow_move_constructible, is_pointer, is_reference, is_same, is_scalar, is_signed, remove_const, remove_cv, remove_pointer, remove_reference, true_type, underlying_type
 #include <utility> // declval, forward, make_pair, move, pair, swap
 #include <valarray> // valarray
@@ -126,7 +123,7 @@ namespace nlohmann
 	template<template<typename U, typename V, typename... Args> class ObjectType =
 		std::map,
 		template<typename U, typename... Args> class ArrayType = std::vector,
-		class StringType = std::string, class BooleanType = bool,
+		class StringType = std::wstring, class BooleanType = bool,
 		class NumberIntegerType = std::int64_t,
 		class NumberUnsignedType = std::uint64_t,
 		class NumberFloatType = double,
@@ -198,7 +195,7 @@ namespace nlohmann
 		{
 		public:
 			/// returns the explanatory string
-			const char* what() const noexcept override
+			const char * what() const noexcept override
 			{
 				return m.what();
 			}
@@ -207,7 +204,7 @@ namespace nlohmann
 			const int id;
 
 		protected:
-			exception(int id_, const char* what_arg) : id(id_), m(what_arg) {}
+			exception(int id_, const char * what_arg) : id(id_), m(what_arg) {}
 
 			static std::string name(const std::string& ename, int id)
 			{
@@ -293,7 +290,7 @@ namespace nlohmann
 			const std::size_t byte;
 
 		private:
-			parse_error(int id_, std::size_t byte_, const char* what_arg)
+			parse_error(int id_, std::size_t byte_, const char * what_arg)
 				: exception(id_, what_arg), byte(byte_) {}
 		};
 
@@ -344,7 +341,7 @@ namespace nlohmann
 			}
 
 		private:
-			invalid_iterator(int id_, const char* what_arg)
+			invalid_iterator(int id_, const char * what_arg)
 				: exception(id_, what_arg) {}
 		};
 
@@ -438,7 +435,7 @@ namespace nlohmann
 			}
 
 		private:
-			out_of_range(int id_, const char* what_arg) : exception(id_, what_arg) {}
+			out_of_range(int id_, const char * what_arg) : exception(id_, what_arg) {}
 		};
 
 		/*!
@@ -748,11 +745,10 @@ namespace nlohmann
 				enable_if_t<std::is_convertible<T, BasicJsonType>::value, int> = 0>
 				static void construct(BasicJsonType& j, const std::valarray<T>& arr)
 			{
-				using std::begin;
-				using std::end;
 				j.m_type = value_t::array;
 				j.m_value = value_t::array;
-				j.m_value.array = j.template create<typename BasicJsonType::array_t>(begin(arr), end(arr));
+				j.m_value.array->resize(arr.size());
+				std::copy(std::begin(arr), std::end(arr), j.m_value.array->begin());
 				j.assert_invariant();
 			}
 		};
@@ -1106,7 +1102,10 @@ namespace nlohmann
 			}
 
 			default:
-				JSON_THROW(type_error::create(302, "type must be number, but is " + std::string(j.type_name())));
+			{
+				std::wstring s(j.type_name());
+				JSON_THROW(type_error::create(302, "type must be number, but is " + std::string(s.begin(), s.end())));
+			}
 			}
 		}
 
@@ -1115,7 +1114,8 @@ namespace nlohmann
 		{
 			if (JSON_UNLIKELY(not j.is_boolean()))
 			{
-				JSON_THROW(type_error::create(302, "type must be boolean, but is " + std::string(j.type_name())));
+				std::wstring s(j.type_name());
+				JSON_THROW(type_error::create(302, "type must be boolean, but is " + std::string(s.begin(), s.end())));
 			}
 			b = *j.template get_ptr<const typename BasicJsonType::boolean_t*>();
 		}
@@ -1125,7 +1125,8 @@ namespace nlohmann
 		{
 			if (JSON_UNLIKELY(not j.is_string()))
 			{
-				JSON_THROW(type_error::create(302, "type must be string, but is " + std::string(j.type_name())));
+				std::wstring str(j.type_name());
+				JSON_THROW(type_error::create(302, "type must be string, but is " + std::string(str.begin(), str.end())));
 			}
 			s = *j.template get_ptr<const typename BasicJsonType::string_t*>();
 		}
@@ -1162,7 +1163,8 @@ namespace nlohmann
 		{
 			if (JSON_UNLIKELY(not j.is_array()))
 			{
-				JSON_THROW(type_error::create(302, "type must be array, but is " + std::string(j.type_name())));
+				auto s = std::wstring(j.type_name());
+				JSON_THROW(type_error::create(302, "type must be array, but is " + std::string(s.begin(), s.end())));
 			}
 			arr = *j.template get_ptr<const typename BasicJsonType::array_t*>();
 		}
@@ -1174,7 +1176,7 @@ namespace nlohmann
 		{
 			if (JSON_UNLIKELY(not j.is_array()))
 			{
-				JSON_THROW(type_error::create(302, "type must be array, but is " + std::string(j.type_name())));
+				JSON_THROW(type_error::create(302, "type must be array, but is " + std::wstring(j.type_name())));
 			}
 			std::transform(j.rbegin(), j.rend(),
 				std::front_inserter(l), [](const BasicJsonType & i)
@@ -1190,13 +1192,10 @@ namespace nlohmann
 		{
 			if (JSON_UNLIKELY(not j.is_array()))
 			{
-				JSON_THROW(type_error::create(302, "type must be array, but is " + std::string(j.type_name())));
+				JSON_THROW(type_error::create(302, "type must be array, but is " + std::wstring(j.type_name())));
 			}
 			l.resize(j.size());
-			for (size_t i = 0; i < j.size(); ++i)
-			{
-				l[i] = j[i];
-			}
+			std::copy(j.m_value.array->begin(), j.m_value.array->end(), std::begin(l));
 		}
 
 		template<typename BasicJsonType, typename CompatibleArrayType>
@@ -1248,7 +1247,8 @@ namespace nlohmann
 		{
 			if (JSON_UNLIKELY(not j.is_array()))
 			{
-				JSON_THROW(type_error::create(302, "type must be array, but is " + std::string(j.type_name())));
+				auto str = std::wstring(j.type_name());
+				JSON_THROW(type_error::create(302, "type must be array, but is " + std::string(str.begin(), str.end())));
 			}
 
 			from_json_array_impl(j, arr, priority_tag<2> {});
@@ -1260,7 +1260,8 @@ namespace nlohmann
 		{
 			if (JSON_UNLIKELY(not j.is_object()))
 			{
-				JSON_THROW(type_error::create(302, "type must be object, but is " + std::string(j.type_name())));
+				auto s = j.type_name();
+				JSON_THROW(type_error::create(302, "type must be object, but is " + std::string(s.begin(), s.end())));
 			}
 
 			auto inner_object = j.template get_ptr<const typename BasicJsonType::object_t*>();
@@ -1312,7 +1313,10 @@ namespace nlohmann
 			}
 
 			default:
-				JSON_THROW(type_error::create(302, "type must be number, but is " + std::string(j.type_name())));
+			{
+				auto s = std::wstring(j.type_name());
+				JSON_THROW(type_error::create(302, "type must be number, but is " + std::string(s.begin(), s.end())));
+			}
 			}
 		}
 
@@ -1405,7 +1409,7 @@ namespace nlohmann
 		struct input_adapter_protocol
 		{
 			virtual int get_character() = 0;
-			virtual std::string read(std::size_t offset, std::size_t length) = 0;
+			virtual std::wstring read(std::size_t offset, std::size_t length) = 0;
 			virtual ~input_adapter_protocol() = default;
 		};
 
@@ -1417,7 +1421,7 @@ namespace nlohmann
 		class cached_input_stream_adapter : public input_adapter_protocol
 		{
 		public:
-			explicit cached_input_stream_adapter(std::istream& i)
+			explicit cached_input_stream_adapter(std::wistream& i)
 				: is(i), start_position(is.tellg())
 			{
 				fill_buffer();
@@ -1436,7 +1440,7 @@ namespace nlohmann
 				is.clear();
 				// We initially read a lot of characters into the buffer, and we may
 				// not have processed all of them. Therefore, we need to "rewind" the
-				// stream after the last processed char.
+				// stream after the last processed wchar_t.
 				is.seekg(start_position);
 				is.ignore(static_cast<std::streamsize>(processed_chars));
 				// clear stream flags
@@ -1454,7 +1458,7 @@ namespace nlohmann
 					if (fill_size == 0)
 					{
 						eof = true;
-						return std::char_traits<char>::eof();
+						return std::char_traits<wchar_t>::eof();
 					}
 
 					// the buffer is ready
@@ -1466,10 +1470,10 @@ namespace nlohmann
 				return buffer[buffer_pos++] & 0xFF;
 			}
 
-			std::string read(std::size_t offset, std::size_t length) override
+			std::wstring read(std::size_t offset, std::size_t length) override
 			{
 				// create buffer
-				std::string result(length, '\0');
+				std::wstring result(length, L'\0');
 
 				// save stream position
 				const auto current_pos = is.tellg();
@@ -1501,7 +1505,7 @@ namespace nlohmann
 			}
 
 			/// the associated input stream
-			std::istream& is;
+			std::wistream& is;
 
 			/// chars returned via get_character()
 			std::size_t processed_chars = 0;
@@ -1517,14 +1521,14 @@ namespace nlohmann
 			const std::streampos start_position;
 
 			/// internal buffer
-			std::array<char, BufferSize> buffer{ {} };
+			std::array<wchar_t, BufferSize> buffer{ {} };
 		};
 
 		/// input adapter for buffer input
 		class input_buffer_adapter : public input_adapter_protocol
 		{
 		public:
-			input_buffer_adapter(const char* b, const std::size_t l)
+			input_buffer_adapter(const wchar_t* b, const std::size_t l)
 				: cursor(b), limit(b + l), start(b)
 			{
 				// skip byte order mark
@@ -1545,23 +1549,23 @@ namespace nlohmann
 					return *(cursor++) & 0xFF;
 				}
 
-				return std::char_traits<char>::eof();
+				return std::char_traits<wchar_t>::eof();
 			}
 
-			std::string read(std::size_t offset, std::size_t length) override
+			std::wstring read(std::size_t offset, std::size_t length) override
 			{
 				// avoid reading too many characters
 				const auto max_length = static_cast<size_t>(limit - start);
-				return std::string(start + offset, (std::min)(length, max_length - offset));
+				return std::wstring(start + offset, (std::min)(length, max_length - offset));
 			}
 
 		private:
 			/// pointer to the current character
-			const char* cursor;
+			const wchar_t* cursor;
 			/// pointer past the last character
-			const char* limit;
+			const wchar_t* limit;
 			/// pointer to the first character
-			const char* start;
+			const wchar_t* start;
 		};
 
 		class input_adapter
@@ -1570,11 +1574,11 @@ namespace nlohmann
 			// native support
 
 			/// input adapter for input stream
-			input_adapter(std::istream& i)
+			input_adapter(std::wistream& i)
 				: ia(std::make_shared<cached_input_stream_adapter<16384>>(i)) {}
 
 			/// input adapter for input stream
-			input_adapter(std::istream&& i)
+			input_adapter(std::wistream&& i)
 				: ia(std::make_shared<cached_input_stream_adapter<16384>>(i)) {}
 
 			/// input adapter for buffer
@@ -1586,7 +1590,7 @@ namespace nlohmann
 				sizeof(typename std::remove_pointer<CharT>::type) == 1,
 				int>::type = 0>
 				input_adapter(CharT b, std::size_t l)
-				: ia(std::make_shared<input_buffer_adapter>(reinterpret_cast<const char*>(b), l)) {}
+				: ia(std::make_shared<input_buffer_adapter>(reinterpret_cast<const wchar_t*>(b), l)) {}
 
 			// derived support
 
@@ -1599,8 +1603,8 @@ namespace nlohmann
 				sizeof(typename std::remove_pointer<CharT>::type) == 1,
 				int>::type = 0>
 				input_adapter(CharT b)
-				: input_adapter(reinterpret_cast<const char*>(b),
-					std::strlen(reinterpret_cast<const char*>(b))) {}
+				: input_adapter(reinterpret_cast<const wchar_t*>(b),
+					std::strlen(reinterpret_cast<const wchar_t*>(b))) {}
 
 			/// input adapter for iterator range with contiguous storage
 			template<class IteratorType,
@@ -1622,14 +1626,14 @@ namespace nlohmann
 
 				// assertion to check that each element is 1 byte long
 				static_assert(
-					sizeof(typename std::iterator_traits<IteratorType>::value_type) == 1,
-					"each element in the iterator range must have the size of 1 byte");
+					sizeof(typename std::iterator_traits<IteratorType>::value_type) == sizeof (wchar_t),
+					"each element in the iterator range must have the size of wchar_t");
 
 				const auto len = static_cast<size_t>(std::distance(first, last));
 				if (JSON_LIKELY(len > 0))
 				{
 					// there is at least one element: use the address of first
-					ia = std::make_shared<input_buffer_adapter>(reinterpret_cast<const char*>(&(*first)), len);
+					ia = std::make_shared<input_buffer_adapter>(reinterpret_cast<const wchar_t*>(&(*first)), len);
 				}
 				else
 				{
@@ -1704,44 +1708,44 @@ namespace nlohmann
 			};
 
 			/// return name of values of type token_type (only used for errors)
-			static const char* token_type_name(const token_type t) noexcept
+			static const wchar_t* token_type_name(const token_type t) noexcept
 			{
 				switch (t)
 				{
 				case token_type::uninitialized:
-					return "<uninitialized>";
+					return L"<uninitialized>";
 				case token_type::literal_true:
-					return "true literal";
+					return L"true literal";
 				case token_type::literal_false:
-					return "false literal";
+					return L"false literal";
 				case token_type::literal_null:
-					return "null literal";
+					return L"null literal";
 				case token_type::value_string:
-					return "string literal";
+					return L"string literal";
 				case lexer::token_type::value_unsigned:
 				case lexer::token_type::value_integer:
 				case lexer::token_type::value_float:
-					return "number literal";
+					return L"number literal";
 				case token_type::begin_array:
-					return "'['";
+					return L"'['";
 				case token_type::begin_object:
-					return "'{'";
+					return L"'{'";
 				case token_type::end_array:
-					return "']'";
+					return L"']'";
 				case token_type::end_object:
-					return "'}'";
+					return L"'}'";
 				case token_type::name_separator:
-					return "':'";
+					return L"':'";
 				case token_type::value_separator:
-					return "','";
+					return L"','";
 				case token_type::parse_error:
-					return "<parse error>";
+					return L"<parse error>";
 				case token_type::end_of_input:
-					return "end of input";
+					return L"end of input";
 				case token_type::literal_or_value:
-					return "'[', '{', or a literal";
+					return L"'[', '{', or a literal";
 				default: // catch non-enum values
-					return "unknown token"; // LCOV_EXCL_LINE
+					return L"unknown token"; // LCOV_EXCL_LINE
 				}
 			}
 
@@ -1758,11 +1762,11 @@ namespace nlohmann
 			/////////////////////
 
 			/// return the locale-dependent decimal point
-			static char get_decimal_point() noexcept
+			static wchar_t get_decimal_point() noexcept
 			{
 				const auto loc = localeconv();
 				assert(loc != nullptr);
-				return (loc->decimal_point == nullptr) ? '.' : loc->decimal_point[0];
+				return (loc->decimal_point == nullptr) ? L'.' : loc->decimal_point[0];
 			}
 
 			/////////////////////
@@ -1787,7 +1791,7 @@ namespace nlohmann
 			int get_codepoint()
 			{
 				// this function only makes sense after reading `\u`
-				assert(current == 'u');
+				assert(current == L'u');
 				int codepoint = 0;
 
 				const auto factors = { 12, 8, 4, 0 };
@@ -1795,15 +1799,15 @@ namespace nlohmann
 				{
 					get();
 
-					if (current >= '0' and current <= '9')
+					if (current >= L'0' and current <= L'9')
 					{
 						codepoint += ((current - 0x30) << factor);
 					}
-					else if (current >= 'A' and current <= 'F')
+					else if (current >= L'A' and current <= L'F')
 					{
 						codepoint += ((current - 0x37) << factor);
 					}
-					else if (current >= 'a' and current <= 'f')
+					else if (current >= L'a' and current <= L'f')
 					{
 						codepoint += ((current - 0x57) << factor);
 					}
@@ -1840,7 +1844,7 @@ namespace nlohmann
 					}
 					else
 					{
-						error_message = "invalid string: ill-formed UTF-8 byte";
+						error_message = L"invalid string: ill-formed UTF-8 byte";
 						return false;
 					}
 				}
@@ -1868,7 +1872,7 @@ namespace nlohmann
 				reset();
 
 				// we entered the function by reading an open quote
-				assert(current == '\"');
+				assert(current == L'\"');
 
 				while (true)
 				{
@@ -1876,23 +1880,23 @@ namespace nlohmann
 					switch (get())
 					{
 						// end of file while parsing string
-					case std::char_traits<char>::eof():
+					case std::char_traits<wchar_t>::eof():
 					{
-						error_message = "invalid string: missing closing quote";
+						error_message = L"invalid string: missing closing quote";
 						return token_type::parse_error;
 					}
 
 					// closing quote
-					case '\"':
+					case L'\"':
 					{
 						// terminate yytext
-						add('\0');
+						add(L'\0');
 						--yylen;
 						return token_type::value_string;
 					}
 
 					// escapes
-					case '\\':
+					case L'\\':
 					{
 						switch (get())
 						{
@@ -1937,7 +1941,7 @@ namespace nlohmann
 
 							if (JSON_UNLIKELY(codepoint1 == -1))
 							{
-								error_message = "invalid string: '\\u' must be followed by 4 hex digits";
+								error_message = L"invalid string: '\\u' must be followed by 4 hex digits";
 								return token_type::parse_error;
 							}
 
@@ -1951,7 +1955,7 @@ namespace nlohmann
 
 									if (JSON_UNLIKELY(codepoint2 == -1))
 									{
-										error_message = "invalid string: '\\u' must be followed by 4 hex digits";
+										error_message = L"invalid string: '\\u' must be followed by 4 hex digits";
 										return token_type::parse_error;
 									}
 
@@ -1970,13 +1974,13 @@ namespace nlohmann
 									}
 									else
 									{
-										error_message = "invalid string: surrogate U+DC00..U+DFFF must be followed by U+DC00..U+DFFF";
+										error_message = L"invalid string: surrogate U+DC00..U+DFFF must be followed by U+DC00..U+DFFF";
 										return token_type::parse_error;
 									}
 								}
 								else
 								{
-									error_message = "invalid string: surrogate U+DC00..U+DFFF must be followed by U+DC00..U+DFFF";
+									error_message = L"invalid string: surrogate U+DC00..U+DFFF must be followed by U+DC00..U+DFFF";
 									return token_type::parse_error;
 								}
 							}
@@ -1984,7 +1988,7 @@ namespace nlohmann
 							{
 								if (JSON_UNLIKELY(0xDC00 <= codepoint1 and codepoint1 <= 0xDFFF))
 								{
-									error_message = "invalid string: surrogate U+DC00..U+DFFF must follow U+D800..U+DBFF";
+									error_message = L"invalid string: surrogate U+DC00..U+DFFF must follow U+D800..U+DBFF";
 									return token_type::parse_error;
 								}
 
@@ -2028,7 +2032,7 @@ namespace nlohmann
 
 						// other characters after escape
 						default:
-							error_message = "invalid string: forbidden character after backslash";
+							error_message = L"invalid string: forbidden character after backslash";
 							return token_type::parse_error;
 						}
 
@@ -2069,7 +2073,7 @@ namespace nlohmann
 					case 0x1e:
 					case 0x1f:
 					{
-						error_message = "invalid string: control character must be escaped";
+						error_message = L"invalid string: control character must be escaped";
 						return token_type::parse_error;
 					}
 
@@ -2291,26 +2295,26 @@ namespace nlohmann
 					// remaining bytes (80..C1 and F5..FF) are ill-formed
 					default:
 					{
-						error_message = "invalid string: ill-formed UTF-8 byte";
+						error_message = L"invalid string: ill-formed UTF-8 byte";
 						return token_type::parse_error;
 					}
 					}
 				}
 			}
 
-			static void strtof(float& f, const char* str, char** endptr) noexcept
+			static void strtof(float& f, const wchar_t* str, wchar_t** endptr) noexcept
 			{
-				f = std::strtof(str, endptr);
+				f = std::wcstof(str, endptr);
 			}
 
-			static void strtof(double& f, const char* str, char** endptr) noexcept
+			static void strtof(double& f, const wchar_t* str, wchar_t** endptr) noexcept
 			{
-				f = std::strtod(str, endptr);
+				f = std::wcstod(str, endptr);
 			}
 
-			static void strtof(long double& f, const char* str, char** endptr) noexcept
+			static void strtof(long double& f, const wchar_t* str, wchar_t** endptr) noexcept
 			{
-				f = std::strtold(str, endptr);
+				f = std::wcstold(str, endptr);
 			}
 
 			/*!
@@ -2365,27 +2369,27 @@ namespace nlohmann
 				// state (init): we just found out we need to scan a number
 				switch (current)
 				{
-				case '-':
+				case L'-':
 				{
 					add(current);
 					goto scan_number_minus;
 				}
 
-				case '0':
+				case L'0':
 				{
 					add(current);
 					goto scan_number_zero;
 				}
 
-				case '1':
-				case '2':
-				case '3':
-				case '4':
-				case '5':
-				case '6':
-				case '7':
-				case '8':
-				case '9':
+				case L'1':
+				case L'2':
+				case L'3':
+				case L'4':
+				case L'5':
+				case L'6':
+				case L'7':
+				case L'8':
+				case L'9':
 				{
 					add(current);
 					goto scan_number_any1;
@@ -2403,21 +2407,21 @@ namespace nlohmann
 				number_type = token_type::value_integer;
 				switch (get())
 				{
-				case '0':
+				case L'0':
 				{
 					add(current);
 					goto scan_number_zero;
 				}
 
-				case '1':
-				case '2':
-				case '3':
-				case '4':
-				case '5':
-				case '6':
-				case '7':
-				case '8':
-				case '9':
+				case L'1':
+				case L'2':
+				case L'3':
+				case L'4':
+				case L'5':
+				case L'6':
+				case L'7':
+				case L'8':
+				case L'9':
 				{
 					add(current);
 					goto scan_number_any1;
@@ -2425,7 +2429,7 @@ namespace nlohmann
 
 				default:
 				{
-					error_message = "invalid number; expected digit after '-'";
+					error_message = L"invalid number; expected digit after '-'";
 					return token_type::parse_error;
 				}
 				}
@@ -2434,14 +2438,14 @@ namespace nlohmann
 				// state: we just parse a zero (maybe with a leading minus sign)
 				switch (get())
 				{
-				case '.':
+				case L'.':
 				{
 					add(decimal_point_char);
 					goto scan_number_decimal1;
 				}
 
-				case 'e':
-				case 'E':
+				case L'e':
+				case L'E':
 				{
 					add(current);
 					goto scan_number_exponent;
@@ -2455,29 +2459,29 @@ namespace nlohmann
 				// state: we just parsed a number 0-9 (maybe with a leading minus sign)
 				switch (get())
 				{
-				case '0':
-				case '1':
-				case '2':
-				case '3':
-				case '4':
-				case '5':
-				case '6':
-				case '7':
-				case '8':
-				case '9':
+				case L'0':
+				case L'1':
+				case L'2':
+				case L'3':
+				case L'4':
+				case L'5':
+				case L'6':
+				case L'7':
+				case L'8':
+				case L'9':
 				{
 					add(current);
 					goto scan_number_any1;
 				}
 
-				case '.':
+				case L'.':
 				{
 					add(decimal_point_char);
 					goto scan_number_decimal1;
 				}
 
-				case 'e':
-				case 'E':
+				case L'e':
+				case L'E':
 				{
 					add(current);
 					goto scan_number_exponent;
@@ -2492,16 +2496,16 @@ namespace nlohmann
 				number_type = token_type::value_float;
 				switch (get())
 				{
-				case '0':
-				case '1':
-				case '2':
-				case '3':
-				case '4':
-				case '5':
-				case '6':
-				case '7':
-				case '8':
-				case '9':
+				case L'0':
+				case L'1':
+				case L'2':
+				case L'3':
+				case L'4':
+				case L'5':
+				case L'6':
+				case L'7':
+				case L'8':
+				case L'9':
 				{
 					add(current);
 					goto scan_number_decimal2;
@@ -2509,7 +2513,7 @@ namespace nlohmann
 
 				default:
 				{
-					error_message = "invalid number; expected digit after '.'";
+					error_message = L"invalid number; expected digit after '.'";
 					return token_type::parse_error;
 				}
 				}
@@ -2518,23 +2522,23 @@ namespace nlohmann
 				// we just parsed at least one number after a decimal point
 				switch (get())
 				{
-				case '0':
-				case '1':
-				case '2':
-				case '3':
-				case '4':
-				case '5':
-				case '6':
-				case '7':
-				case '8':
-				case '9':
+				case L'0':
+				case L'1':
+				case L'2':
+				case L'3':
+				case L'4':
+				case L'5':
+				case L'6':
+				case L'7':
+				case L'8':
+				case L'9':
 				{
 					add(current);
 					goto scan_number_decimal2;
 				}
 
-				case 'e':
-				case 'E':
+				case L'e':
+				case L'E':
 				{
 					add(current);
 					goto scan_number_exponent;
@@ -2549,23 +2553,23 @@ namespace nlohmann
 				number_type = token_type::value_float;
 				switch (get())
 				{
-				case '+':
-				case '-':
+				case L'+':
+				case L'-':
 				{
 					add(current);
 					goto scan_number_sign;
 				}
 
-				case '0':
-				case '1':
-				case '2':
-				case '3':
-				case '4':
-				case '5':
-				case '6':
-				case '7':
-				case '8':
-				case '9':
+				case L'0':
+				case L'1':
+				case L'2':
+				case L'3':
+				case L'4':
+				case L'5':
+				case L'6':
+				case L'7':
+				case L'8':
+				case L'9':
 				{
 					add(current);
 					goto scan_number_any2;
@@ -2574,7 +2578,7 @@ namespace nlohmann
 				default:
 				{
 					error_message =
-						"invalid number; expected '+', '-', or digit after exponent";
+						L"invalid number; expected '+', '-', or digit after exponent";
 					return token_type::parse_error;
 				}
 				}
@@ -2583,16 +2587,16 @@ namespace nlohmann
 				// we just parsed an exponent sign
 				switch (get())
 				{
-				case '0':
-				case '1':
-				case '2':
-				case '3':
-				case '4':
-				case '5':
-				case '6':
-				case '7':
-				case '8':
-				case '9':
+				case L'0':
+				case L'1':
+				case L'2':
+				case L'3':
+				case L'4':
+				case L'5':
+				case L'6':
+				case L'7':
+				case L'8':
+				case L'9':
 				{
 					add(current);
 					goto scan_number_any2;
@@ -2600,7 +2604,7 @@ namespace nlohmann
 
 				default:
 				{
-					error_message = "invalid number; expected digit after exponent sign";
+					error_message = L"invalid number; expected digit after exponent sign";
 					return token_type::parse_error;
 				}
 				}
@@ -2638,13 +2642,13 @@ namespace nlohmann
 				add('\0');
 				--yylen;
 
-				char* endptr = nullptr;
+				wchar_t* endptr = nullptr;
 				errno = 0;
 
 				// try to parse integers first and fall back to floats
 				if (number_type == token_type::value_unsigned)
 				{
-					const auto x = std::strtoull(yytext.data(), &endptr, 10);
+					const auto x = std::wcstoull(yytext.data(), &endptr, 10);
 
 					// we checked the number format before
 					assert(endptr == yytext.data() + yylen);
@@ -2660,7 +2664,7 @@ namespace nlohmann
 				}
 				else if (number_type == token_type::value_integer)
 				{
-					const auto x = std::strtoll(yytext.data(), &endptr, 10);
+					const auto x = std::wcstoll(yytext.data(), &endptr, 10);
 
 					// we checked the number format before
 					assert(endptr == yytext.data() + yylen);
@@ -2690,7 +2694,7 @@ namespace nlohmann
 			@param[in] length        the length of the passed literal text
 			@param[in] return_type   the token type to return on success
 			*/
-			token_type scan_literal(const char* literal_text, const std::size_t length,
+			token_type scan_literal(const wchar_t* literal_text, const std::size_t length,
 				token_type return_type)
 			{
 				assert(current == literal_text[0]);
@@ -2698,7 +2702,7 @@ namespace nlohmann
 				{
 					if (JSON_UNLIKELY(get() != literal_text[i]))
 					{
-						error_message = "invalid literal";
+						error_message = L"invalid literal";
 						return token_type::parse_error;
 					}
 				}
@@ -2734,7 +2738,7 @@ namespace nlohmann
 					yytext.resize(2 * yytext.capacity(), '\0');
 				}
 				assert(yylen < yytext.size());
-				yytext[yylen++] = static_cast<char>(c);
+				yytext[yylen++] = static_cast<wchar_t>(c);
 			}
 
 		public:
@@ -2761,11 +2765,11 @@ namespace nlohmann
 			}
 
 			/// return string value
-			const std::string get_string()
+			const std::wstring get_string()
 			{
-				// yytext cannot be returned as char*, because it may contain a null
+				// yytext cannot be returned as wchar_t*, because it may contain a null
 				// byte (parsed as "\u0000")
-				return std::string(yytext.data(), yylen);
+				return std::wstring(yytext.data(), yylen);
 			}
 
 			/////////////////////
@@ -2779,16 +2783,16 @@ namespace nlohmann
 			}
 
 			/// return the last read token (for errors only)
-			std::string get_token_string() const
+			std::wstring get_token_string() const
 			{
 				// get the raw byte sequence of the last token
-				std::string s = ia->read(start_pos, chars_read - start_pos);
+				std::wstring s = ia->read(start_pos, chars_read - start_pos);
 
 				// escape control characters
-				std::string result;
+				std::wstring result;
 				for (auto c : s)
 				{
-					if (c == '\0' or c == std::char_traits<char>::eof())
+					if (c == '\0' or c == std::char_traits<wchar_t>::eof())
 					{
 						// ignore EOF
 						continue;
@@ -2796,9 +2800,9 @@ namespace nlohmann
 					else if ('\x00' <= c and c <= '\x1f')
 					{
 						// escape control characters
-						std::stringstream ss;
-						ss << "<U+" << std::setw(4) << std::uppercase << std::setfill('0')
-							<< std::hex << static_cast<int>(c) << ">";
+						std::wstringstream ss;
+						ss << L"<U+" << std::setw(4) << std::uppercase << std::setfill(L'0')
+							<< std::hex << static_cast<int>(c) << L">";
 						result += ss.str();
 					}
 					else
@@ -2812,7 +2816,7 @@ namespace nlohmann
 			}
 
 			/// return syntax error message
-			constexpr const char* get_error_message() const noexcept
+			constexpr const wchar_t* get_error_message() const noexcept
 			{
 				return error_message;
 			}
@@ -2827,59 +2831,59 @@ namespace nlohmann
 				do
 				{
 					get();
-				} while (current == ' ' or current == '\t' or current == '\n' or current == '\r');
+				} while (current == L' ' or current == L'\t' or current == L'\n' or current == L'\r');
 
 				switch (current)
 				{
 					// structural characters
-				case '[':
+				case L'[':
 					return token_type::begin_array;
-				case ']':
+				case L']':
 					return token_type::end_array;
-				case '{':
+				case L'{':
 					return token_type::begin_object;
-				case '}':
+				case L'}':
 					return token_type::end_object;
-				case ':':
+				case L':':
 					return token_type::name_separator;
-				case ',':
+				case L',':
 					return token_type::value_separator;
 
 					// literals
-				case 't':
-					return scan_literal("true", 4, token_type::literal_true);
-				case 'f':
-					return scan_literal("false", 5, token_type::literal_false);
-				case 'n':
-					return scan_literal("null", 4, token_type::literal_null);
+				case L't':
+					return scan_literal(L"true", 4, token_type::literal_true);
+				case L'f':
+					return scan_literal(L"false", 5, token_type::literal_false);
+				case L'n':
+					return scan_literal(L"null", 4, token_type::literal_null);
 
 					// string
-				case '\"':
+				case L'\"':
 					return scan_string();
 
 					// number
-				case '-':
-				case '0':
-				case '1':
-				case '2':
-				case '3':
-				case '4':
-				case '5':
-				case '6':
-				case '7':
-				case '8':
-				case '9':
+				case L'-':
+				case L'0':
+				case L'1':
+				case L'2':
+				case L'3':
+				case L'4':
+				case L'5':
+				case L'6':
+				case L'7':
+				case L'8':
+				case L'9':
 					return scan_number();
 
 					// end of input (the null byte is needed when parsing from
 					// string literals)
-				case '\0':
-				case std::char_traits<char>::eof():
+				case L'\0':
+				case std::char_traits<wchar_t>::eof():
 					return token_type::end_of_input;
 
 					// error
 				default:
-					error_message = "invalid literal";
+					error_message = L"invalid literal";
 					return token_type::parse_error;
 				}
 			}
@@ -2889,7 +2893,7 @@ namespace nlohmann
 			detail::input_adapter_t ia = nullptr;
 
 			/// the current character
-			int current = std::char_traits<char>::eof();
+			int current = std::char_traits<wchar_t>::eof();
 
 			/// whether get() should return the last character again
 			bool next_unget = false;
@@ -2900,12 +2904,12 @@ namespace nlohmann
 			std::size_t start_pos = 0;
 
 			/// buffer for variable-length tokens (numbers, strings)
-			std::vector<char> yytext = std::vector<char>(1024, '\0');
+			std::vector<wchar_t> yytext = std::vector<wchar_t>(1024, L'\0');
 			/// current index in yytext
 			std::size_t yylen = 0;
 
 			/// a description of occurred lexer errors
-			const char* error_message = "";
+			const wchar_t* error_message = L"";
 
 			// number values
 			number_integer_t value_integer = 0;
@@ -2913,7 +2917,7 @@ namespace nlohmann
 			number_float_t value_float = 0;
 
 			/// the decimal point
-			const char decimal_point_char = '.';
+			const wchar_t decimal_point_char = '.';
 		};
 
 		/*!
@@ -3062,7 +3066,7 @@ namespace nlohmann
 					}
 
 					// parse values
-					std::string key;
+					std::wstring key;
 					BasicJsonType value;
 					while (true)
 					{
@@ -3251,8 +3255,9 @@ namespace nlohmann
 					{
 						if (allow_exceptions)
 						{
+							auto s = m_lexer.get_token_string();
 							JSON_THROW(out_of_range::create(406, "number overflow parsing '" +
-								m_lexer.get_token_string() + "'"));
+								std::string(s.begin(), s.end()) + "'"));
 						}
 						expect(token_type::uninitialized);
 					}
@@ -3429,23 +3434,23 @@ namespace nlohmann
 
 			[[noreturn]] void throw_exception() const
 			{
-				std::string error_msg = "syntax error - ";
+				std::wstring error_msg = L"syntax error - ";
 				if (last_token == token_type::parse_error)
 				{
-					error_msg += std::string(m_lexer.get_error_message()) + "; last read: '" +
-						m_lexer.get_token_string() + "'";
+					error_msg += std::wstring(m_lexer.get_error_message()) + L"; last read: '" +
+						m_lexer.get_token_string() + L"'";
 				}
 				else
 				{
-					error_msg += "unexpected " + std::string(lexer_t::token_type_name(last_token));
+					error_msg += L"unexpected " + std::wstring(lexer_t::token_type_name(last_token));
 				}
 
 				if (expected != token_type::uninitialized)
 				{
-					error_msg += "; expected " + std::string(lexer_t::token_type_name(expected));
+					error_msg += L"; expected " + std::wstring(lexer_t::token_type_name(expected));
 				}
 
-				JSON_THROW(parse_error::create(101, m_lexer.get_position(), error_msg));
+				JSON_THROW(parse_error::create(101, m_lexer.get_position(), std::string(error_msg.begin(), error_msg.end())));
 			}
 
 		private:
@@ -3582,7 +3587,7 @@ namespace nlohmann
 			static constexpr difference_type end_value = begin_value + 1;
 
 			/// iterator as signed integer type
-			difference_type m_it = std::numeric_limits<std::ptrdiff_t>::min();
+			difference_type m_it = (std::numeric_limits<std::ptrdiff_t>::min)();
 		};
 
 		/*!
@@ -4227,7 +4232,7 @@ namespace nlohmann
 				}
 
 				/// return key of the iterator
-				std::string key() const
+				std::wstring key() const
 				{
 					assert(anchor.m_object != nullptr);
 
@@ -4235,7 +4240,7 @@ namespace nlohmann
 					{
 						// use integer array index as key
 					case value_t::array:
-						return std::to_string(array_index);
+						return std::to_wstring(array_index);
 
 						// use key from the object
 					case value_t::object:
@@ -4555,7 +4560,7 @@ namespace nlohmann
 			*/
 			static constexpr bool little_endianess(int num = 1) noexcept
 			{
-				return (*reinterpret_cast<char*>(&num) == 1);
+				return (*reinterpret_cast<wchar_t*>(&num) == 1);
 			}
 
 		private:
@@ -4569,7 +4574,7 @@ namespace nlohmann
 				switch (get_char ? get() : current)
 				{
 					// EOF
-				case std::char_traits<char>::eof():
+				case std::char_traits<wchar_t>::eof():
 					JSON_THROW(parse_error::create(110, chars_read, "unexpected end of input"));
 
 					// Integer 0x00..0x17 (0..23)
@@ -4887,7 +4892,7 @@ namespace nlohmann
 				switch (get())
 				{
 					// EOF
-				case std::char_traits<char>::eof():
+				case std::char_traits<wchar_t>::eof():
 					JSON_THROW(parse_error::create(110, chars_read, "unexpected end of input"));
 
 					// positive fixint
@@ -5212,7 +5217,7 @@ namespace nlohmann
 
 			This function provides the interface to the used input adapter. It does
 			not throw in case the input reached EOF, but returns
-			`std::char_traits<char>::eof()` in that case.
+			`std::char_traits<wchar_t>::eof()` in that case.
 
 			@return character read from the input
 			*/
@@ -5275,9 +5280,9 @@ namespace nlohmann
 			@throw parse_error.110 if input has less than @a len bytes
 			*/
 			template<typename NumberType>
-			std::string get_string(const NumberType len)
+			std::wstring get_string(const NumberType len)
 			{
-				std::string result;
+				std::wstring result;
 				std::generate_n(std::back_inserter(result), len, [this]()
 				{
 					get();
@@ -5299,7 +5304,7 @@ namespace nlohmann
 			@throw parse_error.110 if input ended
 			@throw parse_error.113 if an unexpected byte is read
 			*/
-			std::string get_cbor_string()
+			std::wstring get_cbor_string()
 			{
 				check_eof();
 
@@ -5356,11 +5361,11 @@ namespace nlohmann
 
 				case 0x7f: // UTF-8 string (indefinite length)
 				{
-					std::string result;
+					std::wstring result;
 					while (get() != 0xff)
 					{
 						check_eof();
-						result.push_back(static_cast<char>(current));
+						result.push_back(static_cast<wchar_t>(current));
 					}
 					return result;
 				}
@@ -5412,7 +5417,7 @@ namespace nlohmann
 			@throw parse_error.110 if input ended
 			@throw parse_error.113 if an unexpected byte is read
 			*/
-			std::string get_msgpack_string()
+			std::wstring get_msgpack_string()
 			{
 				check_eof();
 
@@ -5515,14 +5520,14 @@ namespace nlohmann
 			{
 				if (expect_eof)
 				{
-					if (JSON_UNLIKELY(current != std::char_traits<char>::eof()))
+					if (JSON_UNLIKELY(current != std::char_traits<wchar_t>::eof()))
 					{
 						JSON_THROW(parse_error::create(110, chars_read, "expected end of input"));
 					}
 				}
 				else
 				{
-					if (JSON_UNLIKELY(current == std::char_traits<char>::eof()))
+					if (JSON_UNLIKELY(current == std::char_traits<wchar_t>::eof()))
 					{
 						JSON_THROW(parse_error::create(110, chars_read, "unexpected end of input"));
 					}
@@ -5534,7 +5539,7 @@ namespace nlohmann
 			input_adapter_t ia = nullptr;
 
 			/// the current character
-			int current = std::char_traits<char>::eof();
+			int current = std::char_traits<wchar_t>::eof();
 
 			/// the number of characters read
 			std::size_t chars_read = 0;
@@ -6094,7 +6099,7 @@ namespace nlohmann
 			@param[in] s  output stream to serialize to
 			@param[in] ichar  indentation character to use
 			*/
-			serializer(output_adapter_t<char> s, const char ichar)
+			serializer(output_adapter_t<wchar_t> s, const wchar_t ichar)
 				: o(std::move(s)), loc(std::localeconv()),
 				thousands_sep(loc->thousands_sep == nullptr ? '\0' : loc->thousands_sep[0]),
 				decimal_point(loc->decimal_point == nullptr ? '\0' : loc->decimal_point[0]),
@@ -6132,13 +6137,13 @@ namespace nlohmann
 				{
 					if (val.m_value.object->empty())
 					{
-						o->write_characters("{}", 2);
+						o->write_characters(L"{}", 2);
 						return;
 					}
 
 					if (pretty_print)
 					{
-						o->write_characters("{\n", 2);
+						o->write_characters(L"{\n", 2);
 
 						// variable to hold indentation for recursive calls
 						const auto new_indent = current_indent + indent_step;
@@ -6152,50 +6157,50 @@ namespace nlohmann
 						for (std::size_t cnt = 0; cnt < val.m_value.object->size() - 1; ++cnt, ++i)
 						{
 							o->write_characters(indent_string.c_str(), new_indent);
-							o->write_character('\"');
+							o->write_character(L'\"');
 							dump_escaped(i->first, ensure_ascii);
-							o->write_characters("\": ", 3);
+							o->write_characters(L"\": ", 3);
 							dump(i->second, true, ensure_ascii, indent_step, new_indent);
-							o->write_characters(",\n", 2);
+							o->write_characters(L",\n", 2);
 						}
 
 						// last element
 						assert(i != val.m_value.object->cend());
 						assert(std::next(i) == val.m_value.object->cend());
 						o->write_characters(indent_string.c_str(), new_indent);
-						o->write_character('\"');
+						o->write_character(L'\"');
 						dump_escaped(i->first, ensure_ascii);
-						o->write_characters("\": ", 3);
+						o->write_characters(L"\": ", 3);
 						dump(i->second, true, ensure_ascii, indent_step, new_indent);
 
-						o->write_character('\n');
+						o->write_character(L'\n');
 						o->write_characters(indent_string.c_str(), current_indent);
-						o->write_character('}');
+						o->write_character(L'}');
 					}
 					else
 					{
-						o->write_character('{');
+						o->write_character(L'{');
 
 						// first n-1 elements
 						auto i = val.m_value.object->cbegin();
 						for (std::size_t cnt = 0; cnt < val.m_value.object->size() - 1; ++cnt, ++i)
 						{
-							o->write_character('\"');
+							o->write_character(L'\"');
 							dump_escaped(i->first, ensure_ascii);
-							o->write_characters("\":", 2);
+							o->write_characters(L"\":", 2);
 							dump(i->second, false, ensure_ascii, indent_step, current_indent);
-							o->write_character(',');
+							o->write_character(L',');
 						}
 
 						// last element
 						assert(i != val.m_value.object->cend());
 						assert(std::next(i) == val.m_value.object->cend());
-						o->write_character('\"');
+						o->write_character(L'\"');
 						dump_escaped(i->first, ensure_ascii);
-						o->write_characters("\":", 2);
+						o->write_characters(L"\":", 2);
 						dump(i->second, false, ensure_ascii, indent_step, current_indent);
 
-						o->write_character('}');
+						o->write_character(L'}');
 					}
 
 					return;
@@ -6205,13 +6210,13 @@ namespace nlohmann
 				{
 					if (val.m_value.array->empty())
 					{
-						o->write_characters("[]", 2);
+						o->write_characters(L"[]", 2);
 						return;
 					}
 
 					if (pretty_print)
 					{
-						o->write_characters("[\n", 2);
+						o->write_characters(L"[\n", 2);
 
 						// variable to hold indentation for recursive calls
 						const auto new_indent = current_indent + indent_step;
@@ -6226,7 +6231,7 @@ namespace nlohmann
 						{
 							o->write_characters(indent_string.c_str(), new_indent);
 							dump(*i, true, ensure_ascii, indent_step, new_indent);
-							o->write_characters(",\n", 2);
+							o->write_characters(L",\n", 2);
 						}
 
 						// last element
@@ -6236,25 +6241,25 @@ namespace nlohmann
 
 						o->write_character('\n');
 						o->write_characters(indent_string.c_str(), current_indent);
-						o->write_character(']');
+						o->write_character(L']');
 					}
 					else
 					{
-						o->write_character('[');
+						o->write_character(L'[');
 
 						// first n-1 elements
 						for (auto i = val.m_value.array->cbegin();
 							i != val.m_value.array->cend() - 1; ++i)
 						{
 							dump(*i, false, ensure_ascii, indent_step, current_indent);
-							o->write_character(',');
+							o->write_character(L',');
 						}
 
 						// last element
 						assert(not val.m_value.array->empty());
 						dump(val.m_value.array->back(), false, ensure_ascii, indent_step, current_indent);
 
-						o->write_character(']');
+						o->write_character(L']');
 					}
 
 					return;
@@ -6262,9 +6267,9 @@ namespace nlohmann
 
 				case value_t::string:
 				{
-					o->write_character('\"');
+					o->write_character(L'\"');
 					dump_escaped(*val.m_value.string, ensure_ascii);
-					o->write_character('\"');
+					o->write_character(L'\"');
 					return;
 				}
 
@@ -6272,11 +6277,11 @@ namespace nlohmann
 				{
 					if (val.m_value.boolean)
 					{
-						o->write_characters("true", 4);
+						o->write_characters(L"true", 4);
 					}
 					else
 					{
-						o->write_characters("false", 5);
+						o->write_characters(L"false", 5);
 					}
 					return;
 				}
@@ -6301,13 +6306,13 @@ namespace nlohmann
 
 				case value_t::discarded:
 				{
-					o->write_characters("<discarded>", 11);
+					o->write_characters(L"<discarded>", 11);
 					return;
 				}
 
 				case value_t::null:
 				{
-					o->write_characters("null", 4);
+					o->write_characters(L"null", 4);
 					return;
 				}
 				}
@@ -6325,7 +6330,7 @@ namespace nlohmann
 				return ((u <= 127) ? 0
 					: ((192 <= u and u <= 223) ? 1
 						: ((224 <= u and u <= 239) ? 2
-							: ((240 <= u and u <= 247) ? 3 : std::string::npos))));
+							: ((240 <= u and u <= 247) ? 3 : std::wstring::npos))));
 			}
 
 			/*!
@@ -6400,7 +6405,7 @@ namespace nlohmann
 						if (ensure_ascii and (s[i] & 0x80 or s[i] == 0x7F))
 						{
 							const auto bytes = bytes_following(static_cast<uint8_t>(s[i]));
-							if (bytes == std::string::npos)
+							if (bytes == std::wstring::npos)
 							{
 								// invalid characters are treated as is, so no
 								// additional space will be used
@@ -6444,7 +6449,7 @@ namespace nlohmann
 				result[++pos] = 'u';
 
 				// convert a number 0..15 to its hex representation (0..f)
-				static const std::array<char, 16> hexify =
+				static const std::array<wchar_t, 16> hexify =
 				{
 					{
 						'0', '1', '2', '3', '4', '5', '6', '7',
@@ -6571,7 +6576,7 @@ namespace nlohmann
 							(ensure_ascii and (s[i] & 0x80 or s[i] == 0x7F)))
 						{
 							const auto bytes = bytes_following(static_cast<uint8_t>(s[i]));
-							if (bytes == std::string::npos)
+							if (bytes == std::wstring::npos)
 							{
 								// copy invalid character as is
 								result[pos++] = s[i];
@@ -6662,19 +6667,18 @@ namespace nlohmann
 					return;
 				}
 
-				const decltype(x) is_negative = std::signbit(static_cast<double>(x));
+				const bool is_negative = (x <= 0) and (x != 0);  // see issue #755
 				std::size_t i = 0;
 
-				// spare 1 byte for '\0'
-				while (x != 0 and i < number_buffer.size() - 1)
+				while (x != 0)
 				{
+					// spare 1 byte for '\0'
+					assert(i < number_buffer.size() - 1);
+
 					const auto digit = std::labs(static_cast<long>(x % 10));
-					number_buffer[i++] = static_cast<char>('0' + digit);
+					number_buffer[i++] = static_cast<wchar_t>('0' + digit);
 					x /= 10;
 				}
-
-				// make sure the number has been processed completely
-				assert(x == 0);
 
 				if (is_negative)
 				{
@@ -6700,21 +6704,7 @@ namespace nlohmann
 				// NaN / inf
 				if (not std::isfinite(x) or std::isnan(x))
 				{
-					o->write_characters("null", 4);
-					return;
-				}
-
-				// special case for 0.0 and -0.0
-				if (x == 0)
-				{
-					if (std::signbit(x))
-					{
-						o->write_characters("-0.0", 4);
-					}
-					else
-					{
-						o->write_characters("0.0", 3);
-					}
+					o->write_characters(L"null", 4);
 					return;
 				}
 
@@ -6722,7 +6712,7 @@ namespace nlohmann
 				static constexpr auto d = std::numeric_limits<number_float_t>::digits10;
 
 				// the actual conversion
-				std::ptrdiff_t len = snprintf(number_buffer.data(), number_buffer.size(), "%.*g", d, x);
+				std::ptrdiff_t len = swprintf(number_buffer.data(), number_buffer.size(), L"%.*g", d, x);
 
 				// negative value indicates an error
 				assert(len > 0);
@@ -6730,22 +6720,22 @@ namespace nlohmann
 				assert(static_cast<std::size_t>(len) < number_buffer.size());
 
 				// erase thousands separator
-				if (thousands_sep != '\0')
+				if (thousands_sep != L'\0')
 				{
 					const auto end = std::remove(number_buffer.begin(),
 						number_buffer.begin() + len, thousands_sep);
-					std::fill(end, number_buffer.end(), '\0');
+					std::fill(end, number_buffer.end(), L'\0');
 					assert((end - number_buffer.begin()) <= len);
 					len = (end - number_buffer.begin());
 				}
 
 				// convert decimal point to '.'
-				if (decimal_point != '\0' and decimal_point != '.')
+				if (decimal_point != L'\0' and decimal_point != L'.')
 				{
 					const auto dec_pos = std::find(number_buffer.begin(), number_buffer.end(), decimal_point);
 					if (dec_pos != number_buffer.end())
 					{
-						*dec_pos = '.';
+						*dec_pos = L'.';
 					}
 				}
 
@@ -6754,33 +6744,33 @@ namespace nlohmann
 				// determine if need to append ".0"
 				const bool value_is_int_like =
 					std::none_of(number_buffer.begin(), number_buffer.begin() + len + 1,
-						[](char c)
+						[](wchar_t c)
 				{
-					return (c == '.' or c == 'e');
+					return (c == L'.' or c == L'e');
 				});
 
 				if (value_is_int_like)
 				{
-					o->write_characters(".0", 2);
+					o->write_characters(L".0", 2);
 				}
 			}
 
 		private:
 			/// the output of the serializer
-			output_adapter_t<char> o = nullptr;
+			output_adapter_t<wchar_t> o = nullptr;
 
 			/// a (hopefully) large enough character buffer
-			std::array<char, 64> number_buffer{ {} };
+			std::array<wchar_t, 64> number_buffer{ {} };
 
 			/// the locale
 			const std::lconv* loc = nullptr;
 			/// the locale's thousand separator character
-			const char thousands_sep = '\0';
+			const wchar_t thousands_sep = L'\0';
 			/// the locale's decimal point character
-			const char decimal_point = '\0';
+			const wchar_t decimal_point = L'\0';
 
 			/// the indentation character
-			const char indent_char;
+			const wchar_t indent_char;
 
 			/// the indentation string
 			string_t indent_string;
@@ -6938,37 +6928,37 @@ namespace nlohmann
 
 		@since version 2.0.0
 		*/
-		explicit json_pointer(const std::string& s = "") : reference_tokens(split(s)) {}
+		explicit json_pointer(const std::wstring& s = L"") : reference_tokens(split(s)) {}
 
 		/*!
 		@brief return a string representation of the JSON pointer
 
 		@invariant For each JSON pointer `ptr`, it holds:
 		@code {.cpp}
-		ptr == json_pointer(ptr.to_string());
+		ptr == json_pointer(ptr.to_wstring());
 		@endcode
 
 		@return a string representation of the JSON pointer
 
-		@liveexample{The example shows the result of `to_string`.,
+		@liveexample{The example shows the result of `to_wstring`.,
 		json_pointer__to_string}
 
 		@since version 2.0.0
 		*/
-		std::string to_string() const noexcept
+		std::wstring to_wstring() const noexcept
 		{
 			return std::accumulate(reference_tokens.begin(), reference_tokens.end(),
-				std::string{},
-				[](const std::string & a, const std::string & b)
+				std::wstring{},
+				[](const std::wstring & a, const std::wstring & b)
 			{
-				return a + "/" + escape(b);
+				return a + L"/" + escape(b);
 			});
 		}
 
-		/// @copydoc to_string()
-		operator std::string() const
+		/// @copydoc to_wstring()
+		operator std::wstring() const
 		{
-			return to_string();
+			return to_wstring();
 		}
 
 	private:
@@ -6976,7 +6966,7 @@ namespace nlohmann
 		@brief remove and return last reference pointer
 		@throw out_of_range.405 if JSON pointer has no parent
 		*/
-		std::string pop_back()
+		std::wstring pop_back()
 		{
 			if (JSON_UNLIKELY(is_root()))
 			{
@@ -7083,9 +7073,9 @@ namespace nlohmann
 		@throw parse_error.107  if the pointer is not empty or begins with '/'
 		@throw parse_error.108  if character '~' is not followed by '0' or '1'
 		*/
-		static std::vector<std::string> split(const std::string& reference_string)
+		static std::vector<std::wstring> split(const std::wstring& reference_string)
 		{
-			std::vector<std::string> result;
+			std::vector<std::wstring> result;
 
 			// special case: empty reference string -> no reference tokens
 			if (reference_string.empty())
@@ -7098,7 +7088,7 @@ namespace nlohmann
 			{
 				JSON_THROW(detail::parse_error::create(107, 1,
 					"JSON pointer must be empty or begin with '/' - was: '" +
-					reference_string + "'"));
+					std::string(reference_string.begin(), reference_string.end()) + "'"));
 			}
 
 			// extract the reference tokens:
@@ -7112,7 +7102,7 @@ namespace nlohmann
 				// we can stop if start == string::npos+1 = 0
 				start != 0;
 				// set the beginning of the next reference token
-				// (will eventually be 0 if slash == std::string::npos)
+				// (will eventually be 0 if slash == std::wstring::npos)
 				start = slash + 1,
 				// find next slash
 				slash = reference_string.find_first_of('/', start))
@@ -7123,7 +7113,7 @@ namespace nlohmann
 
 				// check reference tokens are properly escaped
 				for (std::size_t pos = reference_token.find_first_of('~');
-					pos != std::string::npos;
+					pos != std::wstring::npos;
 					pos = reference_token.find_first_of('~', pos + 1))
 				{
 					assert(reference_token[pos] == '~');
@@ -7158,12 +7148,12 @@ namespace nlohmann
 
 		@since version 2.0.0
 		*/
-		static void replace_substring(std::string& s, const std::string& f,
-			const std::string& t)
+		static void replace_substring(std::wstring& s, const std::wstring& f,
+			const std::wstring& t)
 		{
 			assert(not f.empty());
 			for (auto pos = s.find(f);                // find first occurrence of f
-				pos != std::string::npos;         // make sure f was found
+				pos != std::wstring::npos;         // make sure f was found
 				s.replace(pos, f.size(), t),      // replace with t, and
 				pos = s.find(f, pos + t.size()))  // find next occurrence of f
 			{
@@ -7171,18 +7161,18 @@ namespace nlohmann
 		}
 
 		/// escape "~"" to "~0" and "/" to "~1"
-		static std::string escape(std::string s)
+		static std::wstring escape(std::wstring s)
 		{
-			replace_substring(s, "~", "~0");
-			replace_substring(s, "/", "~1");
+			replace_substring(s, L"~", L"~0");
+			replace_substring(s, L"/", L"~1");
 			return s;
 		}
 
 		/// unescape "~1" to tilde and "~0" to slash (order is important!)
-		static void unescape(std::string& s)
+		static void unescape(std::wstring& s)
 		{
-			replace_substring(s, "~1", "/");
-			replace_substring(s, "~0", "~");
+			replace_substring(s, L"~1", L"/");
+			replace_substring(s, L"~0", L"~");
 		}
 
 		/*!
@@ -7193,7 +7183,7 @@ namespace nlohmann
 		@note Empty objects or arrays are flattened to `null`.
 		*/
 		NLOHMANN_BASIC_JSON_TPL_DECLARATION
-			static void flatten(const std::string& reference_string,
+			static void flatten(const std::wstring& reference_string,
 				const NLOHMANN_BASIC_JSON_TPL& value,
 				NLOHMANN_BASIC_JSON_TPL& result);
 
@@ -7218,7 +7208,7 @@ namespace nlohmann
 			json_pointer const& rhs) noexcept;
 
 		/// the reference tokens
-		std::vector<std::string> reference_tokens;
+		std::vector<std::wstring> reference_tokens;
 	};
 
 	/*!
@@ -7228,7 +7218,7 @@ namespace nlohmann
 	in @ref object_t)
 	@tparam ArrayType type for JSON arrays (`std::vector` by default; will be used
 	in @ref array_t)
-	@tparam StringType type for JSON strings and object keys (`std::string` by
+	@tparam StringType type for JSON strings and object keys (`std::wstring` by
 	default; will be used in @ref string_t)
 	@tparam BooleanType type for JSON booleans (`bool` by default; will be used
 	in @ref boolean_t)
@@ -7479,7 +7469,7 @@ namespace nlohmann
 #elif defined(__clang__)
 			result["compiler"] = { { "family", "clang" },{ "version", __clang_version__ } };
 #elif defined(__GNUC__) || defined(__GNUG__)
-			result["compiler"] = { { "family", "gcc" },{ "version", std::to_string(__GNUC__) + "." + std::to_string(__GNUC_MINOR__) + "." + std::to_string(__GNUC_PATCHLEVEL__) } };
+			result["compiler"] = { { "family", "gcc" },{ "version", std::to_wstring(__GNUC__) + "." + std::to_wstring(__GNUC_MINOR__) + "." + std::to_wstring(__GNUC_PATCHLEVEL__) } };
 #elif defined(__HP_cc) || defined(__HP_aCC)
 			result["compiler"] = "hp"
 #elif defined(__IBMCPP__)
@@ -7495,7 +7485,7 @@ namespace nlohmann
 #endif
 
 #ifdef __cplusplus
-			result["compiler"]["c++"] = std::to_string(__cplusplus);
+			result["compiler"]["c++"] = std::to_wstring(__cplusplus);
 #else
 			result["compiler"]["c++"] = "unknown";
 #endif
@@ -7525,7 +7515,7 @@ namespace nlohmann
 
 		@tparam ObjectType  the container to store objects (e.g., `std::map` or
 		`std::unordered_map`)
-		@tparam StringType the type of the keys or names (e.g., `std::string`).
+		@tparam StringType the type of the keys or names (e.g., `std::wstring`).
 		The comparison function `std::less<StringType>` is used to order elements
 		inside the container.
 		@tparam AllocatorType the allocator to use for objects (e.g.,
@@ -7534,15 +7524,15 @@ namespace nlohmann
 		#### Default type
 
 		With the default values for @a ObjectType (`std::map`), @a StringType
-		(`std::string`), and @a AllocatorType (`std::allocator`), the default
+		(`std::wstring`), and @a AllocatorType (`std::allocator`), the default
 		value for @a object_t is:
 
 		@code {.cpp}
 		std::map<
-		std::string, // key_type
+		std::wstring, // key_type
 		basic_json, // value_type
-		std::less<std::string>, // key_compare
-		std::allocator<std::pair<const std::string, basic_json>> // allocator_type
+		std::less<std::wstring>, // key_compare
+		std::allocator<std::pair<const std::wstring, basic_json>> // allocator_type
 		>
 		@endcode
 
@@ -7657,22 +7647,22 @@ namespace nlohmann
 		described below. Unicode values are split by the JSON class into
 		byte-sized characters during deserialization.
 
-		@tparam StringType  the container to store strings (e.g., `std::string`).
+		@tparam StringType  the container to store strings (e.g., `std::wstring`).
 		Note this container is used for keys/names in objects, see @ref object_t.
 
 		#### Default type
 
-		With the default values for @a StringType (`std::string`), the default
+		With the default values for @a StringType (`std::wstring`), the default
 		value for @a string_t is:
 
 		@code {.cpp}
-		std::string
+		std::wstring
 		@endcode
 
 		#### Encoding
 
 		Strings are stored in UTF-8 encoding. Therefore, functions like
-		`std::string::size()` or `std::string::length()` return the number of
+		`std::wstring::size()` or `std::wstring::length()` return the number of
 		bytes in the string rather than the number of characters or glyphs.
 
 		#### String comparison
@@ -8030,7 +8020,7 @@ namespace nlohmann
 
 				case value_t::string:
 				{
-					string = create<string_t>("");
+					string = create<string_t>(L"");
 					break;
 				}
 
@@ -8173,7 +8163,7 @@ namespace nlohmann
 		@brief per-element parser callback type
 
 		With a parser callback function, the result of parsing a JSON text can be
-		influenced. When passed to @ref parse(std::istream&, const
+		influenced. When passed to @ref parse(std::wistream&, const
 		parser_callback_t) or @ref parse(const CharT, const parser_callback_t),
 		it is called on certain events (passed as @ref parse_event_t via parameter
 		@a event) with a set recursion depth @a depth and context JSON value
@@ -8216,7 +8206,7 @@ namespace nlohmann
 		should be kept (`true`) or not (`false`). In the latter case, it is either
 		skipped completely or replaced by an empty discarded object.
 
-		@sa @ref parse(std::istream&, parser_callback_t) or
+		@sa @ref parse(std::wistream&, parser_callback_t) or
 		@ref parse(const CharT, const parser_callback_t) for examples
 
 		@since version 1.0.0
@@ -8322,7 +8312,7 @@ namespace nlohmann
 		See the examples below.
 
 		@tparam CompatibleType a type such that:
-		- @a CompatibleType is not derived from `std::istream`,
+		- @a CompatibleType is not derived from `std::wistream`,
 		- @a CompatibleType is not @ref basic_json (to avoid hijacking copy/move
 		constructors),
 		- @a CompatibleType is not a @ref basic_json nested type (e.g.,
@@ -8349,7 +8339,7 @@ namespace nlohmann
 		@since version 2.1.0
 		*/
 		template<typename CompatibleType, typename U = detail::uncvref_t<CompatibleType>,
-			detail::enable_if_t<not std::is_base_of<std::istream, U>::value and
+			detail::enable_if_t<not std::is_base_of<std::wistream, U>::value and
 			not std::is_same<U, basic_json_t>::value and
 			not detail::is_basic_json_nested_type<
 			basic_json_t, U>::value and
@@ -8743,7 +8733,7 @@ namespace nlohmann
 
 			default:
 				JSON_THROW(invalid_iterator::create(206, "cannot construct with iterators from " +
-					std::string(first.m_object->type_name())));
+					std::wstring(first.m_object->type_name())));
 			}
 
 			assert_invariant();
@@ -8987,11 +8977,11 @@ namespace nlohmann
 		@since version 1.0.0; indentation character @a indent_char and option
 		@a ensure_ascii added in version 3.0.0
 		*/
-		string_t dump(const int indent = -1, const char indent_char = ' ',
+		string_t dump(const int indent = -1, const wchar_t indent_char = ' ',
 			const bool ensure_ascii = false) const
 		{
 			string_t result;
-			serializer s(detail::output_adapter<char>(result), indent_char);
+			serializer s(detail::output_adapter<wchar_t>(result), indent_char);
 
 			if (indent >= 0)
 			{
@@ -9392,7 +9382,7 @@ namespace nlohmann
 				return m_value.boolean;
 			}
 
-			JSON_THROW(type_error::create(302, "type must be boolean, but is " + std::string(type_name())));
+			JSON_THROW(type_error::create(302, "type must be boolean, but is " + std::wstring(type_name())));
 		}
 
 		/// get a pointer to the value (object)
@@ -9501,7 +9491,7 @@ namespace nlohmann
 				return *ptr;
 			}
 
-			JSON_THROW(type_error::create(303, "incompatible ReferenceType for get_ref, actual type is " + std::string(obj.type_name())));
+			JSON_THROW(type_error::create(303, "incompatible ReferenceType for get_ref, actual type is " + std::wstring(obj.type_name())));
 		}
 
 	public:
@@ -9567,7 +9557,7 @@ namespace nlohmann
 		to other types. There a few things to note: (1) Floating-point numbers can
 		be converted to integers\, (2) A JSON array can be converted to a standard
 		`std::vector<short>`\, (3) A JSON object can be converted to C++
-		associative containers such as `std::unordered_map<std::string\,
+		associative containers such as `std::unordered_map<std::wstring\,
 		json>`.,get__ValueType_const}
 
 		@since version 2.1.0
@@ -9822,7 +9812,7 @@ namespace nlohmann
 		instance `int` for JSON integer numbers, `bool` for JSON booleans, or
 		`std::vector` types for JSON arrays. The character type of @ref string_t
 		as well as an initializer list of this type is excluded to avoid
-		ambiguities as these types implicitly convert to `std::string`.
+		ambiguities as these types implicitly convert to `std::wstring`.
 
 		@return copy of the JSON value, converted to type @a ValueType
 
@@ -9836,7 +9826,7 @@ namespace nlohmann
 		to other types. There a few things to note: (1) Floating-point numbers can
 		be converted to integers\, (2) A JSON array can be converted to a standard
 		`std::vector<short>`\, (3) A JSON object can be converted to C++
-		associative containers such as `std::unordered_map<std::string\,
+		associative containers such as `std::unordered_map<std::wstring\,
 		json>`.,operator__ValueType}
 
 		@since version 1.0.0
@@ -9907,12 +9897,12 @@ namespace nlohmann
 					JSON_CATCH(std::out_of_range&)
 				{
 					// create better exception explanation
-					JSON_THROW(out_of_range::create(401, "array index " + std::to_string(idx) + " is out of range"));
+					JSON_THROW(out_of_range::create(401, "array index " + std::to_wstring(idx) + " is out of range"));
 				}
 			}
 			else
 			{
-				JSON_THROW(type_error::create(304, "cannot use at() with " + std::string(type_name())));
+				JSON_THROW(type_error::create(304, "cannot use at() with " + std::wstring(type_name())));
 			}
 		}
 
@@ -9954,12 +9944,12 @@ namespace nlohmann
 					JSON_CATCH(std::out_of_range&)
 				{
 					// create better exception explanation
-					JSON_THROW(out_of_range::create(401, "array index " + std::to_string(idx) + " is out of range"));
+					JSON_THROW(out_of_range::create(401, "array index " + std::to_wstring(idx) + " is out of range"));
 				}
 			}
 			else
 			{
-				JSON_THROW(type_error::create(304, "cannot use at() with " + std::string(type_name())));
+				JSON_THROW(type_error::create(304, "cannot use at() with " + std::wstring(type_name())));
 			}
 		}
 
@@ -10010,7 +10000,7 @@ namespace nlohmann
 			}
 			else
 			{
-				JSON_THROW(type_error::create(304, "cannot use at() with " + std::string(type_name())));
+				JSON_THROW(type_error::create(304, "cannot use at() with " + std::wstring(type_name())));
 			}
 		}
 
@@ -10061,7 +10051,7 @@ namespace nlohmann
 			}
 			else
 			{
-				JSON_THROW(type_error::create(304, "cannot use at() with " + std::string(type_name())));
+				JSON_THROW(type_error::create(304, "cannot use at() with " + std::wstring(type_name())));
 			}
 		}
 
@@ -10114,7 +10104,7 @@ namespace nlohmann
 				return m_value.array->operator[](idx);
 			}
 
-			JSON_THROW(type_error::create(305, "cannot use operator[] with " + std::string(type_name())));
+			JSON_THROW(type_error::create(305, "cannot use operator[] with " + std::wstring(type_name())));
 		}
 
 		/*!
@@ -10144,7 +10134,7 @@ namespace nlohmann
 				return m_value.array->operator[](idx);
 			}
 
-			JSON_THROW(type_error::create(305, "cannot use operator[] with " + std::string(type_name())));
+			JSON_THROW(type_error::create(305, "cannot use operator[] with " + std::wstring(type_name())));
 		}
 
 		/*!
@@ -10190,7 +10180,7 @@ namespace nlohmann
 				return m_value.object->operator[](key);
 			}
 
-			JSON_THROW(type_error::create(305, "cannot use operator[] with " + std::string(type_name())));
+			JSON_THROW(type_error::create(305, "cannot use operator[] with " + std::wstring(type_name())));
 		}
 
 		/*!
@@ -10232,7 +10222,7 @@ namespace nlohmann
 				return m_value.object->find(key)->second;
 			}
 
-			JSON_THROW(type_error::create(305, "cannot use operator[] with " + std::string(type_name())));
+			JSON_THROW(type_error::create(305, "cannot use operator[] with " + std::wstring(type_name())));
 		}
 
 		/*!
@@ -10279,7 +10269,7 @@ namespace nlohmann
 				return m_value.object->operator[](key);
 			}
 
-			JSON_THROW(type_error::create(305, "cannot use operator[] with " + std::string(type_name())));
+			JSON_THROW(type_error::create(305, "cannot use operator[] with " + std::wstring(type_name())));
 		}
 
 		/*!
@@ -10322,7 +10312,7 @@ namespace nlohmann
 				return m_value.object->find(key)->second;
 			}
 
-			JSON_THROW(type_error::create(305, "cannot use operator[] with " + std::string(type_name())));
+			JSON_THROW(type_error::create(305, "cannot use operator[] with " + std::wstring(type_name())));
 		}
 
 		/*!
@@ -10390,14 +10380,14 @@ namespace nlohmann
 				return default_value;
 			}
 
-			JSON_THROW(type_error::create(306, "cannot use value() with " + std::string(type_name())));
+			JSON_THROW(type_error::create(306, "cannot use value() with " + std::wstring(type_name())));
 		}
 
 		/*!
-		@brief overload for a default value of type const char*
+		@brief overload for a default value of type const wchar_t*
 		@copydoc basic_json::value(const typename object_t::key_type&, ValueType) const
 		*/
-		string_t value(const typename object_t::key_type& key, const char* default_value) const
+		string_t value(const typename object_t::key_type& key, const wchar_t* default_value) const
 		{
 			return value(key, string_t(default_value));
 		}
@@ -10461,14 +10451,14 @@ namespace nlohmann
 				}
 			}
 
-			JSON_THROW(type_error::create(306, "cannot use value() with " + std::string(type_name())));
+			JSON_THROW(type_error::create(306, "cannot use value() with " + std::wstring(type_name())));
 		}
 
 		/*!
-		@brief overload for a default value of type const char*
+		@brief overload for a default value of type const wchar_t*
 		@copydoc basic_json::value(const json_pointer&, ValueType) const
 		*/
-		string_t value(const json_pointer& ptr, const char* default_value) const
+		string_t value(const json_pointer& ptr, const wchar_t* default_value) const
 		{
 			return value(ptr, string_t(default_value));
 		}
@@ -10658,7 +10648,7 @@ namespace nlohmann
 			}
 
 			default:
-				JSON_THROW(type_error::create(307, "cannot use erase() with " + std::string(type_name())));
+				JSON_THROW(type_error::create(307, "cannot use erase() with " + std::wstring(type_name())));
 			}
 
 			return result;
@@ -10766,7 +10756,7 @@ namespace nlohmann
 			}
 
 			default:
-				JSON_THROW(type_error::create(307, "cannot use erase() with " + std::string(type_name())));
+				JSON_THROW(type_error::create(307, "cannot use erase() with " + std::wstring(type_name())));
 			}
 
 			return result;
@@ -10809,7 +10799,7 @@ namespace nlohmann
 				return m_value.object->erase(key);
 			}
 
-			JSON_THROW(type_error::create(307, "cannot use erase() with " + std::string(type_name())));
+			JSON_THROW(type_error::create(307, "cannot use erase() with " + std::wstring(type_name())));
 		}
 
 		/*!
@@ -10843,14 +10833,14 @@ namespace nlohmann
 			{
 				if (JSON_UNLIKELY(idx >= size()))
 				{
-					JSON_THROW(out_of_range::create(401, "array index " + std::to_string(idx) + " is out of range"));
+					JSON_THROW(out_of_range::create(401, "array index " + std::to_wstring(idx) + " is out of range"));
 				}
 
 				m_value.array->erase(m_value.array->begin() + static_cast<difference_type>(idx));
 			}
 			else
 			{
-				JSON_THROW(type_error::create(307, "cannot use erase() with " + std::string(type_name())));
+				JSON_THROW(type_error::create(307, "cannot use erase() with " + std::wstring(type_name())));
 			}
 		}
 
@@ -11590,7 +11580,7 @@ namespace nlohmann
 			// push_back only works for null objects or arrays
 			if (JSON_UNLIKELY(not(is_null() or is_array())))
 			{
-				JSON_THROW(type_error::create(308, "cannot use push_back() with " + std::string(type_name())));
+				JSON_THROW(type_error::create(308, "cannot use push_back() with " + std::wstring(type_name())));
 			}
 
 			// transform null object into an array
@@ -11626,7 +11616,7 @@ namespace nlohmann
 			// push_back only works for null objects or arrays
 			if (JSON_UNLIKELY(not(is_null() or is_array())))
 			{
-				JSON_THROW(type_error::create(308, "cannot use push_back() with " + std::string(type_name())));
+				JSON_THROW(type_error::create(308, "cannot use push_back() with " + std::wstring(type_name())));
 			}
 
 			// transform null object into an array
@@ -11676,7 +11666,7 @@ namespace nlohmann
 			// push_back only works for null objects or objects
 			if (JSON_UNLIKELY(not(is_null() or is_object())))
 			{
-				JSON_THROW(type_error::create(308, "cannot use push_back() with " + std::string(type_name())));
+				JSON_THROW(type_error::create(308, "cannot use push_back() with " + std::wstring(type_name())));
 			}
 
 			// transform null object into an object
@@ -11777,7 +11767,7 @@ namespace nlohmann
 			// emplace_back only works for null objects or arrays
 			if (JSON_UNLIKELY(not(is_null() or is_array())))
 			{
-				JSON_THROW(type_error::create(311, "cannot use emplace_back() with " + std::string(type_name())));
+				JSON_THROW(type_error::create(311, "cannot use emplace_back() with " + std::wstring(type_name())));
 			}
 
 			// transform null object into an array
@@ -11825,7 +11815,7 @@ namespace nlohmann
 			// emplace only works for null objects or arrays
 			if (JSON_UNLIKELY(not(is_null() or is_object())))
 			{
-				JSON_THROW(type_error::create(311, "cannot use emplace() with " + std::string(type_name())));
+				JSON_THROW(type_error::create(311, "cannot use emplace() with " + std::wstring(type_name())));
 			}
 
 			// transform null object into an object
@@ -11885,7 +11875,7 @@ namespace nlohmann
 				return result;
 			}
 
-			JSON_THROW(type_error::create(309, "cannot use insert() with " + std::string(type_name())));
+			JSON_THROW(type_error::create(309, "cannot use insert() with " + std::wstring(type_name())));
 		}
 
 		/*!
@@ -11938,7 +11928,7 @@ namespace nlohmann
 				return result;
 			}
 
-			JSON_THROW(type_error::create(309, "cannot use insert() with " + std::string(type_name())));
+			JSON_THROW(type_error::create(309, "cannot use insert() with " + std::wstring(type_name())));
 		}
 
 		/*!
@@ -11976,7 +11966,7 @@ namespace nlohmann
 			// insert only works for arrays
 			if (JSON_UNLIKELY(not is_array()))
 			{
-				JSON_THROW(type_error::create(309, "cannot use insert() with " + std::string(type_name())));
+				JSON_THROW(type_error::create(309, "cannot use insert() with " + std::wstring(type_name())));
 			}
 
 			// check if iterator pos fits to this JSON value
@@ -12034,7 +12024,7 @@ namespace nlohmann
 			// insert only works for arrays
 			if (JSON_UNLIKELY(not is_array()))
 			{
-				JSON_THROW(type_error::create(309, "cannot use insert() with " + std::string(type_name())));
+				JSON_THROW(type_error::create(309, "cannot use insert() with " + std::wstring(type_name())));
 			}
 
 			// check if iterator pos fits to this JSON value
@@ -12077,7 +12067,7 @@ namespace nlohmann
 			// insert only works for objects
 			if (JSON_UNLIKELY(not is_object()))
 			{
-				JSON_THROW(type_error::create(309, "cannot use insert() with " + std::string(type_name())));
+				JSON_THROW(type_error::create(309, "cannot use insert() with " + std::wstring(type_name())));
 			}
 
 			// check if range iterators belong to the same JSON object
@@ -12127,11 +12117,11 @@ namespace nlohmann
 
 			if (JSON_UNLIKELY(not is_object()))
 			{
-				JSON_THROW(type_error::create(312, "cannot use update() with " + std::string(type_name())));
+				JSON_THROW(type_error::create(312, "cannot use update() with " + std::wstring(type_name())));
 			}
 			if (JSON_UNLIKELY(not j.is_object()))
 			{
-				JSON_THROW(type_error::create(312, "cannot use update() with " + std::string(j.type_name())));
+				JSON_THROW(type_error::create(312, "cannot use update() with " + std::wstring(j.type_name())));
 			}
 
 			for (auto it = j.begin(); it != j.end(); ++it)
@@ -12178,7 +12168,7 @@ namespace nlohmann
 
 			if (JSON_UNLIKELY(not is_object()))
 			{
-				JSON_THROW(type_error::create(312, "cannot use update() with " + std::string(type_name())));
+				JSON_THROW(type_error::create(312, "cannot use update() with " + std::wstring(type_name())));
 			}
 
 			// check if range iterators belong to the same JSON object
@@ -12258,7 +12248,7 @@ namespace nlohmann
 			}
 			else
 			{
-				JSON_THROW(type_error::create(310, "cannot use swap() with " + std::string(type_name())));
+				JSON_THROW(type_error::create(310, "cannot use swap() with " + std::wstring(type_name())));
 			}
 		}
 
@@ -12291,7 +12281,7 @@ namespace nlohmann
 			}
 			else
 			{
-				JSON_THROW(type_error::create(310, "cannot use swap() with " + std::string(type_name())));
+				JSON_THROW(type_error::create(310, "cannot use swap() with " + std::wstring(type_name())));
 			}
 		}
 
@@ -12324,7 +12314,7 @@ namespace nlohmann
 			}
 			else
 			{
-				JSON_THROW(type_error::create(310, "cannot use swap() with " + std::string(type_name())));
+				JSON_THROW(type_error::create(310, "cannot use swap() with " + std::wstring(type_name())));
 			}
 		}
 
@@ -12810,7 +12800,7 @@ namespace nlohmann
 			o.width(0);
 
 			// do the actual serialization
-			serializer s(detail::output_adapter<char>(o), o.fill());
+			serializer s(detail::output_adapter<wchar_t>(o), o.fill());
 			s.dump(j, pretty_print, false, static_cast<unsigned int>(indentation));
 			return o;
 		}
@@ -12847,7 +12837,7 @@ namespace nlohmann
 		- strings with character/literal type with size of 1 byte
 		- input streams
 		- container with contiguous storage of 1-byte values. Compatible container
-		types include `std::vector`, `std::string`, `std::array`,
+		types include `std::vector`, `std::wstring`, `std::array`,
 		`std::valarray`, and `std::initializer_list`. Furthermore, C-style
 		arrays can be used with `std::begin()`/`std::end()`. User-defined
 		containers can be used as long as they implement random-access iterators
@@ -12937,7 +12927,7 @@ namespace nlohmann
 
 		This function reads from an iterator range of a container with contiguous
 		storage of 1-byte values. Compatible container types include
-		`std::vector`, `std::string`, `std::array`, `std::valarray`, and
+		`std::vector`, `std::wstring`, `std::array`, `std::valarray`, and
 		`std::initializer_list`. Furthermore, C-style arrays can be used with
 		`std::begin()`/`std::end()`. User-defined containers can be used as long
 		as they implement random-access iterators and a contiguous storage.
@@ -13003,12 +12993,12 @@ namespace nlohmann
 		@brief deserialize from stream
 		@deprecated This stream operator is deprecated and will be removed in a
 		future version of the library. Please use
-		@ref operator>>(std::istream&, basic_json&)
+		@ref operator>>(std::wistream&, basic_json&)
 		instead; that is, replace calls like `j << i;` with `i >> j;`.
 		@since version 1.0.0; deprecated since version 3.0.0
 		*/
 		JSON_DEPRECATED
-			friend std::istream& operator<<(basic_json& j, std::istream& i)
+			friend std::wistream& operator<<(basic_json& j, std::wistream& i)
 		{
 			return operator>>(i, j);
 		}
@@ -13033,12 +13023,12 @@ namespace nlohmann
 		@liveexample{The example below shows how a JSON value is constructed by
 		reading a serialization from a stream.,operator_deserialize}
 
-		@sa parse(std::istream&, const parser_callback_t) for a variant with a
+		@sa parse(std::wistream&, const parser_callback_t) for a variant with a
 		parser callback function to filter values while parsing
 
 		@since version 1.0.0
 		*/
-		friend std::istream& operator>>(std::istream& i, basic_json& j)
+		friend std::wistream& operator>>(std::wistream& i, basic_json& j)
 		{
 			parser(detail::input_adapter(i)).parse(false, j);
 			return i;
@@ -13077,28 +13067,28 @@ namespace nlohmann
 		@sa @ref type() -- return the type of the JSON value
 		@sa @ref operator value_t() -- return the type of the JSON value (implicit)
 
-		@since version 1.0.0, public since 2.1.0, `const char*` and `noexcept`
+		@since version 1.0.0, public since 2.1.0, `const wchar_t*` and `noexcept`
 		since 3.0.0
 		*/
-		const char* type_name() const noexcept
+		const wchar_t* type_name() const noexcept
 		{
 			{
 				switch (m_type)
 				{
 				case value_t::null:
-					return "null";
+					return L"null";
 				case value_t::object:
-					return "object";
+					return L"object";
 				case value_t::array:
-					return "array";
+					return L"array";
 				case value_t::string:
-					return "string";
+					return L"string";
 				case value_t::boolean:
-					return "boolean";
+					return L"boolean";
 				case value_t::discarded:
-					return "discarded";
+					return L"discarded";
 				default:
-					return "number";
+					return L"number";
 				}
 			}
 		}
@@ -13221,9 +13211,9 @@ namespace nlohmann
 			binary_writer<uint8_t>(o).write_cbor(j);
 		}
 
-		static void to_cbor(const basic_json& j, detail::output_adapter<char> o)
+		static void to_cbor(const basic_json& j, detail::output_adapter<wchar_t> o)
 		{
-			binary_writer<char>(o).write_cbor(j);
+			binary_writer<wchar_t>(o).write_cbor(j);
 		}
 
 		/*!
@@ -13316,9 +13306,9 @@ namespace nlohmann
 			binary_writer<uint8_t>(o).write_msgpack(j);
 		}
 
-		static void to_msgpack(const basic_json& j, detail::output_adapter<char> o)
+		static void to_msgpack(const basic_json& j, detail::output_adapter<wchar_t> o)
 		{
-			binary_writer<char>(o).write_msgpack(j);
+			binary_writer<wchar_t>(o).write_msgpack(j);
 		}
 
 		/*!
@@ -13798,7 +13788,7 @@ namespace nlohmann
 			// the valid JSON Patch operations
 			enum class patch_operations { add, remove, replace, move, copy, test, invalid };
 
-			const auto get_op = [](const std::string & op)
+			const auto get_op = [](const std::wstring & op)
 			{
 				if (op == "add")
 				{
@@ -13872,7 +13862,7 @@ namespace nlohmann
 							if (JSON_UNLIKELY(static_cast<size_type>(idx) > parent.size()))
 							{
 								// avoid undefined behavior
-								JSON_THROW(out_of_range::create(401, "array index " + std::to_string(idx) + " is out of range"));
+								JSON_THROW(out_of_range::create(401, "array index " + std::to_wstring(idx) + " is out of range"));
 							}
 							else
 							{
@@ -13930,8 +13920,8 @@ namespace nlohmann
 			for (const auto& val : json_patch)
 			{
 				// wrapper to get a value for an operation
-				const auto get_value = [&val](const std::string & op,
-					const std::string & member,
+				const auto get_value = [&val](const std::wstring & op,
+					const std::wstring & member,
 					bool string_type) -> basic_json&
 				{
 					// find value
@@ -13963,8 +13953,8 @@ namespace nlohmann
 				}
 
 				// collect mandatory members
-				const std::string op = get_value("op", "op", true);
-				const std::string path = get_value(op, "path", true);
+				const std::wstring op = get_value("op", "op", true);
+				const std::wstring path = get_value(op, "path", true);
 				json_pointer ptr(path);
 
 				switch (get_op(op))
@@ -13990,7 +13980,7 @@ namespace nlohmann
 
 				case patch_operations::move:
 				{
-					const std::string from_path = get_value("move", "from", true);
+					const std::wstring from_path = get_value("move", "from", true);
 					json_pointer from_ptr(from_path);
 
 					// the "from" location must exist - use at()
@@ -14007,7 +13997,7 @@ namespace nlohmann
 
 				case patch_operations::copy:
 				{
-					const std::string from_path = get_value("copy", "from", true);
+					const std::wstring from_path = get_value("copy", "from", true);
 					const json_pointer from_ptr(from_path);
 
 					// the "from" location must exist - use at()
@@ -14083,7 +14073,7 @@ namespace nlohmann
 		@since version 2.0.0
 		*/
 		static basic_json diff(const basic_json& source, const basic_json& target,
-			const std::string& path = "")
+			const std::wstring& path = "")
 		{
 			// the patch
 			basic_json result(value_t::array);
@@ -14113,7 +14103,7 @@ namespace nlohmann
 					while (i < source.size() and i < target.size())
 					{
 						// recursive call to compare array values at index i
-						auto temp_diff = diff(source[i], target[i], path + "/" + std::to_string(i));
+						auto temp_diff = diff(source[i], target[i], path + "/" + std::to_wstring(i));
 						result.insert(result.end(), temp_diff.begin(), temp_diff.end());
 						++i;
 					}
@@ -14130,7 +14120,7 @@ namespace nlohmann
 						result.insert(result.begin() + end_index, object(
 						{
 							{ "op", "remove" },
-							{ "path", path + "/" + std::to_string(i) }
+							{ "path", path + "/" + std::to_wstring(i) }
 						}));
 						++i;
 					}
@@ -14141,7 +14131,7 @@ namespace nlohmann
 						result.push_back(
 						{
 							{ "op", "add" },
-							{ "path", path + "/" + std::to_string(i) },
+							{ "path", path + "/" + std::to_wstring(i) },
 							{ "value", target[i] }
 						});
 						++i;
@@ -14304,7 +14294,7 @@ namespace nlohmann
 				// check if reference token is a number
 				const bool nums =
 					std::all_of(reference_token.begin(), reference_token.end(),
-						[](const char x)
+						[](const wchar_t x)
 				{
 					return (x >= '0' and x <= '9');
 				});
@@ -14385,7 +14375,7 @@ namespace nlohmann
 				{
 					// "-" always fails the range check
 					JSON_THROW(detail::out_of_range::create(402,
-						"array index '-' (" + std::to_string(ptr->m_value.array->size()) +
+						"array index '-' (" + std::to_wstring(ptr->m_value.array->size()) +
 						") is out of range"));
 				}
 
@@ -14439,7 +14429,7 @@ namespace nlohmann
 				{
 					// "-" cannot be used for const access
 					JSON_THROW(detail::out_of_range::create(402,
-						"array index '-' (" + std::to_string(ptr->m_value.array->size()) +
+						"array index '-' (" + std::to_wstring(ptr->m_value.array->size()) +
 						") is out of range"));
 				}
 
@@ -14494,7 +14484,7 @@ namespace nlohmann
 				{
 					// "-" always fails the range check
 					JSON_THROW(detail::out_of_range::create(402,
-						"array index '-' (" + std::to_string(ptr->m_value.array->size()) +
+						"array index '-' (" + std::to_wstring(ptr->m_value.array->size()) +
 						") is out of range"));
 				}
 
@@ -14527,7 +14517,7 @@ namespace nlohmann
 	}
 
 	NLOHMANN_BASIC_JSON_TPL_DECLARATION
-		void json_pointer::flatten(const std::string& reference_string,
+		void json_pointer::flatten(const std::wstring& reference_string,
 			const NLOHMANN_BASIC_JSON_TPL& value,
 			NLOHMANN_BASIC_JSON_TPL& result)
 	{
@@ -14545,7 +14535,7 @@ namespace nlohmann
 				// iterate array and use index as reference string
 				for (std::size_t i = 0; i < value.m_value.array->size(); ++i)
 				{
-					flatten(reference_string + "/" + std::to_string(i),
+					flatten(reference_string + "/" + std::to_wstring(i),
 						value.m_value.array->operator[](i), result);
 				}
 			}
@@ -14691,7 +14681,7 @@ namespace std
 
   @since version 1.0.0
   */
-inline nlohmann::json operator "" _json(const char* s, std::size_t n)
+inline nlohmann::json operator "" _json(const wchar_t* s, std::size_t n)
 {
 	return nlohmann::json::parse(s, s + n);
 }
@@ -14709,9 +14699,9 @@ object if no parse error occurred.
 
 @since version 2.0.0
 */
-inline nlohmann::json::json_pointer operator "" _json_pointer(const char* s, std::size_t n)
+inline nlohmann::json::json_pointer operator "" _json_pointer(const wchar_t* s, std::size_t n)
 {
-	return nlohmann::json::json_pointer(std::string(s, n));
+	return nlohmann::json::json_pointer(std::wstring(s, n));
 }
 
 // restore GCC/clang diagnostic settings
@@ -14732,8 +14722,4 @@ inline nlohmann::json::json_pointer operator "" _json_pointer(const char* s, std
 #undef NLOHMANN_BASIC_JSON_TPL_DECLARATION
 #undef NLOHMANN_BASIC_JSON_TPL
 
-using json = nlohmann::json;
-
 #endif
-
-#pragma warning ( pop )

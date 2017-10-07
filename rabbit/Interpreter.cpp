@@ -17,6 +17,6 @@ InterpretationResult Interpreter::Interpret(ConstRef<ResizableArray<class Lexeme
 	(aLexedCode);
 
 	InterpretationResult result;
-	result.ErrorMessage = L"Compiler Not Implemented";
+	result.ErrorMessage = StringData(L"Compiler Not Implemented");
 	return result;
 }

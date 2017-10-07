@@ -1,0 +1,18 @@
+// ^-pointers are GCd and scanning data is generated at compile time through reflection
+class LongLastingObject
+{
+    SomethingTemporary ^ ptr;
+}
+
+// // These objects are created using gcnew:
+// T ^ obj = gcnew T(); // OK
+// // Therefore, this would be an error:
+// // T ^ obj = new T(); // ERROR
+// // As would assigning a gcpointer to a non-gc pointer:
+// // T * ptr = gcnew T(); // ERROR
+
+// A GC sweep can occur at any GC memory allocation and will temporarily suspend all threads while it occurs
+
+// GC objects may not be passed to C++ except through a rbt::GC<T> wrapper which through the use of reference counting keeps the object alive; it could also theoretically keep reporting instances of itself to the GC system as it gets copied around
+
+// The only time GC objects could theoretically be passed as non-gc pointers is to pure functions as their changes have no way to outlive their parent, although there is little to no point in allowing this as it would initially seem weird and arbitrary to most people and it's benefits could easily be automated through optimizations

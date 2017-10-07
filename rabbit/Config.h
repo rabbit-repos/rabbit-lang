@@ -8,7 +8,10 @@ class Config
 {
 public:
 	Config();
+	Config(RValue<Config> aMove);
 	~Config() { }
+
+	Ref<Config> operator=(RValue<Config> aMove);
 
 	void OpenProject(ConstRef<String> aPath);
 

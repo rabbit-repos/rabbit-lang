@@ -7,16 +7,18 @@ class List
 public:
 	List();
 	List(Const<i32> aLength, Const<bool> aClearMemory = true);
-	List(ConstRef<List> aOther);
+	explicit List(ConstRef<List> aOther);
 	List(RValue<List> aOther);
 	~List();
 
-	Ref<List> operator=(ConstRef<List> aOther);
+	Ref<List> operator=(ConstRef<List> aOther) = delete;
 	Ref<List> operator=(RValue<List> aOther);
 
 	void Add(ConstRef<T> aItem);
+	void Add(RValue<T> aItem);
 
 	void RemoveAtIndex(Const<i32> aIndex);
+	void Clear();
 
 	i32 Size() const;
 	i32 Capacity() const;
@@ -33,29 +35,23 @@ public:
 
 private:
 	ResizableArray<T> myData;
-
-	// TODO: Store initial X items on "stack", like so:
-	// Array<T, N> myStackCache;
-
-	i32 myLength;
+	i32 mySize;
 };
 
 template <typename T>
 Ref<List<T>> List<T>::operator=(RValue<List> aOther)
 {
 	myData = std::move(aOther.myData);
-	myLength = aOther.myLength;
-	aOther.myLength = 0;
+	mySize = aOther.mySize;
+	aOther.mySize = 0;
 	return *this;
 }
 
-template <typename T>
-Ref<List<T>> List<T>::operator=(ConstRef<List> aOther)
-{
-	myData = aOther.myData;
-	myLength = aOther.myLength;
-	return *this;
-}
+// template <typename T>
+// Ref<List<T>> List<T>::operator=(ConstRef<List> aOther)
+// {
+// 	return *this;
+// }
 
 template <typename T>
 List<T>::List(RValue<List> aOther)
@@ -66,9 +62,9 @@ List<T>::List(RValue<List> aOther)
 
 template <typename T>
 List<T>::List(ConstRef<List> aOther)
-	: List()
 {
-	*this = aOther;
+	myData = ResizableArray<T>(aOther.myData);
+	mySize = aOther.mySize;
 }
 
 template <typename T>
@@ -104,7 +100,7 @@ void List<T>::Resize(Const<i32> aLength, Const<bool> aClearMemory /*= true*/)
 #endif
 
 	myData.Resize(aLength, aClearMemory);
-	myLength = aLength;
+	mySize = aLength;
 }
 
 template <typename T>
@@ -122,38 +118,54 @@ template <typename T>
 List<T>::List(Const<i32> aLength, Const<bool> aClearMemory /*= true*/)
 	: myData(aLength, aClearMemory)
 {
-	myLength = 0;
+	mySize = 0;
 }
 
 template <typename T>
 void List<T>::RemoveAtIndex(Const<i32> aIndex)
 {
 #ifdef _DEBUG
-	if (myLength <= 0)
+	if (mySize <= 0)
 		abort();
 #endif
 
-	for (size i = aIndex + 1; i < myLength; ++i)
+	for (size i = aIndex + 1; i < mySize; ++i)
 		std::move(myData[i], myData[i - 1]);
 	
-	--myLength;
+	--mySize;
 
-	new (&myData[myLength]) T();
+	new (&myData[mySize]) T();
+}
+
+template <typename T>
+void List<T>::Clear()
+{
+	myData.Reset();
+	mySize = 0;
 }
 
 template <typename T>
 void List<T>::Add(ConstRef<T> aItem)
 {
-	myLength++;
-	if (myLength >= Capacity())
+	mySize++;
+	if (mySize >= Capacity())
 		Reserve(Max(8, Capacity() * 2));
-	myData[myLength - 1] = aItem;
+	myData[mySize - 1] = aItem;
+}
+
+template <typename T>
+void List<T>::Add(RValue<T> aItem)
+{
+	mySize++;
+	if (mySize >= Capacity())
+		Reserve(Max(8, Capacity() * 2));
+	myData[mySize - 1] = std::move(aItem);
 }
 
 template <typename T>
 List<T>::List()
 {
-	myLength = 0;
+	mySize = 0;
 }
 
 template <typename T>
@@ -161,13 +173,13 @@ List<T>::~List()
 {
 	for (i32 i = 0; i < Size(); ++i)
 		myData[i].~T();
-	myLength = 0;
+	mySize = 0;
 }
 
 template <typename T>
 i32 List<T>::Size() const
 {
-	return myLength;
+	return mySize;
 }
 
 template <typename T>
@@ -184,5 +196,5 @@ void List<T>::SetLength(Const<i32> aLength)
 		abort();
 #endif
 
-	myLength = aLength;
+	mySize = aLength;
 }

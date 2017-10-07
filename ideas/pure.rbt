@@ -1,0 +1,7 @@
+
+// Functions may be marked as pure, when they are they may only read data and call other pure functions effectively making them guaranteed not to modify the program state
+// Because pure functions can only call other pure functions they may not call C++ code
+void Test() pure
+{
+
+}

@@ -1,0 +1,16 @@
+// C++/C headers can be included using the cinclude compiler command, <*> looks through a list of include directories included in the project file while "*" works relatively to the directory of the file we are currently parsing 
+#cinclude <iostream>
+#cinclude <string>
+
+void TestScope()
+{
+    // C++ symbols always appear under the cpp namespace
+    cpp::std::cout << cpp::std::string("Hello World!") << cpp::std::endl;
+
+    // If we're doing the "using" idea this is instead possible:
+    // using std = cpp::std;
+    // std::cout << std::string("Hello World!") << std::endl;
+
+    // In reality rabbit symbols live in their own namespace while c++ ones do not, in generated and user created C++ code all rabbit symbols can be found under the rbt namespace
+    // This makes accidental name collisions accross libraries written in the two different languages next to impossible
+}

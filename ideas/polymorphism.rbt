@@ -1,0 +1,20 @@
+
+class Base
+{
+    abstract void Test();
+}
+
+// // Abstract classes may not be instantiated but may be pointed to
+// Base b; // ERROR
+// Base * b; // OK
+
+// Should inheritance be allowed from non-polymorphic classes?
+class Derived : Base
+{
+    // Final should also be implemented
+    void Test() override
+}
+
+// // When the type is known no vtable lookup should occur
+// Derived d;
+// d.Test();

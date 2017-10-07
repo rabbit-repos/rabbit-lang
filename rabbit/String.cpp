@@ -127,6 +127,16 @@ bool String::FindLast(Const<Char> aChar, Out<i32> aIndex, Const<i32> aBeginAt /*
 	return false;
 }
 
+bool String::CopyTo(Ptr<Char> aData, Const<i32> aLength) const
+{
+	if (myLength + 1 >= aLength)
+		return false;
+
+	memcpy(aData, myData, myLength * sizeof Char);
+	aData[myLength] = L'\0';
+	return true;
+}
+
 String::~String()
 {
 #ifdef _DEBUG

@@ -1,46 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?> 
 <AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
   <Type Name="String">
-    <DisplayString>{myData,[myLength]su}[{myLength}]</DisplayString>
+    <DisplayString>{myData,[mySize]su}[{mySize}]</DisplayString>
     <StringView>myData,[myLength]</StringView>
 
     <Expand>
       <Synthetic Name="String">
-        <DisplayString>{myData,[myLength]su}[{myLength}]</DisplayString>
-        <StringView>myData,[myLength]</StringView>
+        <DisplayString>{myData,[mySize]su}[{mySize}]</DisplayString>
+        <StringView>myData,[mySize]</StringView>
       </Synthetic>
-      <Item Name="Length">myLength</Item>
+      <Item Name="Length">mySize</Item>
       <Item Name="Data Source">*myOwner</Item>
     </Expand>
   </Type>
 
   <Type Name="StringData">
-    <DisplayString>{myData.myData.myData.myData,[myData.myLength - 1]su}[{myData.myLength - 1}]</DisplayString>
+    <DisplayString>{myData.myData.myData.myData,[myData.mySize - 1]su}[{myData.mySize - 1}]</DisplayString>
     
     <Expand>
       <Item Name="Data">myData</Item>
-      <Item Name="Length">myData.myLength</Item>
+      <Item Name="Length">myData.mySize</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="List&lt;*&gt;">
+    <DisplayString>{{ Size={mySize} }}</DisplayString>
+    
+    <Expand>
+      <Item Name="[Size]" ExcludeView="simple">mySize</Item>
+      <Item Name="[Capacity]" ExcludeView="simple">myData.mySize</Item>
+      <ArrayItems>
+        <Size>mySize</Size>
+        <ValuePointer>($T1*)myData.myData.myData</ValuePointer>
+      </ArrayItems>
     </Expand>
   </Type>
 
   <Type Name="ResizableArray&lt;*&gt;">
-    <DisplayString>{{ Length = {myLength} }}</DisplayString>
+    <DisplayString>{{ Size = {mySize} }}</DisplayString>
 
     <Expand>
-      <Item Name="Length">myLength</Item>
+      <Item Name="[Size]">mySize</Item>
       
       <ArrayItems>
-        <Size>myLength</Size>
-        <ValuePointer>(T*)myData.myData</ValuePointer>
+        <Size>mySize</Size>
+        <ValuePointer>($T1*)myData.myData</ValuePointer>
       </ArrayItems>
     </Expand>
   </Type>
 
   <Type Name="ResizableArrayBase">
-    <DisplayString>{{{myLength} Bytes}}</DisplayString>
+    <DisplayString>{{ Size = {mySize} bytes }}</DisplayString>
 
     <Expand>
-      <Item Name="Address">myData</Item>
+      <Item Name="Address">(void*)myData</Item>
+      <Item Name="Size">mySize</Item>
     </Expand>
   </Type>
 </AutoVisualizer>

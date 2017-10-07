@@ -14,13 +14,22 @@
 #include <fstream>
 #include <iostream>
 #include <xutility>
+#include <type_traits>
+#include <random>
+
+#pragma warning ( push )
+#pragma warning ( disable : 4706 )
 #include "json.h"
+#pragma warning ( pop )
 
 constexpr size_t KiloByte = 1024;
 constexpr size_t MegaByte = KiloByte * 1024;
 constexpr size_t GigaByte = MegaByte * 1024;
 
 #include "Types.h"
+
+using json = nlohmann::json;
+
 #include "ResizableArray.h"
 #include "List.h"
 #include "StringData.h"

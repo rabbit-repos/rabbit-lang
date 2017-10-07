@@ -4,10 +4,28 @@
 #include "String.h"
 #include "ResizableArray.h"
 
+Const<StringData> gDefaultProjectName(L"output");
+Const<StringData> gDefaultProjectType(L"executable");
+constexpr i32 MaxPath = 512;
+
 Config::Config()
 	: myProjectName(), myProjectType(ProjectType::Unknown), myOutputExecutionTime(false), myOutputLexResults(false)
 {
+}
 
+Config::Config(RValue<Config> aMove)
+	: Config()
+{
+	*this = std::move(aMove);
+}
+
+Ref<Config> Config::operator=(RValue<Config> aMove)
+{
+	myProjectName = std::move(aMove.myProjectName);
+	myProjectType = std::move(aMove.myProjectType);
+	myOutputExecutionTime = std::move(aMove.myOutputExecutionTime);
+	myOutputLexResults = std::move(aMove.myOutputLexResults);
+	return *this;
 }
 
 void Config::OpenProject(ConstRef<String> aPath)
@@ -15,7 +33,7 @@ void Config::OpenProject(ConstRef<String> aPath)
 	Const<String> trimmedPath = aPath.Trim();
 
 	std::wstring FilePath;
-
+	
 	if (trimmedPath.EndsWith(L".json"))
 	{
 		FilePath = trimmedPath.ToWideString();
@@ -27,8 +45,8 @@ void Config::OpenProject(ConstRef<String> aPath)
 		abort();
 	}
 
+	std::wifstream file(FilePath, std::ios::in);
 	json document;
-	std::ifstream file(FilePath);
 	file >> document;
 
 	ReadProject(document);
@@ -46,12 +64,12 @@ bool HasValue(ConstRef<json> aNode, ConstRef<String> aProperty);
 void Config::ReadProject(ConstRef<json> aDocument)
 {
 	*this = Config();
-
+	
 	// Project Name
-	myProjectName = ReadValue<StringData>(aDocument, L"projectName", L"output");
+	myProjectName = ReadValue<StringData>(aDocument, L"projectName", gDefaultProjectName);
 
 	// Project Type
-	Const<StringData> projectType(ReadValue<StringData>(aDocument, L"projectType", L"executable"));
+	Const<StringData> projectType(ReadValue<StringData>(aDocument, L"projectType", gDefaultProjectType));
 	
 	if (String(L"executable").EqualsIgnoreCase(projectType))
 	{
@@ -108,16 +126,16 @@ ConstRef<List<StringData>> Config::GetSourceFiles() const
 template <typename T>
 T ReadValue(ConstRef<json> aNode, ConstRef<String> aProperty, ConstRef<T> aDefault)
 {
-	// PERF: ToASCII will allocate on the heap, would be nice to search without taking a copy (jsfmcpp uses i8 chars)
-	auto it = aNode.find(aProperty.ToASCII());
+	// PERF: ToWideString allocates on the heap, not exactly ideal, would be better to pass in Ptr<Char> with length och null terminated stack allocated one
+	auto it = aNode.find(aProperty.ToWideString());
 	if (it == aNode.end())
-		return aDefault;
+		return T(aDefault);
 	return it->get<T>();
 }
 
 bool HasValue(ConstRef<json> aNode, ConstRef<String> aProperty)
 {
-	// PERF: ToASCII will allocate on the heap, would be nice to search without taking a copy (jsfmcpp uses i8 chars)
-	auto it = aNode.find(aProperty.ToASCII());
+	// PERF: ToWideString allocates on the heap, not exactly ideal, would be better to pass in Ptr<Char> with length och null terminated stack allocated one
+	auto it = aNode.find(aProperty.ToWideString());
 	return it != aNode.end();
 }

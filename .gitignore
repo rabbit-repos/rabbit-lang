@@ -288,3 +288,4 @@ __pycache__/
 *.xsd.cs
 
 !rabbit/rabbit.vcxproj.user
+enc_temp_folder/

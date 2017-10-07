@@ -1,0 +1,2 @@
+When the code tree is parsed and symbols are first started to be resolved you load the number of at the moment unresolvable symbols from the previous compilation of all files and resolve them in order from least unresolvable dependencies to most.
+Although the code tree parsing might be able to solve 

@@ -7,16 +7,18 @@ class StringData
 {
 public:
 	StringData();
-	StringData(ConstPtr<Char> aString);
+	explicit StringData(ConstPtr<Char> aString);
+	explicit StringData(ConstRef<std::wstring> aString);
 	StringData(ConstPtr<Char> aString, Const<i32> aLength);
-	StringData(ConstRef<String> aString);
+	explicit StringData(ConstRef<String> aString);
 	StringData(Const<i32> aExpectedLength);
 	StringData(RValue<StringData> aOther);
-	StringData(ConstRef<StringData> aOther);
+	explicit StringData(ConstRef<StringData> aOther);
 	~StringData();
 
 	Ref<StringData> operator=(RValue<StringData> aOther);
-	Ref<StringData> operator=(ConstRef<StringData> aOther);
+
+	Ref<StringData> operator=(ConstRef<StringData> aOther) = delete;
 
 	static StringData FromASCII(ConstPtr<char> aString);
 
