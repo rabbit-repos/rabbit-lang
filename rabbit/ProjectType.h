@@ -1,6 +1,6 @@
 #pragma once
 
-enum class ProjectType
+enum class ProjectType : u8
 {
 	Unknown,
 	Executable,

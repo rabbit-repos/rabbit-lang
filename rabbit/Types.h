@@ -14,6 +14,8 @@ using u64 = unsigned long long;
 using f32 = float;
 using f64 = double;
 
+using ptrdiff = ptrdiff_t;
+
 template <typename T>
 constexpr T MinOf = std::numeric_limits<T>::min();
 
@@ -48,7 +50,6 @@ template <typename T>
 using Out = Ref<T>;
 
 using size = size_t;
-using byte = char;
 
 // TODO: Maybe move somewhere?
 template <typename T>
@@ -73,34 +74,24 @@ constexpr const T & Max(const T & aValue, const T & aAnotherValue)
 	return (aValue < aAnotherValue) ? aAnotherValue : aValue;
 }
 
+inline Ref<std::wostream> operator<<(Ref<std::wostream> aOut, ConstRef<i8> aValue)
+{
+	aOut << static_cast<i16>(aValue);
+	return aOut;
+}
+inline Ref<std::ostream> operator<<(Ref<std::ostream> aOut, ConstRef<i8> aValue)
+{
+	aOut << static_cast<i16>(aValue);
+	return aOut;
+}
+
 inline Ref<std::wostream> operator<<(Ref<std::wostream> aOut, ConstRef<u8> aValue)
 {
 	aOut << static_cast<u16>(aValue);
 	return aOut;
 }
+
 inline Ref<std::ostream> operator<<(Ref<std::ostream> aOut, ConstRef<u8> aValue)
-{
-	aOut << static_cast<u16>(aValue);
-	return aOut;
-}
-
-inline Ref<std::wostream> operator<<(Ref<std::wostream> aOut, ConstRef<i8> aValue)
-{
-	aOut << static_cast<u16>(aValue);
-	return aOut;
-}
-inline Ref<std::ostream> operator<<(Ref<std::ostream> aOut, ConstRef<i8> aValue)
-{
-	aOut << static_cast<u16>(aValue);
-	return aOut;
-}
-
-inline Ref<std::wostream> operator<<(Ref<std::wostream> aOut, ConstRef<byte> aValue)
-{
-	aOut << static_cast<u16>(aValue);
-	return aOut;
-}
-inline Ref<std::ostream> operator<<(Ref<std::ostream> aOut, ConstRef<byte> aValue)
 {
 	aOut << static_cast<u16>(aValue);
 	return aOut;

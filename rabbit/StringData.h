@@ -9,22 +9,22 @@ public:
 	StringData();
 	explicit StringData(ConstPtr<Char> aString);
 	explicit StringData(ConstRef<std::wstring> aString);
-	StringData(ConstPtr<Char> aString, Const<i32> aLength);
 	explicit StringData(ConstRef<String> aString);
+	StringData(ConstPtr<Char> aString, Const<i32> aLength);
 	StringData(Const<i32> aExpectedLength);
 	StringData(RValue<StringData> aOther);
-	explicit StringData(ConstRef<StringData> aOther);
 	~StringData();
 
 	Ref<StringData> operator=(RValue<StringData> aOther);
 
-	Ref<StringData> operator=(ConstRef<StringData> aOther) = delete;
+	StringData Copy() const;
+
+	// Use Copy() instead
+	StringData(ConstRef<StringData>) = delete;
+	// Use Copy() instead
+	Ref<StringData> operator=(ConstRef<StringData>) = delete;
 
 	static StringData FromASCII(ConstPtr<char> aString);
-
-	// TODO: Test if this can only be reached by literal strings (definition below)
-	// template <size_t N>
-	// MutableStringBlob(const Char aString[N]);
 
 	void Resize(Const<i32> aLength);
 	bool Reserve(Const<i32> aLength);
@@ -41,6 +41,7 @@ public:
 	Ptr<Char> GetAddress();
 	ConstPtr<Char> GetAddress() const;
 
+	void Append(ConstRef<String> aString);
 	void Append(ConstPtr<Char> aString);
 	void Append(ConstPtr<Char> aString, Const<i32> aLength);
 	void AppendChar(Const<Char> aCharacter);

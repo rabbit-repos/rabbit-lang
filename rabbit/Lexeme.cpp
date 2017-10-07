@@ -3,10 +3,8 @@
 
 Lexeme::Lexeme()
 {
-	std::cout << "Lexeme::Lexeme()" << std::endl;
 }
 
 Lexeme::~Lexeme()
 {
-	std::cout << "Lexeme::~Lexeme()" << std::endl;
 }

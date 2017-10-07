@@ -13,9 +13,9 @@ ResizableArrayBase::ResizableArrayBase()
 ResizableArrayBase::ResizableArrayBase(Const<size> aSize, Const<bool> aClearMemory/* = true*/)
 {
 	if (aClearMemory)
-		myData = static_cast<Ptr<byte>>(calloc(1, aSize));
+		myData = static_cast<Ptr<u8>>(calloc(1, aSize));
 	else
-		myData = static_cast<Ptr<byte>>(malloc(aSize));
+		myData = static_cast<Ptr<u8>>(malloc(aSize));
 
 	if (!myData)
 		abort();
@@ -29,19 +29,23 @@ ResizableArrayBase::ResizableArrayBase(RValue<ResizableArrayBase> aOther)
 	*this = std::move(aOther);
 }
 
-ResizableArrayBase::ResizableArrayBase(ConstRef<ResizableArrayBase> aOther)
+ResizableArrayBase ResizableArrayBase::Copy() const
 {
-	if (aOther.myData)
+	ResizableArrayBase copy;
+
+	if (myData)
 	{
-		myData = reinterpret_cast<Ptr<byte>>(malloc(aOther.mySize));
-		if (!myData)
+		copy.myData = reinterpret_cast<Ptr<u8>>(malloc(mySize));
+		if (!copy.myData)
 			abort();
-		memcpy(myData, aOther.myData, aOther.mySize);
+		memcpy(copy.myData, myData, mySize);
 	}
 	else
-		myData = null;
+		copy.myData = null;
 
-	mySize = aOther.mySize;
+	copy.mySize = mySize;
+
+	return copy;
 }
 
 ResizableArrayBase::~ResizableArrayBase()
@@ -54,9 +58,9 @@ void ResizableArrayBase::Resize(Const<size> aSize, Const<bool> aClearMemory/* = 
 	Const<RawPtr> oldData = myData;
 	
 	if (aClearMemory && aSize > mySize)
-		myData = static_cast<Ptr<byte>>(calloc(1, aSize));
+		myData = static_cast<Ptr<u8>>(calloc(1, aSize));
 	else
-		myData = static_cast<Ptr<byte>>(malloc(aSize));
+		myData = static_cast<Ptr<u8>>(malloc(aSize));
 
 	if (!myData)
 		abort();
@@ -70,12 +74,12 @@ void ResizableArrayBase::Resize(Const<size> aSize, Const<bool> aClearMemory/* = 
 	mySize = aSize;
 }
 
-Ptr<byte> ResizableArrayBase::GetAddress()
+Ptr<u8> ResizableArrayBase::GetAddress()
 {
 	return myData;
 }
 
-ConstPtr<byte> ResizableArrayBase::GetAddress() const
+ConstPtr<u8> ResizableArrayBase::GetAddress() const
 {
 	return myData;
 }
@@ -92,11 +96,6 @@ Ref<ResizableArrayBase> ResizableArrayBase::operator=(RValue<ResizableArrayBase>
 
 	return *this;
 }
-
-// Ref<ResizableArrayBase> ResizableArrayBase::operator=(ConstRef<ResizableArrayBase> aOther)
-// {
-// 	return *this;
-// }
 
 size ResizableArrayBase::Size() const
 {

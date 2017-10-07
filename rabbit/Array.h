@@ -7,14 +7,14 @@ class ArrayBase
 public:
 	ArrayBase(Const<bool> aClearMemory = true);
 	
-	Ptr<byte> GetAddress();
-	ConstPtr<byte> GetAddress() const;
+	Ptr<u8> GetAddress();
+	ConstPtr<u8> GetAddress() const;
 
 	constexpr size Count() const;
 	constexpr size SizeInBytes() const;
 
 protected:
-	byte myData[S * N];
+	u8 myData[S * N];
 };
 
 template <size S, size N>
@@ -39,15 +39,15 @@ constexpr size ArrayBase<S, N>::SizeInBytes() const
 }
 
 template <size S, size N>
-Ptr<byte> ArrayBase<S, N>::GetAddress()
+Ptr<u8> ArrayBase<S, N>::GetAddress()
 {
-	return static_cast<Ptr<byte>>(myData);
+	return static_cast<Ptr<u8>>(myData);
 }
 
 template <size S, size N>
-ConstPtr<byte> ArrayBase<S, N>::GetAddress() const
+ConstPtr<u8> ArrayBase<S, N>::GetAddress() const
 {
-	return static_cast<ConstPtr<byte>>(myData);
+	return static_cast<ConstPtr<u8>>(myData);
 }
 
 template <typename T, size N = 1>

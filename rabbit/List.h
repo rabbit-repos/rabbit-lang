@@ -6,16 +6,23 @@ class List
 {
 public:
 	List();
-	List(Const<i32> aLength, Const<bool> aClearMemory = true);
-	explicit List(ConstRef<List> aOther);
-	List(RValue<List> aOther);
+	List(Const<i32> aCapacity);
 	~List();
 
-	Ref<List> operator=(ConstRef<List> aOther) = delete;
+	List(RValue<List> aOther);
 	Ref<List> operator=(RValue<List> aOther);
+
+	// Use Copy() instead
+	List(ConstRef<List> aOther) = delete;
+	// Use Copy() instead
+	Ref<List> operator=(ConstRef<List> aOther) = delete;
+
+	List Copy() const;
 
 	void Add(ConstRef<T> aItem);
 	void Add(RValue<T> aItem);
+
+	void AddRange(ConstPtr<T> aItemList, i32 aNumberOfItems);
 
 	void RemoveAtIndex(Const<i32> aIndex);
 	void Clear();
@@ -24,8 +31,8 @@ public:
 	i32 Capacity() const;
 	
 	void SetLength(Const<i32> aLength);
-	void Resize(Const<i32> aLength, Const<bool> aClearMemory = true);
-	bool Reserve(Const<i32> aLength, Const<bool> aClearMemory = true);
+	void Resize(Const<i32> aLength);
+	bool Reserve(Const<i32> aLength);
 
 	Ptr<T> GetAddress();
 	ConstPtr<T> GetAddress() const;
@@ -39,6 +46,34 @@ private:
 };
 
 template <typename T>
+List<T>::List()
+{
+	mySize = 0;
+}
+
+template <typename T>
+List<T>::List(Const<i32> aCapacity)
+	: myData(aCapacity)
+{
+	mySize = 0;
+}
+
+template <typename T>
+List<T>::~List()
+{
+	for (i32 i = 0; i < Size(); ++i)
+		myData[i].~T();
+	mySize = 0;
+}
+
+template <typename T>
+void List<T>::AddRange(ConstPtr<T> aItemList, i32 aNumberOfItems)
+{
+	for (i32 i = 0; i < aNumberOfItems; ++i)
+		Add(aItemList[i]);
+}
+
+template <typename T>
 Ref<List<T>> List<T>::operator=(RValue<List> aOther)
 {
 	myData = std::move(aOther.myData);
@@ -46,12 +81,6 @@ Ref<List<T>> List<T>::operator=(RValue<List> aOther)
 	aOther.mySize = 0;
 	return *this;
 }
-
-// template <typename T>
-// Ref<List<T>> List<T>::operator=(ConstRef<List> aOther)
-// {
-// 	return *this;
-// }
 
 template <typename T>
 List<T>::List(RValue<List> aOther)
@@ -61,10 +90,12 @@ List<T>::List(RValue<List> aOther)
 }
 
 template <typename T>
-List<T>::List(ConstRef<List> aOther)
+List<T> List<T>::Copy() const
 {
-	myData = ResizableArray<T>(aOther.myData);
-	mySize = aOther.mySize;
+	List list;
+	list.myData = myData.Copy();
+	list.mySize = mySize;
+	return list;
 }
 
 template <typename T>
@@ -92,33 +123,26 @@ ConstPtr<T> List<T>::GetAddress() const
 }
 
 template <typename T>
-void List<T>::Resize(Const<i32> aLength, Const<bool> aClearMemory /*= true*/)
+void List<T>::Resize(Const<i32> aLength)
 {
 #ifdef _DEBUG
 	if (aLength < 0)
 		abort();
 #endif
 
-	myData.Resize(aLength, aClearMemory);
+	myData.Resize(aLength);
 	mySize = aLength;
 }
 
 template <typename T>
-bool List<T>::Reserve(Const<i32> aLength, Const<bool> aClearMemory /*= true*/)
+bool List<T>::Reserve(Const<i32> aLength)
 {
 	if (aLength > Capacity())
 	{
-		myData.Resize(aLength, aClearMemory);
+		myData.Resize(aLength);
 		return true;
 	}
 	return false;
-}
-
-template <typename T>
-List<T>::List(Const<i32> aLength, Const<bool> aClearMemory /*= true*/)
-	: myData(aLength, aClearMemory)
-{
-	mySize = 0;
 }
 
 template <typename T>
@@ -160,20 +184,6 @@ void List<T>::Add(RValue<T> aItem)
 	if (mySize >= Capacity())
 		Reserve(Max(8, Capacity() * 2));
 	myData[mySize - 1] = std::move(aItem);
-}
-
-template <typename T>
-List<T>::List()
-{
-	mySize = 0;
-}
-
-template <typename T>
-List<T>::~List()
-{
-	for (i32 i = 0; i < Size(); ++i)
-		myData[i].~T();
-	mySize = 0;
 }
 
 template <typename T>

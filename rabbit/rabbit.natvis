@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?> 
 <AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
   <Type Name="String">
-    <DisplayString>{myData,[mySize]su}[{mySize}]</DisplayString>
+    <DisplayString>"{myData,[mySize]sb}"[{mySize}]</DisplayString>
     <StringView>myData,[myLength]</StringView>
 
     <Expand>
@@ -15,7 +15,7 @@
   </Type>
 
   <Type Name="StringData">
-    <DisplayString>{myData.myData.myData.myData,[myData.mySize - 1]su}[{myData.mySize - 1}]</DisplayString>
+    <DisplayString>"{myData.myData.myData.myData,[myData.mySize - 1]sb}"[{myData.mySize - 1}]</DisplayString>
     
     <Expand>
       <Item Name="Data">myData</Item>
@@ -24,7 +24,7 @@
   </Type>
 
   <Type Name="List&lt;*&gt;">
-    <DisplayString>{{ Size={mySize} }}</DisplayString>
+    <DisplayString>[List&lt;{"$T1",sb}&gt;] {{ Size={mySize} }}</DisplayString>
     
     <Expand>
       <Item Name="[Size]" ExcludeView="simple">mySize</Item>
@@ -37,7 +37,7 @@
   </Type>
 
   <Type Name="ResizableArray&lt;*&gt;">
-    <DisplayString>{{ Size = {mySize} }}</DisplayString>
+    <DisplayString>[ResizableArray&lt;{"$T1",sb}&gt;] {{ Size = {mySize} }}</DisplayString>
 
     <Expand>
       <Item Name="[Size]">mySize</Item>
@@ -50,11 +50,22 @@
   </Type>
 
   <Type Name="ResizableArrayBase">
-    <DisplayString>{{ Size = {mySize} bytes }}</DisplayString>
+    <DisplayString>[Raw Data] {{ Size = {mySize} bytes }}</DisplayString>
 
     <Expand>
       <Item Name="Address">(void*)myData</Item>
       <Item Name="Size">mySize</Item>
+    </Expand>
+  </Type>
+  
+  <Type Name="VirtualList">
+    <DisplayString>{{ Size = {myObjects.mySize} }}</DisplayString>
+
+    <Expand>
+      <IndexListItems>
+        <Size>myObjects.mySize</Size>
+        <ValueNode>*myObjects[$i],na</ValueNode>
+      </IndexListItems>
     </Expand>
   </Type>
 </AutoVisualizer>

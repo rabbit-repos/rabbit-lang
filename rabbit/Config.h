@@ -1,26 +1,21 @@
 #pragma once
 #include "ProjectType.h"
-#include "StringData.h"
-
-class String;
 
 class Config
 {
 public:
 	Config();
-	Config(RValue<Config> aMove);
+	Config(ConstRef<String> aPath);
 	~Config() { }
 
 	Ref<Config> operator=(RValue<Config> aMove);
 
-	void OpenProject(ConstRef<String> aPath);
+	ConstRef<StringData> GetProjectName() const { return myProjectName; }
+	ProjectType GetProjectType() const { return myProjectType; }
+	bool GetOutputExecutionTime() const { return myOutputExecutionTime; }
+	bool GetOutputLexResults() const { return myOutputLexResults; }
 
-	String GetProjectName() const;
-	ProjectType GetProjectType() const;
-	bool GetOutputExecutionTime() const;
-	bool GetOutputLexResults() const;
-
-	ConstRef<List<StringData>> GetSourceFiles() const;
+	ConstRef<List<StringData>> GetSourceFiles() const { return mySourceFiles; }
 
 private:
 	void ReadProject(ConstRef<json> aDocument);

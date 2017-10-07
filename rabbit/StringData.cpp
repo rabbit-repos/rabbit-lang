@@ -11,7 +11,7 @@ StringData::StringData()
 
 StringData::StringData(ConstPtr<Char> aString)
 {
-	myData.Resize(static_cast<i32>(wcslen(aString) + 1), false);
+	myData.Resize(static_cast<i32>(wcslen(aString) + 1));
 	memcpy(myData.GetAddress(), aString, (Size() + 1) * sizeof Char);
 #ifdef _DEBUG
 	myNumReferences = 0;
@@ -24,7 +24,7 @@ StringData::StringData(ConstRef<std::wstring> aString)
 }
 
 StringData::StringData(Const<i32> aExpectedLength)
-	: myData(aExpectedLength + 1, false)
+	: myData(aExpectedLength + 1)
 {
 	myData[0] = L'\0';
 #ifdef _DEBUG
@@ -38,19 +38,10 @@ StringData::StringData(RValue<StringData> aOther)
 	*this = std::move(aOther);
 }
 
-StringData::StringData(ConstRef<StringData> aOther)
-	: StringData()
-{
-	myData = List<Char>(aOther.myData);
-#ifdef _DEBUG
-	myNumReferences = 0;
-#endif
-}
-
 StringData::StringData(ConstPtr<Char> aString, Const<i32> aLength)
-	: myData(aLength + 1, false)
+	: myData(aLength + 1)
 {
-	myData.Resize(aLength + 1, false);
+	myData.Resize(aLength + 1);
 	memcpy(myData.GetAddress(), aString, aLength * sizeof Char);
 	myData[aLength] = L'\0';
 #ifdef _DEBUG
@@ -59,9 +50,9 @@ StringData::StringData(ConstPtr<Char> aString, Const<i32> aLength)
 }
 
 StringData::StringData(ConstRef<String> aString)
-	: myData(aString.Size() + 1, false)
+	: myData(aString.Size() + 1)
 {
-	myData.Resize(aString.Size() + 1, false);
+	myData.Resize(aString.Size() + 1);
 	memcpy(myData.GetAddress(), aString.GetAddress(), Size() * sizeof Char);
 	myData[Size()] = L'\0';
 #ifdef _DEBUG
@@ -97,14 +88,15 @@ Ref<StringData> StringData::operator=(RValue<StringData> aOther)
 	return *this;
 }
 
-// Ref<StringData> StringData::operator=(ConstRef<StringData> aOther)
-// {
-// 	myData = aOther.myData;
-// #ifdef _DEBUG
-// 	myNumReferences = 0;
-// #endif
-// 	return *this;
-// }
+StringData StringData::Copy() const
+{
+	StringData data;
+	data.myData = myData.Copy();
+#ifdef _DEBUG
+	data.myNumReferences = 0;
+#endif
+	return data;
+}
 
 StringData StringData::FromASCII(ConstPtr<char> aString)
 {
@@ -180,7 +172,7 @@ ConstPtr<Char> StringData::GetAddress() const
 void StringData::Append(ConstPtr<Char> aString, Const<i32> aLength)
 {
 	CheckForReferences();
-	MakeSizeFor(Size() + aLength);
+	MakeSizeFor(aLength);
 
 	memcpy(&myData[Size()], aString, sizeof Char * aLength);
 	myData.SetLength(Size() + aLength);
@@ -192,10 +184,16 @@ void StringData::Append(ConstPtr<Char> aString)
 	Append(aString, static_cast<i32>(wcslen(aString)));
 }
 
-void StringData::MakeSizeFor(Const<i32> aLength)
+void StringData::Append(ConstRef<String> aString)
 {
+	Append(aString.GetAddress(), aString.Size());
+}
+
+void StringData::MakeSizeFor(Const<i32> aAdditionalData)
+{
+	Const<i32> desiredSize = Size() + aAdditionalData;
 	i32 capacity = Max(32, Capacity());
-	while (capacity < aLength)
+	while (desiredSize >= capacity)
 		capacity *= 2;
 	if (capacity != Capacity())
 		Reserve(capacity);
@@ -216,7 +214,7 @@ void StringData::AppendChar(Const<Char> aCharacter)
 {
 	CheckForReferences();
 
-	MakeSizeFor(Size() + 1);
+	MakeSizeFor(1);
 	myData.Add(aCharacter);
 	myData[myData.Size()] = L'\0';
 }

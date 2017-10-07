@@ -6,5 +6,5 @@ public:
 	Lexeme();
 	virtual ~Lexeme();
 
-	virtual void Test() = 0;
+	virtual void AppendData(Ref<List<u8>> aData) = 0;
 };

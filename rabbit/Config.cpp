@@ -4,36 +4,42 @@
 #include "String.h"
 #include "ResizableArray.h"
 
-Const<StringData> gDefaultProjectName(L"output");
-Const<StringData> gDefaultProjectType(L"executable");
-constexpr i32 MaxPath = 512;
+json ReadFile(ConstRef<String> aPath);
+Const<json> gDefaultConfig = ReadFile(L"default-project.json");
 
 Config::Config()
-	: myProjectName(), myProjectType(ProjectType::Unknown), myOutputExecutionTime(false), myOutputLexResults(false)
 {
+	ReadProject(gDefaultConfig);
 }
 
-Config::Config(RValue<Config> aMove)
-	: Config()
+Config::Config(ConstRef<String> aPath)
 {
-	*this = std::move(aMove);
+	ReadProject(ReadFile(aPath));
 }
+
+#define RBT_MOVE(p) p = std::move(aMove.p)
 
 Ref<Config> Config::operator=(RValue<Config> aMove)
 {
-	myProjectName = std::move(aMove.myProjectName);
-	myProjectType = std::move(aMove.myProjectType);
-	myOutputExecutionTime = std::move(aMove.myOutputExecutionTime);
-	myOutputLexResults = std::move(aMove.myOutputLexResults);
+	RBT_MOVE(mySourceFiles);
+	RBT_MOVE(myProjectName);
+	RBT_MOVE(myProjectType);
+	RBT_MOVE(myOutputExecutionTime);
+	RBT_MOVE(myOutputLexResults);
 	return *this;
 }
 
-void Config::OpenProject(ConstRef<String> aPath)
+#undef RBT_MOVE
+
+template <typename T>
+bool ReadValue(ConstRef<json> aNode, ConstRef<String> aProperty, Out<T> aValueToSet);
+
+json ReadFile(ConstRef<String> aPath)
 {
 	Const<String> trimmedPath = aPath.Trim();
 
 	std::wstring FilePath;
-	
+
 	if (trimmedPath.EndsWith(L".json"))
 	{
 		FilePath = trimmedPath.ToWideString();
@@ -48,94 +54,49 @@ void Config::OpenProject(ConstRef<String> aPath)
 	std::wifstream file(FilePath, std::ios::in);
 	json document;
 	file >> document;
-
-	ReadProject(document);
+	return document;
 }
-
-String Config::GetProjectName() const
-{
-	return myProjectName;
-}
-
-template <typename T>
-T ReadValue(ConstRef<json> aNode, ConstRef<String> aProperty, ConstRef<T> aDefault);
-bool HasValue(ConstRef<json> aNode, ConstRef<String> aProperty);
 
 void Config::ReadProject(ConstRef<json> aDocument)
 {
-	*this = Config();
+	ReadValue<StringData>(aDocument, L"projectName", myProjectName);
 	
-	// Project Name
-	myProjectName = ReadValue<StringData>(aDocument, L"projectName", gDefaultProjectName);
-
 	// Project Type
-	Const<StringData> projectType(ReadValue<StringData>(aDocument, L"projectType", gDefaultProjectType));
-	
-	if (String(L"executable").EqualsIgnoreCase(projectType))
+	StringData projectType;
+	if (ReadValue<StringData>(aDocument, L"projectType", projectType))
 	{
-		myProjectType = ProjectType::Executable;
-	}
-	else if (String(L"library").EqualsIgnoreCase(projectType))
-	{
-		myProjectType = ProjectType::Library;
+		if (String(L"executable").EqualsIgnoreCase(projectType))
+			myProjectType = ProjectType::Executable;
+		else if (String(L"library").EqualsIgnoreCase(projectType))
+			myProjectType = ProjectType::Library;
+		else
+			myProjectType = ProjectType::Unknown;
 	}
 	else
-	{
-		myProjectType = ProjectType::Unknown;
-	}
+		myProjectType = ProjectType::Executable;
 
-	// Output Execution Time
-	myOutputExecutionTime = ReadValue<bool>(aDocument, L"outputExecutionTime", false);
+	ReadValue<bool>(aDocument, L"outputExecutionTime", myOutputExecutionTime);
+	ReadValue<bool>(aDocument, L"outputLexResult", myOutputLexResults);
 
-	// Output Lex Results
-	myOutputLexResults = ReadValue<bool>(aDocument, L"outputLexResult", false);
-
-	// Source Files
-	if (HasValue(aDocument, L"sourceFiles"))
-	{
-		json::array_t empty;
-		json::array_t sourceFiles = ReadValue<json::array_t>(aDocument, L"sourceFiles", empty);
-
+	json::array_t sourceFiles;
+	if (ReadValue<json::array_t>(aDocument, L"sourceFiles", sourceFiles))
 		for (ConstRef<json> node : sourceFiles)
-		{
 			mySourceFiles.Add(node.get<StringData>());
-		}
-	}
-}
-
-ProjectType Config::GetProjectType() const
-{
-	return myProjectType;
-}
-
-bool Config::GetOutputExecutionTime() const
-{
-	return myOutputExecutionTime;
-}
-
-bool Config::GetOutputLexResults() const
-{
-	return myOutputLexResults;
-}
-
-ConstRef<List<StringData>> Config::GetSourceFiles() const
-{
-	return mySourceFiles;
 }
 
 template <typename T>
-T ReadValue(ConstRef<json> aNode, ConstRef<String> aProperty, ConstRef<T> aDefault)
+bool ReadValue(ConstRef<json> aNode, ConstRef<String> aProperty, Out<T> aValueToSet)
 {
-	// PERF: ToWideString allocates on the heap, not exactly ideal, would be better to pass in Ptr<Char> with length och null terminated stack allocated one
+	// PERF: ToWideString allocates on the heap, not exactly ideal, would be better to pass in Ptr<Char> with length and null terminated stack allocated one
 	auto it = aNode.find(aProperty.ToWideString());
 	if (it == aNode.end())
-		return T(aDefault);
-	return it->get<T>();
-}
+	{
+		if (&aNode == &gDefaultConfig)
+			abort();
 
-bool HasValue(ConstRef<json> aNode, ConstRef<String> aProperty)
-{
-	// PERF: ToWideString allocates on the heap, not exactly ideal, would be better to pass in Ptr<Char> with length och null terminated stack allocated one
-	auto it = aNode.find(aProperty.ToWideString());
-	return it != aNode.end();
+		return ReadValue(gDefaultConfig, aProperty, aValueToSet);
+	}
+
+	aValueToSet = it->get<T>();
+	return true;
 }

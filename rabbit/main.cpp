@@ -9,20 +9,20 @@
 
 void Randomize(Const<RawPtr> aData, Const<size> aSize)
 {
-	std::random_device device;
-	Const<std::uniform_int_distribution<size>> d(MinOf<size>, MaxOf<size>);
+	static std::random_device device;
+	static Const<std::uniform_int_distribution<size>> d(MinOf<size>, MaxOf<size>);
 
 	Const<size> num = aSize / sizeof size;
 	for (size i = 0; i < num; ++i)
 	{
 		Const<size> value = d(device);
-		memcpy(&reinterpret_cast<Ptr<byte>>(aData)[i * sizeof size], &value, sizeof value);
+		memcpy(&reinterpret_cast<Ptr<u8>>(aData)[i * sizeof size], &value, sizeof value);
 	}
 
 	Const<size> value = d(device);
 	size remaining = aSize - num * sizeof size;
 	if (remaining > 0)
-		memcpy(&reinterpret_cast<Ptr<byte>>(aData)[aSize - remaining], &value, remaining);
+		memcpy(&reinterpret_cast<Ptr<u8>>(aData)[aSize - remaining], &value, remaining);
 }
 
 #define TESTCLASS(CNAME, NumData) class CNAME : public Lexeme				\
@@ -30,25 +30,34 @@ void Randomize(Const<RawPtr> aData, Const<size> aSize)
 public:																		\
 	CNAME() : myData(NumData)												\
 	{																		\
-		std::cout << #CNAME ## "::" ## #CNAME ## "()" << std::endl;			\
 		Randomize(myData.GetAddress(), myData.SizeInBytes());				\
 	}																		\
 																			\
-	CNAME(RValue<CNAME> aMove) : myData(std::move(aMove.myData)) { } 		\
-																			\
-	virtual void Test() override											\
+	CNAME(ConstRef<CNAME> aCopy) : myData(aCopy.myData.Copy()) { }			\
+	Ref<CNAME> operator=(ConstRef<CNAME> aCopy)								\
 	{																		\
-		std::cout << #CNAME ## "::Test()" << std::endl;						\
+		myData = aCopy.myData.Copy();										\
+		return *this;														\
+	}																		\
+																			\
+	CNAME(RValue<CNAME> aMove) : myData(std::move(aMove.myData)) { } 		\
+	Ref<CNAME> operator=(RValue<CNAME> aCopy)								\
+	{																		\
+		myData = std::move(aCopy.myData);									\
+		return *this;														\
+	}																		\
+																			\
+	virtual void AppendData(Ref<List<u8>> aData) override					\
+	{																		\
+		aData.AddRange(myData.GetAddress(), (i32)myData.Size());			\
 	}																		\
 																			\
 	~CNAME()																\
 	{																		\
-		std::cout << #CNAME ## "::~" ## #CNAME ## "()" << std::endl;		\
 	}																		\
 																			\
 private:																	\
-	ResizableArray<byte> myData;											\
-	void * someDataIOwn;													\
+	ResizableArray<u8> myData;												\
 };
 
 TESTCLASS(A, 23)
@@ -62,73 +71,108 @@ TESTCLASS(H, 20)
 TESTCLASS(I, 40)
 TESTCLASS(J, 92)
 
-class Name
-{
-public:
-	Name(StringData aName)
-	{
-		data = std::move(aName);
-	}
-
-private:
-	StringData data;
-};
+// size hashData()
+// {
+// 
+// }
 
 i32 main(Const<i32> aArgNum, ConstPtr<char> aArgs[])
 {
-	Name one(StringData(L"One"));
-	Name two = one;
+	{
+		std::default_random_engine device;
+		device.seed(0);
+		Const<std::uniform_int_distribution<size>> d(0, 9);
 
+		for (;;)
+		{
+			std::vector<Lexeme*> vector;
+			VirtualList list;
 
-	// {
-	// 	LexedCode list;
-	// 
-	// 	std::random_device device;
-	// 	Const<std::uniform_int_distribution<size>> d(0, 9);
-	// 
-	// 	for (size i = 0; i < 10; ++i)
-	// 	{
-	// 		Const<size> v = d(device);
-	// 		switch (v)
-	// 		{
-	// 		case 0:
-	// 			list.Add(A());
-	// 			break;
-	// 		case 1:
-	// 			list.Add(B());
-	// 			break;
-	// 		case 2:
-	// 			list.Add(C());
-	// 			break;
-	// 		case 3:
-	// 			list.Add(D());
-	// 			break;
-	// 		case 4:
-	// 			list.Add(E());
-	// 			break;
-	// 		case 5:
-	// 			list.Add(F());
-	// 			break;
-	// 		case 6:
-	// 			list.Add(G());
-	// 			break;
-	// 		case 7:
-	// 			list.Add(H());
-	// 			break;
-	// 		case 8:
-	// 			list.Add(I());
-	// 			break;
-	// 		case 9:
-	// 			list.Add(J());
-	// 			break;
-	// 		}
-	// 	}
-	// 
-	// }
-	// 
-	// std::cin.get();
+			for (i32 i = 0; i < 10000; ++i)
+			{
+				Const<size> v = d(device);
+				switch (v)
+				{
+				case 0: {
+					auto * a = new A();
+					list.Add<A>(A(*a));
+					vector.emplace_back(a);
+				} break;
+				case 1: {
+					auto * a = new B();
+					list.Add<B>(B(*a));
+					vector.emplace_back(a);
+				} break;
+				case 2: {
+					auto * a = new C();
+					list.Add<C>(C(*a));
+					vector.emplace_back(a);
+				} break;
+				case 3: {
+					auto * a = new D();
+					list.Add<D>(D(*a));
+					vector.emplace_back(a);
+				} break;
+				case 4: {
+					auto * a = new E();
+					list.Add<E>(E(*a));
+					vector.emplace_back(a);
+				} break;
+				case 5: {
+					auto * a = new F();
+					list.Add<F>(F(*a));
+					vector.emplace_back(a);
+				} break;
+				case 6: {
+					auto * a = new G();
+					list.Add<G>(G(*a));
+					vector.emplace_back(a);
+				} break;
+				case 7: {
+					auto * a = new H();
+					list.Add<H>(H(*a));
+					vector.emplace_back(a);
+				} break;
+				case 8: {
+					auto * a = new I();
+					list.Add<I>(I(*a));
+					vector.emplace_back(a);
+				} break;
+				case 9: {
+					auto * a = new J();
+					list.Add<J>(J(*a));
+					vector.emplace_back(a);
+				} break;
+				}
 
-	std::cout << "Rabbit Language v.0" << std::endl;
+				// std::cout << i << std::endl;
+			}
+
+			List<u8> totalDataControl;
+			List<u8> totalDataVirtual;
+
+			for (size_t i = 0; i < vector.size(); ++i)
+			{
+				vector[i]->AppendData(totalDataControl);
+				delete vector[i];
+			}
+			for (i32 i = 0; i < list.Size(); ++i)
+				list[i]->AppendData(totalDataVirtual);
+
+			if (totalDataControl.Size() != totalDataVirtual.Size())
+				abort();
+			if (memcmp(totalDataControl.GetAddress(), totalDataVirtual.GetAddress(), totalDataControl.Size()) != 0)
+				abort();
+
+			// static i32 i = 0;
+			// std::cout << "it " << ++i << std::endl;
+		}
+	}
+
+	std::cout << "Done" << std::endl;
+	std::cin.get();
+
+	std::cout << "Rabbit Language v0.0" << std::endl;
 
 	if (aArgNum > 1)
 	{
@@ -149,17 +193,15 @@ i32 main(Const<i32> aArgNum, ConstPtr<char> aArgs[])
 				else
 				{
 					std::cout << "Building and running project \"" << aArgs[2] << "\"..." << std::endl;
-					
-					StringData data = StringData::FromASCII(aArgs[2]);
-					String s = data; 
 
-					config.OpenProject(s);
+					StringData projectPath = StringData::FromASCII(aArgs[2]);
+					config = Config(projectPath);
 				}
 			}
 			else
 			{
 				std::cout << "Building and running project in the current directory..." << std::endl;
-				config.OpenProject(StringData::FromASCII(aArgs[0]));
+				config = Config(StringData::FromASCII(aArgs[0]));
 			}
 
 			Lexer lexer(config);
@@ -176,9 +218,9 @@ i32 main(Const<i32> aArgNum, ConstPtr<char> aArgs[])
 			std::cout << "Unknown parameter: " << aArgs[1] << std::endl;
 		}
 	}
-	
+
 	std::cout << "Press Return to quit" << std::endl;
 	std::cin.get();
-	
+
 	return 0;
 }

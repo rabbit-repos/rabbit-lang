@@ -169,7 +169,7 @@
     <ClCompile Include="CharUtility.cpp" />
     <ClCompile Include="Config.cpp" />
     <ClCompile Include="Interpreter.cpp" />
-    <ClCompile Include="LexedCode.cpp" />
+    <ClCompile Include="VirtualList.cpp" />
     <ClCompile Include="Lexeme.cpp" />
     <ClCompile Include="Lexer.cpp" />
     <ClCompile Include="main.cpp" />
@@ -193,7 +193,7 @@
     <ClInclude Include="Interpreter.h" />
     <ClInclude Include="json.h" />
     <ClInclude Include="Array.h" />
-    <ClInclude Include="LexedCode.h" />
+    <ClInclude Include="VirtualList.h" />
     <ClInclude Include="Lexeme.h" />
     <ClInclude Include="Lexer.h" />
     <ClInclude Include="List.h" />
@@ -204,6 +204,7 @@
     <ClInclude Include="StringData.h" />
     <ClInclude Include="SymbolFilter.h" />
     <ClInclude Include="Types.h" />
+    <ClInclude Include="VirtualListHelper.h" />
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="rabbit.natvis" />

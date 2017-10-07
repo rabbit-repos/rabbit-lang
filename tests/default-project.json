@@ -1,0 +1,14 @@
+{
+    "projectName" : "Another Rabbit Project",
+    "projectType" : "executable",
+
+    "outputDirectory" : "bin",
+    "workingDirectory" : "/",
+
+    "outputLexResult" : false,
+    "outputExecutionTime" : false,
+    
+    "sourceFiles" : [
+        "src/**.rbt"
+    ]
+}
