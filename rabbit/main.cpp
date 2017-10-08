@@ -42,13 +42,14 @@ i32 main(Const<i32> aArgNum, ConstPtr<char> aArgs[])
 			}
 
 			Lexer lexer(config);
-			ConstRef<List<StringData>> sourceFiles = config.GetSourceFiles();
-			for (i32 i = 0; i < sourceFiles.Size(); ++i)
-				lexer.LexFile(sourceFiles[i]);
-
-			lexer.LexFile(L"lexing/lexing.rbt");
-
 			Interpreter interpreter(config);
+			LexedCode lexedCode = lexer.LexFile(L"lexing/lexing.rbt");
+			interpreter.Interpret(lexedCode);
+
+			// ConstRef<List<StringData>> sourceFiles = config.GetSourceFiles();
+			// for (i32 i = 0; i < sourceFiles.Size(); ++i)
+			// 	lexer.LexFile(sourceFiles[i]);
+
 		}
 		else
 		{

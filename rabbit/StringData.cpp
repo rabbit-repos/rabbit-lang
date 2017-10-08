@@ -175,7 +175,7 @@ void StringData::Append(ConstPtr<Char> aString, Const<i32> aLength)
 	MakeSizeFor(aLength);
 
 	memcpy(&myData[Size()], aString, sizeof Char * aLength);
-	myData.SetLength(Size() + aLength);
+	myData.SetLength(Size() + aLength + 1);
 	myData[myData.Size()] = L'\0';
 }
 
@@ -191,9 +191,9 @@ void StringData::Append(ConstRef<String> aString)
 
 void StringData::MakeSizeFor(Const<i32> aAdditionalData)
 {
-	Const<i32> desiredSize = Size() + aAdditionalData;
+	Const<i32> desiredSize = Size() + 1 + aAdditionalData;
 	i32 capacity = Max(32, Capacity());
-	while (desiredSize >= capacity)
+	while (desiredSize > capacity)
 		capacity *= 2;
 	if (capacity != Capacity())
 		Reserve(capacity);
@@ -214,9 +214,8 @@ void StringData::AppendChar(Const<Char> aCharacter)
 {
 	CheckForReferences();
 
-	MakeSizeFor(1);
-	myData.Add(aCharacter);
-	myData[myData.Size()] = L'\0';
+	myData.Add(L'\0');
+	myData[Size() - 1] = aCharacter;
 }
 
 std::wostream & operator<<(Ref<std::wostream> aOut, ConstRef<StringData> aString)

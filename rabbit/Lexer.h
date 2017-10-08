@@ -8,7 +8,7 @@ public:
 	Lexer(ConstRef<class Config> aConfig);
 	~Lexer();
 
-	LexedCode LexCode(StringData aCode);
+	LexedCode LexCode(Const<String> aCode);
 	LexedCode LexFile(ConstRef<String> aFilePath);
 
 private:

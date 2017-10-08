@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?> 
 <AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
   <Type Name="String">
-    <DisplayString>"{myData,[mySize]sub}"[{mySize}]</DisplayString>
-    <StringView>myData,[mySize]sb</StringView>
+    <DisplayString>"{&amp;myData[0],[mySize]sub}"[{mySize}]</DisplayString>
+    <StringView>&amp;myData[0],[mySize]sub</StringView>
 
     <Expand>
       <Item Name="Length">mySize</Item>
@@ -20,8 +20,8 @@
       </Synthetic>
       
       <Synthetic Name="String">
-        <DisplayString>"{myData,[mySize]sub}"[{mySize}]</DisplayString>
-        <StringView>myData,[mySize]sub</StringView>
+        <DisplayString>"{&amp;myData[0],[mySize]sub}"[{mySize}]</DisplayString>
+        <StringView>&amp;myData[0],[mySize]sub</StringView>
 
         <Expand>
           <ArrayItems>
@@ -34,8 +34,8 @@
   </Type>
 
   <Type Name="StringData">
-    <DisplayString>"{myData.myData.myData.myData,[myData.mySize - 1]sub}"[{myData.mySize - 1}]</DisplayString>
-    <StringView>myData.myData.myData.myData,[myData.mySize - 1]sub</StringView>
+    <DisplayString>"{&amp;myData[0],[myData.mySize - 1]sub}"[{myData.mySize - 1}]</DisplayString>
+    <StringView>&amp;myData[0],[myData.mySize - 1]sub</StringView>
     
     <Expand>
       <Item Name="Data">myData</Item>
