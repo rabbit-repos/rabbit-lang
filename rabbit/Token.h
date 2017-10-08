@@ -1,10 +1,10 @@
 #pragma once
 
-class Lexeme
+class Token
 {
 public:
-	Lexeme();
-	virtual ~Lexeme();
+	Token();
+	virtual ~Token();
 
 	virtual void AppendData(Ref<List<u8>> aData) = 0;
 };

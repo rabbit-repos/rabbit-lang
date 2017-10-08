@@ -1,14 +1,14 @@
 #pragma once
 
-class LexingContext
+class TokenizerContext
 {
 public:
-	LexingContext(ConstPtr<StringData> aCode);
-	LexingContext(ConstRef<LexingContext>) = delete;
-	LexingContext(RValue<LexingContext>) = delete;
-	Ref<LexingContext> operator=(ConstRef<LexingContext>) = delete;
-	Ref<LexingContext> operator=(RValue<LexingContext>) = delete;
-	~LexingContext();
+	TokenizerContext(ConstPtr<StringData> aCode);
+	TokenizerContext(ConstRef<TokenizerContext>) = delete;
+	TokenizerContext(RValue<TokenizerContext>) = delete;
+	Ref<TokenizerContext> operator=(ConstRef<TokenizerContext>) = delete;
+	Ref<TokenizerContext> operator=(RValue<TokenizerContext>) = delete;
+	~TokenizerContext();
 
 	void AdvanceCursor();
 	void AdvanceCursor(Const<i32> aAmount);
@@ -28,14 +28,14 @@ private:
 	i32 myCursor;
 };
 
-inline Char LexingContext::At() const
+inline Char TokenizerContext::At() const
 {
 	if (myCursor < 0 || myCursor >= myCode->Size())
 		return L'\0';
 	return (*myCode)[myCursor];
 }
 
-inline Char LexingContext::At(Const<i32> aOffset) const
+inline Char TokenizerContext::At(Const<i32> aOffset) const
 {
 	Const<i32> index = myCursor + aOffset;
 	if (index < 0 || index >= myCode->Size())
@@ -43,25 +43,25 @@ inline Char LexingContext::At(Const<i32> aOffset) const
 	return (*myCode)[index];
 }
 
-inline i32 LexingContext::CursorLocation() const
+inline i32 TokenizerContext::CursorLocation() const
 {
 	return myCursor;
 }
 
-inline void LexingContext::AdvanceCursor()
+inline void TokenizerContext::AdvanceCursor()
 {
 	if (!IsAtEnd())
 		++myCursor;
 }
 
-inline void LexingContext::AdvanceCursor(Const<i32> aAmount)
+inline void TokenizerContext::AdvanceCursor(Const<i32> aAmount)
 {
 	myCursor += aAmount;
 	if (myCursor > myCode->Size())
 		myCursor = myCode->Size();
 }
 
-inline bool LexingContext::IsAtEnd() const
+inline bool TokenizerContext::IsAtEnd() const
 {
 	return myCursor >= myCode->Size();
 }

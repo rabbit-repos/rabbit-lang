@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "Interpreter.h"
 #include "Config.h"
-#include "LexedCode.h"
+#include "CodeTokens.h"
 
 Interpreter::Interpreter(ConstRef<Config> aConfiguration)
 {
@@ -12,9 +12,9 @@ Interpreter::~Interpreter()
 {
 }
 
-InterpretationResult Interpreter::Interpret(ConstRef<LexedCode> aLexedCode) const
+InterpretationResult Interpreter::Interpret(ConstRef<CodeTokens> aCodeTokens) const
 {
-	(aLexedCode);
+	(aCodeTokens);
 
 	InterpretationResult result;
 	result.ErrorMessage = StringData(L"Compiler Not Implemented");

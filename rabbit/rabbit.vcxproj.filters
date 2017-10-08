@@ -36,19 +36,19 @@
     <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Lexer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Interpreter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Lexeme.cpp">
+    <ClCompile Include="Tokenizer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="LexedCode.cpp">
+    <ClCompile Include="TokenizerContext.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="LexingContext.cpp">
+    <ClCompile Include="Token.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CodeTokens.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -86,16 +86,10 @@
     <ClInclude Include="pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Lexer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Interpreter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="SymbolFilter.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Lexeme.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="VirtualListHelper.h">
@@ -104,10 +98,16 @@
     <ClInclude Include="VirtualList.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="LexedCode.h">
+    <ClInclude Include="Tokenizer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="LexingContext.h">
+    <ClInclude Include="TokenizerContext.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Token.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CodeTokens.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

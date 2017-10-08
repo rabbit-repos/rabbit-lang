@@ -3,9 +3,9 @@
 #include "StringData.h"
 #include "String.h"
 #include "Config.h"
-#include "Lexer.h"
+#include "Tokenizer.h"
 #include "Interpreter.h"
-#include "Lexeme.h"
+#include "Token.h"
 
 i32 main(Const<i32> aArgNum, ConstPtr<char> aArgs[])
 {
@@ -41,14 +41,14 @@ i32 main(Const<i32> aArgNum, ConstPtr<char> aArgs[])
 				config = Config(StringData::FromASCII(aArgs[0]));
 			}
 
-			Lexer lexer(config);
+			Tokenizer tokenizer(config);
 			Interpreter interpreter(config);
-			LexedCode lexedCode = lexer.LexFile(L"lexing/lexing.rbt");
-			interpreter.Interpret(lexedCode);
+			CodeTokens codeTokens = tokenizer.TokenizeFile(L"lexing/lexing.rbt");
+			interpreter.Interpret(codeTokens);
 
 			// ConstRef<List<StringData>> sourceFiles = config.GetSourceFiles();
 			// for (i32 i = 0; i < sourceFiles.Size(); ++i)
-			// 	lexer.LexFile(sourceFiles[i]);
+			// 	tokenizer.TokenizeFile(sourceFiles[i]);
 
 		}
 		else

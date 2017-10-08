@@ -169,10 +169,10 @@
     <ClCompile Include="CharUtility.cpp" />
     <ClCompile Include="Config.cpp" />
     <ClCompile Include="Interpreter.cpp" />
-    <ClCompile Include="LexedCode.cpp" />
-    <ClCompile Include="Lexeme.cpp" />
-    <ClCompile Include="Lexer.cpp" />
-    <ClCompile Include="LexingContext.cpp" />
+    <ClCompile Include="CodeTokens.cpp" />
+    <ClCompile Include="Token.cpp" />
+    <ClCompile Include="Tokenizer.cpp" />
+    <ClCompile Include="TokenizerContext.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -194,11 +194,11 @@
     <ClInclude Include="Interpreter.h" />
     <ClInclude Include="json.h" />
     <ClInclude Include="Array.h" />
-    <ClInclude Include="LexedCode.h" />
-    <ClInclude Include="LexingContext.h" />
+    <ClInclude Include="CodeTokens.h" />
+    <ClInclude Include="TokenizerContext.h" />
     <ClInclude Include="VirtualList.h" />
-    <ClInclude Include="Lexeme.h" />
-    <ClInclude Include="Lexer.h" />
+    <ClInclude Include="Token.h" />
+    <ClInclude Include="Tokenizer.h" />
     <ClInclude Include="List.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="ProjectType.h" />

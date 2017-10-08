@@ -7,7 +7,7 @@ enum class ErrorType
 	Count
 };
 
-class LexedCode;
+class CodeTokens;
 
 struct InterpretationResult
 {
@@ -22,7 +22,7 @@ public:
 	Interpreter(ConstRef<class Config> aConfiguration);
 	~Interpreter();
 
-	InterpretationResult Interpret(ConstRef<LexedCode> aLexedCode) const;
+	InterpretationResult Interpret(ConstRef<CodeTokens> aCodeTokens) const;
 
 private:
 	ConstPtr<class Config> myConfig;
