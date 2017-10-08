@@ -120,6 +120,11 @@ TokenID CharUtility::GetLexemeIDFromCharacter(Const<Char> aChar, Const<bool> aIs
 	return TokenID::None;
 }
 
+bool CharUtility::IsValidFirstSymbolCharacter(Const<Char> aChar)
+{
+	return IsLetter(aChar) || aChar == L'_' || aChar == L'~';
+}
+
 bool CharUtility::IsControl(Const<Char> aChar)
 {
 	// TODO: Replace this std call

@@ -18,6 +18,8 @@ public:
 	static bool IsValidLexemeCharacter(Const<Char> aChar, Const<bool> aIsFirstCharacter);
 	static TokenID GetLexemeIDFromCharacter(Const<Char> aChar, Const<bool> aIsFirstCharacter);
 
+	static bool IsValidFirstSymbolCharacter(Const<Char> aChar);
+
 	static Char ToLower(Const<Char> aChar);
 	static Char ToUpper(Const<Char> aChar);
 
