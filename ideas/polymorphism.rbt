@@ -11,8 +11,12 @@ class Base
 // Should inheritance be allowed from non-polymorphic classes?
 class Derived : Base
 {
+    // Not specifying override is an error
     // Final should also be implemented
     void Test() override
+    {
+
+    }
 }
 
 // // When the type is known no vtable lookup should occur

@@ -24,7 +24,7 @@ public:
 	{
 		friend class Interpreter;
 		template <typename T>
-		void AddLexeme(RValue<T> aLexeme);
+		static void AddLexeme(RValue<T> aLexeme);
 	};
 
 private:

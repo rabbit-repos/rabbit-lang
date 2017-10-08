@@ -12,6 +12,7 @@ public:
 	~String();
 
 	i32 Size() const;
+	bool IsEmpty() const; 
 	ConstPtr<Char> GetAddress() const;
 	
 	std::string ToASCII() const;
@@ -44,6 +45,8 @@ public:
 	bool FindLast(Const<Char> aChar, Out<i32> aIndex, Const<i32> aBeginAt = MaxOf<i32>) const;
 
 	bool CopyTo(Ptr<Char> aData, Const<i32> aLength) const;
+
+	void Clear();
 
 private:
 	explicit String(ConstPtr<StringData> aOwner, ConstPtr<Char> aDataPoint, const i32 aLength);

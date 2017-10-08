@@ -48,6 +48,9 @@
     <ClCompile Include="LexedCode.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="LexingContext.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="json.h">
@@ -102,6 +105,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="LexedCode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LexingContext.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

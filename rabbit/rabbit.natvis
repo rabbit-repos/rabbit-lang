@@ -88,4 +88,30 @@
       </IndexListItems>
     </Expand>
   </Type>
+
+  <Type Name="LexingContext">
+    <DisplayString>[Lexing Context] {{ PREV({&amp;myCode->myData[myCursor - 1],1sub}) CURR({&amp;myCode->myData[myCursor],1sub}) NEXT({&amp;myCode->myData[myCursor + 1],1sub}) }}</DisplayString>
+
+    <Expand>
+      <Synthetic Name="Previous">
+        <DisplayString>{&amp;myCode->myData[myCursor - 1],1sub} ({myCursor - 2} previous characters)</DisplayString>
+        <Expand>
+          <IndexListItems>
+            <Size>myCursor - 1</Size>
+            <ValueNode>(myCode->myData[$i]),na</ValueNode>
+          </IndexListItems>
+        </Expand>
+      </Synthetic>
+      <Item Name="Current" Optional="true">&amp;myCode->myData[myCursor],1sub</Item>
+      <Synthetic Name="Next">
+        <DisplayString>{&amp;myCode->myData[myCursor + 1],1sub} ({myCode->myData.mySize - myCursor - 1} more characters)</DisplayString>
+        <Expand>
+          <IndexListItems>
+            <Size>myCode->myData.mySize - myCursor</Size>
+            <ValueNode>(myCode->myData[myCursor + 2 + $i]),na</ValueNode>
+          </IndexListItems>
+        </Expand>
+      </Synthetic>
+    </Expand>
+  </Type>
 </AutoVisualizer>

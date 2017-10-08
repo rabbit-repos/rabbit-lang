@@ -17,11 +17,11 @@ bool CharUtility::IsWhiteSpace(Const<Char> aChar)
 	return false;
 }
 
-SymbolCharacterID CharUtility::GetDigitLexemeID(Const<Char> aChar, Const<bool> aIsFirstCharacter)
+LexemeID CharUtility::GetDigitLexemeID(Const<Char> aChar, Const<bool> aIsFirstCharacter)
 {
 	if (!aIsFirstCharacter && IsDigit(aChar))
-		return static_cast<SymbolCharacterID>(static_cast<u8>(SymbolIDValues::FirstDigit) + (aChar - L'0'));
-	return SymbolCharacterID::None;
+		return static_cast<LexemeID>(static_cast<u8>(LexemeIDRanges::FirstDigit) + (aChar - L'0'));
+	return LexemeID::None;
 }
 
 bool CharUtility::IsDigit(Const<Char> aChar)
@@ -31,28 +31,93 @@ bool CharUtility::IsDigit(Const<Char> aChar)
 
 bool CharUtility::IsValidLexemeCharacter(Const<Char> aChar, Const<bool> aIsFirstCharacter)
 {
-	return GetSymbolCharacterID(aChar, aIsFirstCharacter) > SymbolCharacterID::None;
+	return GetLexemeIDFromCharacter(aChar, aIsFirstCharacter) > LexemeID::None;
 }
 
-SymbolCharacterID CharUtility::GetSymbolCharacterID(Const<Char> aChar, Const<bool> aIsFirstCharacter)
+LexemeID CharUtility::GetLexemeIDFromCharacter(Const<Char> aChar, Const<bool> aIsFirstCharacter)
 {
-	Const<SymbolCharacterID> letterID = GetLetterSymbolCharacterID(aChar);
-	if (letterID > SymbolCharacterID::None)
+	Const<LexemeID> letterID = GetLetterSymbolCharacterID(aChar);
+	if (letterID > LexemeID::None)
 		return letterID;
 
-	Const<SymbolCharacterID> digitID = GetDigitLexemeID(aChar, aIsFirstCharacter);
-	if (digitID > SymbolCharacterID::None)
+	Const<LexemeID> digitID = GetDigitLexemeID(aChar, aIsFirstCharacter);
+	if (digitID > LexemeID::None)
 		return digitID;
 	
 	switch (aChar)
 	{
 	case L'_':
-		return SymbolCharacterID::Underscore;
+		return LexemeID::Underscore;
 	case L'-':
-		return aIsFirstCharacter ? SymbolCharacterID::None : SymbolCharacterID::Hyphen;
+		return LexemeID::Hyphen;
 	}
 
-	return SymbolCharacterID::None;
+	if (aIsFirstCharacter)
+	{
+		switch (aChar)
+		{
+		case L'#':
+			return LexemeID::CompilerDirective;
+		case L'<':
+			return LexemeID::OpeningAngleBracket;
+		case L'>':
+			return LexemeID::ClosingAngleBracket;
+		case L'[':
+			return LexemeID::OpeningSquareBracket;
+		case L']':
+			return LexemeID::ClosingSquareBracket;
+		case L'&':
+			return LexemeID::Ampersand;
+		case L'|':
+			return LexemeID::VerticalBar;
+		case L'%':
+			return LexemeID::Modulus;
+		case L'+':
+			return LexemeID::Plus;
+		case L'-':
+			return LexemeID::Hyphen;
+		case L'*':
+			return LexemeID::Asterisk;
+		case L'^':
+			return LexemeID::Caret;
+		case L';':
+			return LexemeID::SemiColon;
+		case L':':
+			return LexemeID::Colon;
+		case L'?':
+			return LexemeID::QuestionMark;
+		case L'=':
+			return LexemeID::EqualitySign;
+		case L'!':
+			return LexemeID::Exclamation;
+		case L'~':
+			return LexemeID::Tilde;
+		case L'{':
+			return LexemeID::OpeningCurlyBrace;
+		case L'}':
+			return LexemeID::ClosingCurlyBrace;
+		case L'(':
+			return LexemeID::OpeningParenthesis;
+		case L')':
+			return LexemeID::ClosingParenthesis;
+		case L',':
+			return LexemeID::Comma;
+		case L'\"':
+			return LexemeID::Quote;
+		case L'$':
+			return LexemeID::DollarSign;
+		case L'@':
+			return LexemeID::AtSign;
+		case L'€':
+			return LexemeID::EuroSign;
+		case L'£':
+			return LexemeID::PundSign;
+		case L'.':
+			return LexemeID::Dot;
+		}
+	}
+
+	return LexemeID::None;
 }
 
 bool CharUtility::IsControl(Const<Char> aChar)
@@ -61,22 +126,22 @@ bool CharUtility::IsControl(Const<Char> aChar)
 	return iswcntrl(aChar);
 }
 
-SymbolCharacterID CharUtility::GetLetterSymbolCharacterID(Const<Char> aChar)
+LexemeID CharUtility::GetLetterSymbolCharacterID(Const<Char> aChar)
 {
 	if (aChar >= FirstUpperCaseLetter && aChar <= LastUpperCaseLetter)
 	{
-		return static_cast<SymbolCharacterID>(aChar - FirstUpperCaseLetter + 1);
+		return static_cast<LexemeID>(aChar - FirstUpperCaseLetter + 1);
 	}
 	if (aChar >= FirstLowerCaseLetter && aChar <= LastLowerCaseLetter)
 	{
-		return static_cast<SymbolCharacterID>((LastUpperCaseLetter - FirstUpperCaseLetter + 2) + aChar - FirstLowerCaseLetter);
+		return static_cast<LexemeID>((LastUpperCaseLetter - FirstUpperCaseLetter + 2) + aChar - FirstLowerCaseLetter);
 	}
-	return static_cast<SymbolCharacterID>(0);
+	return static_cast<LexemeID>(0);
 }
 
 bool CharUtility::IsLetter(Const<Char> aChar)
 {
-	return GetLetterSymbolCharacterID(aChar) > SymbolCharacterID::None;
+	return GetLetterSymbolCharacterID(aChar) > LexemeID::None;
 }
 
 Char CharUtility::ToLower(Const<Char> aChar)

@@ -154,6 +154,11 @@ i32 String::Size() const
 	return mySize;
 }
 
+bool String::IsEmpty() const
+{
+	return mySize == 0;
+}
+
 ConstPtr<Char> String::GetAddress() const
 {
 	return myData;
@@ -305,4 +310,9 @@ Ref<std::ostream> operator<<(Ref<std::ostream> aOut, ConstRef<String> aString)
 	for (i32 i=0; i<aString.Size(); ++i)
 		aOut.write(reinterpret_cast<ConstPtr<char>>(&aString[i]), 1);
 	return aOut;
+}
+
+void String::Clear()
+{
+	*this = String();
 }

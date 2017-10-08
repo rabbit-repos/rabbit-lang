@@ -1,22 +1,22 @@
 #pragma once
 
-enum class SymbolCharacterID : u8;
+enum class LexemeID : u8;
 
 class CharUtility
 {
 public:
 	static bool IsWhiteSpace(Const<Char> aChar);
 	
-	static SymbolCharacterID GetDigitLexemeID(Const<Char> aChar, Const<bool> aIsFirstCharacter);
+	static LexemeID GetDigitLexemeID(Const<Char> aChar, Const<bool> aIsFirstCharacter);
 	static bool IsDigit(Const<Char> aChar);
 	
 	static bool IsControl(Const<Char> aChar);
 	
 	static bool IsLetter(Const<Char> aChar);
-	static SymbolCharacterID GetLetterSymbolCharacterID(Const<Char> aChar);
+	static LexemeID GetLetterSymbolCharacterID(Const<Char> aChar);
 
 	static bool IsValidLexemeCharacter(Const<Char> aChar, Const<bool> aIsFirstCharacter);
-	static SymbolCharacterID GetSymbolCharacterID(Const<Char> aChar, Const<bool> aIsFirstCharacter);
+	static LexemeID GetLexemeIDFromCharacter(Const<Char> aChar, Const<bool> aIsFirstCharacter);
 
 	static Char ToLower(Const<Char> aChar);
 	static Char ToUpper(Const<Char> aChar);
@@ -26,29 +26,57 @@ public:
 	static constexpr Char FirstLowerCaseLetter = L'a';
 	static constexpr Char LastLowerCaseLetter = L'z';
 
-	enum class SymbolIDValues : u8
-	{
-		FirstLetter = 1,
-		LastLetter = FirstLetter + ('Z' - 'A') + ('z' - 'a') + 1,
-		FirstDigit = LastLetter + 1,
-		LastDigit = FirstDigit + 9
-	};
-
 private:
 	CharUtility() { }
 };
 
-enum class SymbolCharacterID : u8
+enum class LexemeIDRanges : u8
+{
+	FirstLetter = 1,
+	LastLetter = FirstLetter + ('Z' - 'A') + ('z' - 'a') + 1,
+	FirstDigit = LastLetter + 1,
+	LastDigit = FirstDigit + 9
+};
+
+enum class LexemeID : u8
 {
 	None,
 	FirstValid,
 	// 1 - XXX is the alphabet
 	Alphabet = FirstValid,
 	// XXX - XXX is the digits
-	Digits = static_cast<u8>(CharUtility::SymbolIDValues::FirstDigit),
-	Underscore = Digits + 10,
-	Hyphen,
+	Digits = static_cast<u8>(LexemeIDRanges::FirstDigit),
 
-	Count
-	// Space ??? TODO: Figure out if this is actually necessary/possibly etc.
+	Underscore = Digits + 10,
+	CompilerDirective,
+	OpeningAngleBracket,
+	ClosingAngleBracket,
+	OpeningSquareBracket,
+	ClosingSquareBracket,
+	Ampersand,
+	Modulus,
+	Plus,
+	Hyphen,
+	Asterisk,
+	Caret,
+	SemiColon,
+	Colon,
+	QuestionMark,
+	EqualitySign,
+	Exclamation,
+	Tilde,
+	OpeningCurlyBrace,
+	ClosingCurlyBrace,
+	OpeningParenthesis,
+	ClosingParenthesis,
+	Comma,
+	VerticalBar,
+	Quote,
+	DollarSign,
+	AtSign,
+	EuroSign,
+	PundSign,
+	Dot,
+
+	Count,
 };

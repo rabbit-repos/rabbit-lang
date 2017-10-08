@@ -1,4 +1,4 @@
-#include <SFML/Graphics.hpp>
+#include <"SFML/Graphics.hpp">
 
 using std = cpp::std;
 
@@ -20,7 +20,7 @@ class Derived : Object
 
 i32 Main(const std::vector<std::string> * aArgs)
 {
-	Console::WriteLine("Hello World!", );
+	Console::WriteLine("{0} {1} {2}", "Hello", "World", -100 * 20 % -1);
 
 	return 0;
 }
