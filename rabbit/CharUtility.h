@@ -13,7 +13,7 @@ public:
 	static bool IsControl(Const<Char> aChar);
 	
 	static bool IsLetter(Const<Char> aChar);
-	static LexemeID GetLetterSymbolCharacterID(Const<Char> aChar);
+	static LexemeID GetLetterLexemeID(Const<Char> aChar);
 
 	static bool IsValidLexemeCharacter(Const<Char> aChar, Const<bool> aIsFirstCharacter);
 	static LexemeID GetLexemeIDFromCharacter(Const<Char> aChar, Const<bool> aIsFirstCharacter);

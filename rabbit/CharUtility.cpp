@@ -36,7 +36,7 @@ bool CharUtility::IsValidLexemeCharacter(Const<Char> aChar, Const<bool> aIsFirst
 
 LexemeID CharUtility::GetLexemeIDFromCharacter(Const<Char> aChar, Const<bool> aIsFirstCharacter)
 {
-	Const<LexemeID> letterID = GetLetterSymbolCharacterID(aChar);
+	Const<LexemeID> letterID = GetLetterLexemeID(aChar);
 	if (letterID > LexemeID::None)
 		return letterID;
 
@@ -126,7 +126,7 @@ bool CharUtility::IsControl(Const<Char> aChar)
 	return iswcntrl(aChar);
 }
 
-LexemeID CharUtility::GetLetterSymbolCharacterID(Const<Char> aChar)
+LexemeID CharUtility::GetLetterLexemeID(Const<Char> aChar)
 {
 	if (aChar >= FirstUpperCaseLetter && aChar <= LastUpperCaseLetter)
 	{
@@ -136,12 +136,12 @@ LexemeID CharUtility::GetLetterSymbolCharacterID(Const<Char> aChar)
 	{
 		return static_cast<LexemeID>((LastUpperCaseLetter - FirstUpperCaseLetter + 2) + aChar - FirstLowerCaseLetter);
 	}
-	return static_cast<LexemeID>(0);
+	return LexemeID::None;
 }
 
 bool CharUtility::IsLetter(Const<Char> aChar)
 {
-	return GetLetterSymbolCharacterID(aChar) > LexemeID::None;
+	return GetLetterLexemeID(aChar) > LexemeID::None;
 }
 
 Char CharUtility::ToLower(Const<Char> aChar)
