@@ -1,22 +1,22 @@
 #pragma once
 
-enum class LexemeID : u8;
+enum class TokenID : u8;
 
 class CharUtility
 {
 public:
 	static bool IsWhiteSpace(Const<Char> aChar);
 	
-	static LexemeID GetDigitLexemeID(Const<Char> aChar, Const<bool> aIsFirstCharacter);
+	static TokenID GetDigitLexemeID(Const<Char> aChar, Const<bool> aIsFirstCharacter);
 	static bool IsDigit(Const<Char> aChar);
 	
 	static bool IsControl(Const<Char> aChar);
 	
 	static bool IsLetter(Const<Char> aChar);
-	static LexemeID GetLetterLexemeID(Const<Char> aChar);
+	static TokenID GetLetterLexemeID(Const<Char> aChar);
 
 	static bool IsValidLexemeCharacter(Const<Char> aChar, Const<bool> aIsFirstCharacter);
-	static LexemeID GetLexemeIDFromCharacter(Const<Char> aChar, Const<bool> aIsFirstCharacter);
+	static TokenID GetLexemeIDFromCharacter(Const<Char> aChar, Const<bool> aIsFirstCharacter);
 
 	static Char ToLower(Const<Char> aChar);
 	static Char ToUpper(Const<Char> aChar);
@@ -30,7 +30,7 @@ private:
 	CharUtility() { }
 };
 
-enum class LexemeIDRanges : u8
+enum class TokenIDRanges : u8
 {
 	FirstLetter = 1,
 	LastLetter = FirstLetter + ('Z' - 'A') + ('z' - 'a') + 1,
@@ -38,14 +38,14 @@ enum class LexemeIDRanges : u8
 	LastDigit = FirstDigit + 9
 };
 
-enum class LexemeID : u8
+enum class TokenID : u8
 {
 	None,
 	FirstValid,
 	// 1 - XXX is the alphabet
 	Alphabet = FirstValid,
 	// XXX - XXX is the digits
-	Digits = static_cast<u8>(LexemeIDRanges::FirstDigit),
+	Digits = static_cast<u8>(TokenIDRanges::FirstDigit),
 
 	Underscore = Digits + 10,
 	CompilerDirective,

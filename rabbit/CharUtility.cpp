@@ -17,11 +17,11 @@ bool CharUtility::IsWhiteSpace(Const<Char> aChar)
 	return false;
 }
 
-LexemeID CharUtility::GetDigitLexemeID(Const<Char> aChar, Const<bool> aIsFirstCharacter)
+TokenID CharUtility::GetDigitLexemeID(Const<Char> aChar, Const<bool> aIsFirstCharacter)
 {
 	if (!aIsFirstCharacter && IsDigit(aChar))
-		return static_cast<LexemeID>(static_cast<u8>(LexemeIDRanges::FirstDigit) + (aChar - L'0'));
-	return LexemeID::None;
+		return static_cast<TokenID>(static_cast<u8>(TokenIDRanges::FirstDigit) + (aChar - L'0'));
+	return TokenID::None;
 }
 
 bool CharUtility::IsDigit(Const<Char> aChar)
@@ -31,25 +31,25 @@ bool CharUtility::IsDigit(Const<Char> aChar)
 
 bool CharUtility::IsValidLexemeCharacter(Const<Char> aChar, Const<bool> aIsFirstCharacter)
 {
-	return GetLexemeIDFromCharacter(aChar, aIsFirstCharacter) > LexemeID::None;
+	return GetLexemeIDFromCharacter(aChar, aIsFirstCharacter) > TokenID::None;
 }
 
-LexemeID CharUtility::GetLexemeIDFromCharacter(Const<Char> aChar, Const<bool> aIsFirstCharacter)
+TokenID CharUtility::GetLexemeIDFromCharacter(Const<Char> aChar, Const<bool> aIsFirstCharacter)
 {
-	Const<LexemeID> letterID = GetLetterLexemeID(aChar);
-	if (letterID > LexemeID::None)
+	Const<TokenID> letterID = GetLetterLexemeID(aChar);
+	if (letterID > TokenID::None)
 		return letterID;
 
-	Const<LexemeID> digitID = GetDigitLexemeID(aChar, aIsFirstCharacter);
-	if (digitID > LexemeID::None)
+	Const<TokenID> digitID = GetDigitLexemeID(aChar, aIsFirstCharacter);
+	if (digitID > TokenID::None)
 		return digitID;
 	
 	switch (aChar)
 	{
 	case L'_':
-		return LexemeID::Underscore;
+		return TokenID::Underscore;
 	case L'-':
-		return LexemeID::Hyphen;
+		return TokenID::Hyphen;
 	}
 
 	if (aIsFirstCharacter)
@@ -57,67 +57,67 @@ LexemeID CharUtility::GetLexemeIDFromCharacter(Const<Char> aChar, Const<bool> aI
 		switch (aChar)
 		{
 		case L'#':
-			return LexemeID::CompilerDirective;
+			return TokenID::CompilerDirective;
 		case L'<':
-			return LexemeID::OpeningAngleBracket;
+			return TokenID::OpeningAngleBracket;
 		case L'>':
-			return LexemeID::ClosingAngleBracket;
+			return TokenID::ClosingAngleBracket;
 		case L'[':
-			return LexemeID::OpeningSquareBracket;
+			return TokenID::OpeningSquareBracket;
 		case L']':
-			return LexemeID::ClosingSquareBracket;
+			return TokenID::ClosingSquareBracket;
 		case L'&':
-			return LexemeID::Ampersand;
+			return TokenID::Ampersand;
 		case L'|':
-			return LexemeID::VerticalBar;
+			return TokenID::VerticalBar;
 		case L'%':
-			return LexemeID::Modulus;
+			return TokenID::Modulus;
 		case L'+':
-			return LexemeID::Plus;
+			return TokenID::Plus;
 		case L'-':
-			return LexemeID::Hyphen;
+			return TokenID::Hyphen;
 		case L'*':
-			return LexemeID::Asterisk;
+			return TokenID::Asterisk;
 		case L'^':
-			return LexemeID::Caret;
+			return TokenID::Caret;
 		case L';':
-			return LexemeID::SemiColon;
+			return TokenID::SemiColon;
 		case L':':
-			return LexemeID::Colon;
+			return TokenID::Colon;
 		case L'?':
-			return LexemeID::QuestionMark;
+			return TokenID::QuestionMark;
 		case L'=':
-			return LexemeID::EqualitySign;
+			return TokenID::EqualitySign;
 		case L'!':
-			return LexemeID::Exclamation;
+			return TokenID::Exclamation;
 		case L'~':
-			return LexemeID::Tilde;
+			return TokenID::Tilde;
 		case L'{':
-			return LexemeID::OpeningCurlyBrace;
+			return TokenID::OpeningCurlyBrace;
 		case L'}':
-			return LexemeID::ClosingCurlyBrace;
+			return TokenID::ClosingCurlyBrace;
 		case L'(':
-			return LexemeID::OpeningParenthesis;
+			return TokenID::OpeningParenthesis;
 		case L')':
-			return LexemeID::ClosingParenthesis;
+			return TokenID::ClosingParenthesis;
 		case L',':
-			return LexemeID::Comma;
+			return TokenID::Comma;
 		case L'\"':
-			return LexemeID::Quote;
+			return TokenID::Quote;
 		case L'$':
-			return LexemeID::DollarSign;
+			return TokenID::DollarSign;
 		case L'@':
-			return LexemeID::AtSign;
+			return TokenID::AtSign;
 		case L'€':
-			return LexemeID::EuroSign;
+			return TokenID::EuroSign;
 		case L'£':
-			return LexemeID::PundSign;
+			return TokenID::PundSign;
 		case L'.':
-			return LexemeID::Dot;
+			return TokenID::Dot;
 		}
 	}
 
-	return LexemeID::None;
+	return TokenID::None;
 }
 
 bool CharUtility::IsControl(Const<Char> aChar)
@@ -126,22 +126,22 @@ bool CharUtility::IsControl(Const<Char> aChar)
 	return iswcntrl(aChar);
 }
 
-LexemeID CharUtility::GetLetterLexemeID(Const<Char> aChar)
+TokenID CharUtility::GetLetterLexemeID(Const<Char> aChar)
 {
 	if (aChar >= FirstUpperCaseLetter && aChar <= LastUpperCaseLetter)
 	{
-		return static_cast<LexemeID>(aChar - FirstUpperCaseLetter + 1);
+		return static_cast<TokenID>(aChar - FirstUpperCaseLetter + 1);
 	}
 	if (aChar >= FirstLowerCaseLetter && aChar <= LastLowerCaseLetter)
 	{
-		return static_cast<LexemeID>((LastUpperCaseLetter - FirstUpperCaseLetter + 2) + aChar - FirstLowerCaseLetter);
+		return static_cast<TokenID>((LastUpperCaseLetter - FirstUpperCaseLetter + 2) + aChar - FirstLowerCaseLetter);
 	}
-	return LexemeID::None;
+	return TokenID::None;
 }
 
 bool CharUtility::IsLetter(Const<Char> aChar)
 {
-	return GetLetterLexemeID(aChar) > LexemeID::None;
+	return GetLetterLexemeID(aChar) > TokenID::None;
 }
 
 Char CharUtility::ToLower(Const<Char> aChar)
