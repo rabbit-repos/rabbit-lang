@@ -45,7 +45,7 @@
     <ClCompile Include="Lexeme.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="VirtualList.cpp">
+    <ClCompile Include="LexedCode.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -99,6 +99,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="VirtualList.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LexedCode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

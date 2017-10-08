@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "Interpreter.h"
 #include "Config.h"
-#include "SymbolFilter.h"
+#include "LexedCode.h"
 
 Interpreter::Interpreter(ConstRef<Config> aConfiguration)
 {
@@ -12,11 +12,12 @@ Interpreter::~Interpreter()
 {
 }
 
-InterpretationResult Interpreter::Interpret(ConstRef<ResizableArray<class Lexeme*>> aLexedCode) const
+InterpretationResult Interpreter::Interpret(ConstRef<LexedCode> aLexedCode) const
 {
 	(aLexedCode);
 
 	InterpretationResult result;
 	result.ErrorMessage = StringData(L"Compiler Not Implemented");
+	result.ErrorType = ErrorType::CompilerNotImplemented;
 	return result;
 }

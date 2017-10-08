@@ -11,14 +11,14 @@ Lexer::~Lexer()
 {
 }
 
-VirtualList Lexer::LexCode(StringData aCode)
+LexedCode Lexer::LexCode(StringData aCode)
 {
-	VirtualList lexemes;
+	LexedCode lexemes;
 
 	return lexemes;
 }
 
-VirtualList Lexer::LexFile(ConstRef<String> aFilePath)
+LexedCode Lexer::LexFile(ConstRef<String> aFilePath)
 {
 	std::wifstream f(aFilePath.ToWideString());
 	

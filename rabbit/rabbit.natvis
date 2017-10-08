@@ -1,25 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?> 
 <AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
   <Type Name="String">
-    <DisplayString>"{myData,[mySize]sb}"[{mySize}]</DisplayString>
-    <StringView>myData,[myLength]</StringView>
+    <DisplayString>"{myData,[mySize]sub}"[{mySize}]</DisplayString>
+    <StringView>myData,[mySize]sb</StringView>
 
     <Expand>
-      <Synthetic Name="String">
-        <DisplayString>{myData,[mySize]su}[{mySize}]</DisplayString>
-        <StringView>myData,[mySize]</StringView>
-      </Synthetic>
       <Item Name="Length">mySize</Item>
-      <Item Name="Data Source">*myOwner</Item>
+      <Synthetic Name="Left Padding" Optional="true">
+        <DisplayString>{&amp;myData[0] - &amp;myOwner->myData[0]} Characters</DisplayString>
+      </Synthetic>
+      <Synthetic Name="Right Padding" Optional="true">
+        <DisplayString>{&amp;myData[mySize] - &amp;myOwner->myData[mySize]} Characters</DisplayString>
+      </Synthetic>
+      <Synthetic Name="Null-Terminated" Condition="myData[mySize] == L'\0'">
+        <DisplayString>true</DisplayString>
+      </Synthetic>
+      <Synthetic Name="Null-Terminated" Condition="myData[mySize] != L'\0'">
+        <DisplayString>FALSE</DisplayString>
+      </Synthetic>
+      
+      <Synthetic Name="String">
+        <DisplayString>"{myData,[mySize]sub}"[{mySize}]</DisplayString>
+        <StringView>myData,[mySize]sub</StringView>
+
+        <Expand>
+          <ArrayItems>
+            <Size>mySize</Size>
+            <ValuePointer>&amp;myData[0] </ValuePointer>
+          </ArrayItems>
+        </Expand>
+      </Synthetic>
     </Expand>
   </Type>
 
   <Type Name="StringData">
-    <DisplayString>"{myData.myData.myData.myData,[myData.mySize - 1]sb}"[{myData.mySize - 1}]</DisplayString>
+    <DisplayString>"{myData.myData.myData.myData,[myData.mySize - 1]sub}"[{myData.mySize - 1}]</DisplayString>
+    <StringView>myData.myData.myData.myData,[myData.mySize - 1]sub</StringView>
     
     <Expand>
       <Item Name="Data">myData</Item>
-      <Item Name="Length">myData.mySize</Item>
+      <Item Name="Length">myData.mySize - 1</Item>
     </Expand>
   </Type>
 
@@ -29,10 +49,10 @@
     <Expand>
       <Item Name="[Size]" ExcludeView="simple">mySize</Item>
       <Item Name="[Capacity]" ExcludeView="simple">myData.mySize</Item>
-      <ArrayItems>
+      <IndexListItems>
         <Size>mySize</Size>
-        <ValuePointer>($T1*)myData.myData.myData</ValuePointer>
-      </ArrayItems>
+        <ValueNode>myData[$i]</ValueNode>
+      </IndexListItems>
     </Expand>
   </Type>
 

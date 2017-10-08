@@ -1,5 +1,6 @@
 #pragma once
 #include "VirtualList.h"
+#include "LexedCode.h"
 
 class Lexer
 {
@@ -7,11 +8,9 @@ public:
 	Lexer(ConstRef<class Config> aConfig);
 	~Lexer();
 
-	VirtualList LexCode(StringData aCode);
-	VirtualList LexFile(ConstRef<String> aFilePath);
+	LexedCode LexCode(StringData aCode);
+	LexedCode LexFile(ConstRef<String> aFilePath);
 
 private:
-	void RemoveComments(Ref<StringData> aCode);
-
 	ConstPtr<class Config> myConfig;
 };

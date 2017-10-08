@@ -5,7 +5,7 @@ enum class VirtualListCopyMode : u8
 	MoveConstruct,
 	CopyConstruct,
 	MoveAssign,
-	CopyAssing,
+	// CopyAssing,
 	Destruct
 };
 
@@ -26,9 +26,9 @@ void VirtualCopyHelper(Const<Ptr<void>> aDestination, Const<Ptr<void>> aSource, 
 	case VirtualListCopyMode::MoveAssign:
 		*destination = std::move(*reinterpret_cast<Ptr<T>>(aSource));
 		break;
-	case VirtualListCopyMode::CopyAssing:
-		*destination = *reinterpret_cast<ConstPtr<T>>(aSource);
-		break;
+	// case VirtualListCopyMode::CopyAssing:
+	// 	*destination = *reinterpret_cast<ConstPtr<T>>(aSource);
+	// 	break;
 
 	case VirtualListCopyMode::Destruct:
 		reinterpret_cast<Ptr<T>>(aSource)->~T();

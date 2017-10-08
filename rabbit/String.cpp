@@ -9,14 +9,14 @@ String::String()
 #ifdef _DEBUG
 	myOwner = null;
 #endif
-	myLength = 0;
+	mySize = 0;
 }
 
 String::String(ConstRef<StringData> aString)
 	: String()
 {
 	myData = aString.GetAddress();
-	myLength = aString.Size();
+	mySize = aString.Size();
 
 #ifdef _DEBUG
 	myOwner = &aString;
@@ -32,7 +32,7 @@ String::String(ConstRef<String> aString, Const<i32> aNumberOfCharacters)
 	myData = aString.GetAddress();
 }
 
-String::String(ConstPtr<StringData> aOwner, ConstPtr<Char> aDataPoint, Const<i32> aLength)
+String::String(ConstPtr<StringData> aOwner, ConstPtr<Char> aDataPoint, Const<i32> aSize)
 	: String()
 {
 #ifdef _DEBUG
@@ -43,15 +43,15 @@ String::String(ConstPtr<StringData> aOwner, ConstPtr<Char> aDataPoint, Const<i32
 	(aOwner);
 #endif
 
-	if (aLength > 0)
+	if (aSize > 0)
 	{
 		myData = aDataPoint;
-		myLength = aLength;
+		mySize = aSize;
 	}
 	else
 	{
 		myData = null;
-		myLength = 0;
+		mySize = 0;
 	}
 }
 
@@ -64,12 +64,12 @@ String::String(ConstPtr<Char> aString)
 	if (aString)
 	{
 		myData = aString;
-		myLength = static_cast<i32>(wcslen(aString));
+		mySize = static_cast<i32>(wcslen(aString));
 	}
 	else
 	{
 		myData = null;
-		myLength = 0;
+		mySize = 0;
 	}
 }
 
@@ -85,7 +85,7 @@ String String::MakeView(Const<i32> aStart, Const<i32> aLength) const
 String String::ChopLeft(Const<i32> aEnd) const
 {
 #ifdef _DEBUG
-	if (aEnd < 0 || aEnd > myLength)
+	if (aEnd < 0 || aEnd > mySize)
 		abort();
 #endif
 	return MakeView(0, aEnd);
@@ -94,10 +94,10 @@ String String::ChopLeft(Const<i32> aEnd) const
 String String::ChopRight(Const<i32> aBegin) const
 {
 #ifdef _DEBUG
-	if (aBegin < 0 || aBegin > myLength)
+	if (aBegin < 0 || aBegin > mySize)
 		abort();
 #endif
-	return MakeView(aBegin, myLength - aBegin);
+	return MakeView(aBegin, mySize - aBegin);
 }
 
 bool String::FindFirst(Const<Char> aChar, Out<i32> aIndex, Const<i32> aBeginAt /*= 0*/) const
@@ -129,11 +129,11 @@ bool String::FindLast(Const<Char> aChar, Out<i32> aIndex, Const<i32> aBeginAt /*
 
 bool String::CopyTo(Ptr<Char> aData, Const<i32> aLength) const
 {
-	if (myLength + 1 >= aLength)
+	if (mySize + 1 >= aLength)
 		return false;
 
-	memcpy(aData, myData, myLength * sizeof Char);
-	aData[myLength] = L'\0';
+	memcpy(aData, myData, mySize * sizeof Char);
+	aData[mySize] = L'\0';
 	return true;
 }
 
@@ -145,13 +145,13 @@ String::~String()
 
 	myData = null;
 	myOwner = null;
-	myLength = -1;
+	mySize = -1;
 #endif
 }
 
 i32 String::Size() const
 {
-	return myLength;
+	return mySize;
 }
 
 ConstPtr<Char> String::GetAddress() const
@@ -189,7 +189,7 @@ std::wstring String::ToWideString() const
 ConstRef<Char> String::operator[](Const<i32> aIndex) const
 {
 #ifdef _DEBUG
-	if (aIndex < 0 || aIndex >= myLength)
+	if (aIndex < 0 || aIndex >= mySize)
 		abort();
 #endif
 	return myData[aIndex];
@@ -198,7 +198,7 @@ ConstRef<Char> String::operator[](Const<i32> aIndex) const
 String String::SubString(Const<i32> aStart, Const<i32> aLength) const
 {
 #ifdef _DEBUG
-	if (aStart < 0 || aStart + aLength > myLength)
+	if (aStart < 0 || aStart + aLength > mySize)
 		abort();
 #endif
 
@@ -207,13 +207,13 @@ String String::SubString(Const<i32> aStart, Const<i32> aLength) const
 
 String String::Trim() const
 {
-	if (!myLength)
+	if (!mySize)
 		return String();
 
 	i32 start = 0;
-	while (start < myLength && CharUtility::IsWhiteSpace(myData[start]))
+	while (start < mySize && CharUtility::IsWhiteSpace(myData[start]))
 		++start;
-	i32 end = myLength - 1;
+	i32 end = mySize - 1;
 	while (end > 0 && CharUtility::IsWhiteSpace(myData[end]))
 		--end;
 
@@ -222,7 +222,7 @@ String String::Trim() const
 
 bool String::BeginsWith(ConstRef<String> aString) const
 {
-	if (aString.Size() > myLength)
+	if (aString.Size() > mySize)
 		return false;
 	for (i32 i = 0; i < aString.Size(); ++i)
 		if ((*this)[i] != aString[i])
@@ -232,9 +232,9 @@ bool String::BeginsWith(ConstRef<String> aString) const
 
 bool String::EndsWith(ConstRef<String> aString) const
 {
-	if (aString.Size() > myLength)
+	if (aString.Size() > mySize)
 		return false;
-	Const<i32> start = myLength - aString.Size();
+	Const<i32> start = mySize - aString.Size();
 	for (i32 i = 0; i < aString.Size(); ++i)
 		if ((*this)[start + i] != aString[i])
 			return false;

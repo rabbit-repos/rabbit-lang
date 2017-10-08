@@ -1,5 +1,4 @@
 #pragma once
-#include "StringData.h"
 
 enum class ErrorType
 {
@@ -7,6 +6,8 @@ enum class ErrorType
 
 	Count
 };
+
+class LexedCode;
 
 struct InterpretationResult
 {
@@ -21,10 +22,8 @@ public:
 	Interpreter(ConstRef<class Config> aConfiguration);
 	~Interpreter();
 
-	InterpretationResult Interpret(ConstRef<ResizableArray<class Lexeme*>> aLexedCode) const;
+	InterpretationResult Interpret(ConstRef<LexedCode> aLexedCode) const;
 
 private:
 	ConstPtr<class Config> myConfig;
 };
-
-

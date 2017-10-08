@@ -50,7 +50,7 @@ private:
 	String MakeView(Const<i32> aStart, Const<i32> aLength) const;
 
 	ConstPtr<Char> myData;
-	i32 myLength;
+	i32 mySize;
 
 #ifdef _DEBUG
 	ConstPtr<StringData> myOwner;
