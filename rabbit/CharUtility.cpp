@@ -31,10 +31,10 @@ bool CharUtility::IsDigit(Const<Char> aChar)
 
 bool CharUtility::IsValidLexemeCharacter(Const<Char> aChar, Const<bool> aIsFirstCharacter)
 {
-	return GetLexemeIDFromCharacter(aChar, aIsFirstCharacter) > TokenID::None;
+	return GetTokenIDFromCharacter(aChar, aIsFirstCharacter) > TokenID::None;
 }
 
-TokenID CharUtility::GetLexemeIDFromCharacter(Const<Char> aChar, Const<bool> aIsFirstCharacter)
+TokenID CharUtility::GetTokenIDFromCharacter(Const<Char> aChar, Const<bool> aIsFirstCharacter)
 {
 	Const<TokenID> letterID = GetLetterLexemeID(aChar);
 	if (letterID > TokenID::None)

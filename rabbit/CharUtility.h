@@ -16,7 +16,7 @@ public:
 	static TokenID GetLetterLexemeID(Const<Char> aChar);
 
 	static bool IsValidLexemeCharacter(Const<Char> aChar, Const<bool> aIsFirstCharacter);
-	static TokenID GetLexemeIDFromCharacter(Const<Char> aChar, Const<bool> aIsFirstCharacter);
+	static TokenID GetTokenIDFromCharacter(Const<Char> aChar, Const<bool> aIsFirstCharacter);
 
 	static bool IsValidFirstSymbolCharacter(Const<Char> aChar);
 

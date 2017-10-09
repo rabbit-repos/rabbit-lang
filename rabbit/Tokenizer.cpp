@@ -170,19 +170,33 @@ void Tokenizer::ParseUnknownStatement(Ref<TokenizerContext> aContext)
 
 String Tokenizer::ParseLexeme(Ref<TokenizerContext> aContext)
 {
-	i32 length = 0;
-	while (!aContext.IsAtEnd() && CharUtility::IsValidLexemeCharacter(aContext.At(length), length == 0))
-		++length;
-	String str = aContext.Peek(length);
-	aContext.AdvanceCursor(length);
-	return str;
+	if (CharUtility::IsValidFirstSymbolCharacter(aContext.At()))
+	{
+		i32 length = 0;
+		while (!aContext.IsAtEnd() && CharUtility::IsValidLexemeCharacter(aContext.At(length), length == 0))
+			++length;
+		String str = aContext.Peek(length);
+		aContext.AdvanceCursor(length);
+		return str;
+	}
+	else
+	{
+		// NOTE: We can't create a string from aContext.At() since that string would have to reference a local variable
+		String str = aContext.Peek(1);
+		aContext.AdvanceCursor();
+		return str;
+	}
 }
 
 CodeTokens Tokenizer::TokenizeFile(ConstRef<String> aFilePath)
 {
 	std::wifstream f(aFilePath.ToWideString());
 	
-	if (!f.good())
+	if (f.good())
+	{
+		std::wcout << aFilePath << std::endl;
+	}
+	else
 	{
 		std::wcout << L"Failed to open file " << aFilePath << std::endl;
 		return CodeTokens();
