@@ -17,18 +17,18 @@ public:
 	ConstPtr<TType> TryGetValue(ConstRef<String> aString) const;
 
 	Ref<TType> GetOrCreateValue(ConstRef<String> aString);
-	Ref<TType> operator[](String aString);
+	Ref<TType> operator[](ConstRef<String> aString);
 
 	// TODO: RemoveValue which deletes empty branches
 	// void RemoveValue(String aString);
 
 private:
 	TType myValue;
-	Ptr<Array<TCharacterMapper::ArrayLength, ArraySize>> myNextLayer;
+	Ptr<Array<StringMap, TCharacterMapper::ArraySize>> myNextLayer;
 };
 
 template <typename TType, typename TCharacterMapper>
-StringMap<TType>::StringMap()
+StringMap<TType, TCharacterMapper>::StringMap()
 	: myValue()
 {
 	myNextLayer = null;
@@ -49,7 +49,7 @@ StringMap<TType, TCharacterMapper>::StringMap(RValue<StringMap> aOther)
 }
 
 template <typename TType, typename TCharacterMapper>
-Ref<StringMap<TType, TCharacterMapper>> StringMap<TType, TCharacterMapper>::operator=(ConstRef<SymbolFilter> aOther)
+Ref<StringMap<TType, TCharacterMapper>> StringMap<TType, TCharacterMapper>::operator=(ConstRef<StringMap> aOther)
 {
 	delete myNextLayer;
 
@@ -78,7 +78,7 @@ Ref<StringMap<TType, TCharacterMapper>> StringMap<TType, TCharacterMapper>::oper
 }
 
 template <typename TType, typename TCharacterMapper>
-Ptr<TType> StringMap<TType, TCharacterMapper>::TryGetValue(String aString)
+Ptr<TType> StringMap<TType, TCharacterMapper>::TryGetValue(ConstRef<String> aString)
 {
 	// Should this even be considered a bad practice? (probably... ): ) 
 	// return const_cast<Ptr<TType>>(static_cast<ConstPtr<SymbolFilter>>(this)->TryGetValue(aString));
@@ -103,7 +103,7 @@ Ptr<TType> StringMap<TType, TCharacterMapper>::TryGetValue(String aString)
 }
 
 template <typename TType, typename TCharacterMapper>
-ConstPtr<TType> StringMap<TType, TCharacterMapper>::TryGetValue(String aString) const
+ConstPtr<TType> StringMap<TType, TCharacterMapper>::TryGetValue(ConstRef<String> aString) const
 {
 	ConstPtr<StringMap> current = this;
 	bool isFirstCharacter = true;
@@ -125,7 +125,7 @@ ConstPtr<TType> StringMap<TType, TCharacterMapper>::TryGetValue(String aString) 
 }
 
 template <typename TType, typename TCharacterMapper>
-Ref<TType> StringMap<TType, TCharacterMapper>::operator[](String aString)
+Ref<TType> StringMap<TType, TCharacterMapper>::operator[](ConstRef<String> aString)
 {
 	return GetOrCreateValue(aString);
 }
