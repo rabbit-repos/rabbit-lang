@@ -88,6 +88,7 @@ void VirtualList<T>::Clear()
 {
 	for (i32 i = 0; i < myObjects.Size(); ++i)
 		myCopyFunctions[i](null, myObjects[i], VirtualListCopyMode::Destruct);
+	myCopyFunctions.Clear();
 	myObjects.Clear();
 	myWritePosition = 0;
 }
@@ -144,6 +145,7 @@ template <typename T>
 Ref<VirtualList<T>> VirtualList<T>::operator=(RValue<VirtualList> aCopy)
 {
 	myObjects = std::move(aCopy.myObjects);
+	myCopyFunctions = std::move(aCopy.myCopyFunctions);
 	myData = std::move(aCopy.myData);
 
 	return *this;

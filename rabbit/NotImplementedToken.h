@@ -4,7 +4,10 @@
 class NotImplementedToken : public Token
 {
 public:
-	NotImplementedToken(Const<TokenID> aToken, String aString);
+	NotImplementedToken(TokenID aTokenID, String aString);
 	~NotImplementedToken();
+
+private:
+	String myTokenString;
 };
 

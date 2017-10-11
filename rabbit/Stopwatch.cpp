@@ -2,7 +2,7 @@
 #include "Stopwatch.h"
 #include <Windows.h>
 
-u64 GetFrequency()
+static LONGLONG GetFrequency()
 {
 	LARGE_INTEGER frequency;
 
@@ -15,7 +15,7 @@ u64 GetFrequency()
 	return frequency.QuadPart;
 }
 
-u64 GetCurrentPerformanceTimer()
+static LONGLONG GetCurrentPerformanceTimer()
 {
 	LARGE_INTEGER timer;
 	if (!QueryPerformanceCounter(&timer))

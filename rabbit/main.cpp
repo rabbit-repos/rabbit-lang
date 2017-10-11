@@ -48,13 +48,15 @@ i32 main(Const<i32> aArgNum, ConstPtr<char> aArgs[])
 			{
 				Stopwatch watch;
 
-				CodeTokens codeTokens = tokenizer.TokenizeFile(L"lexing/lexing.rbt");
-				std::wcout << L"Tokenizer finished in " << watch.GetElapsedTimeInSeconds() * 1000.f << L"ms" << std::endl;
+				CodeTokens codeTokens = tokenizer.TokenizeFile(L"lexing/lexing.rbt", &watch);
+				Const<float> time = watch.GetElapsedTimeInSeconds() * 1000.f;
+				std::wcout << L"Tokenizer finished in " << time << L"ms" << std::endl;
 
 				{
 					Stopwatch interpretWatch;
 					interpreter.Interpret(codeTokens);
-					std::wcout << L"Interpreter finished in " << interpretWatch.GetElapsedTimeInSeconds() * 1000.f << L"ms" << std::endl;
+					Const<float> interpretTime = watch.GetElapsedTimeInSeconds() * 1000.f;
+					std::wcout << L"Interpreter finished in " << interpretTime << L"ms" << std::endl;
 				}
 				std::wcout << L"Compiler finished in " << watch.GetElapsedTimeInSeconds() * 1000.f << L"ms" << std::endl;
 			}

@@ -4,6 +4,9 @@
 #include "CharUtility.h"
 #include "TokenizerContext.h"
 #include "SpecialTokenMap.h"
+#include "NotImplementedToken.h"
+#include "Stopwatch.h"
+#include <thread>
 
 static SpecialTokenMap<TokenID> CreateSpecialTokens();
 static Const<SpecialTokenMap<TokenID>> gSpecialTokens = CreateSpecialTokens();
@@ -163,8 +166,8 @@ void Tokenizer::ParseCompilerDirective(Ref<TokenizerContext> aContext)
 	if (aContext.At() != L'#')
 		return;
 
-	String directiveName = ParseLexeme(aContext);
-	aContext.AddToken<CompilerDirectiveToken>(CompilerDirectiveToken(directiveName));
+	String directiveName = ParseToken(aContext);
+	aContext.AddToken<NotImplementedToken>(NotImplementedToken(TokenID::CompilerDirective, L"Implement token Compiler Directive"));
 	// std::wcout << L"Compiler Directive: \"" << directiveName << L"\"" << std::endl;
 }
 
@@ -174,7 +177,8 @@ void Tokenizer::ParseNumberLiteral(Ref<TokenizerContext> aContext)
 		return;
 
 	Const<String> number = ParseUntil(aContext, [](Const<Char> aChar) { return CharUtility::IsDigit(aChar); });
-	std::wcout << L"Literal Number: " << number << std::endl;
+	// std::wcout << L"Literal Number: " << number << std::endl;
+	aContext.AddToken<NotImplementedToken>(NotImplementedToken(TokenID::NumberLiteral, L"Token not implemented"));
 }
 
 // TODO: Rewrite using ParseUntil
@@ -195,20 +199,23 @@ void Tokenizer::ParseStringLiteral(Ref<TokenizerContext> aContext)
 		++length;
 	} while (aContext.At(length) != L'"' || isEscaping && !aContext.IsAtEnd());
 
-	std::wcout << L"String literal: \"" << aContext.Peek(length) << L"\"" << std::endl;
+	// std::wcout << L"String literal: \"" << aContext.Peek(length) << L"\"" << std::endl;
+	aContext.AddToken<NotImplementedToken>(NotImplementedToken(TokenID::StringLiteral, L"Token not implemented"));
 
 	aContext.AdvanceCursor(length + 1);
 }
 
 void Tokenizer::ParseUnknownStatement(Ref<TokenizerContext> aContext)
 {
-	String statement = ParseLexeme(aContext);
+	String statement = ParseToken(aContext);
 
 	if (statement.Size() > 0)
-		std::wcout << L"Statement: \"" << statement << L"\"" << std::endl;
+	{
+		aContext.AddToken<NotImplementedToken>(NotImplementedToken(TokenID::None, L"Unhandled Statement"));
+	}
 }
 
-String Tokenizer::ParseLexeme(Ref<TokenizerContext> aContext)
+String Tokenizer::ParseToken(Ref<TokenizerContext> aContext)
 {
 	if (CharUtility::IsValidFirstSymbolCharacter(aContext.At()))
 	{
@@ -228,7 +235,7 @@ String Tokenizer::ParseLexeme(Ref<TokenizerContext> aContext)
 	}
 }
 
-CodeTokens Tokenizer::TokenizeFile(ConstRef<String> aFilePath)
+CodeTokens Tokenizer::TokenizeFile(ConstRef<String> aFilePath, Ptr<Stopwatch> aWatchToRestartWhenFileIsRead /*= null*/)
 {
 	std::wifstream f(aFilePath.ToWideString());
 	
@@ -250,5 +257,8 @@ CodeTokens Tokenizer::TokenizeFile(ConstRef<String> aFilePath)
 		code.AppendChar(L'\n');
 	}
 
+	if (aWatchToRestartWhenFileIsRead)
+		aWatchToRestartWhenFileIsRead->Restart();
+	
 	return TokenizeCode(std::move(code));
 }

@@ -29,7 +29,7 @@ public:
 
 private:
 	ConstPtr<StringData> myCode;
-	ConstPtr<CodeTokens> myTokens;
+	Ptr<CodeTokens> myTokens;
 	i32 myCursor;
 };
 
@@ -74,5 +74,5 @@ inline bool TokenizerContext::IsAtEnd() const
 template <typename T>
 void TokenizerContext::AddToken(RValue<T> aToken)
 {
-	myTokens->AddToken(aToken);
+	myTokens->AddToken(std::move(aToken));
 }

@@ -58,6 +58,8 @@ enum class TokenID : u8
 	BitShiftRight,
 	// Same as BitShiftRight
 	StreamInput = BitShiftRight,
+	NumberLiteral,
+	StringLiteral,
 
-	Count,
+	Count
 };

@@ -4,6 +4,7 @@
 #include "TokenID.h"
 
 class TokenizerContext;
+class Stopwatch;
 
 class Tokenizer
 {
@@ -12,14 +13,14 @@ public:
 	~Tokenizer();
 
 	CodeTokens TokenizeCode(ConstRef<StringData> aCode);
-	CodeTokens TokenizeFile(ConstRef<String> aFilePath);
+	CodeTokens TokenizeFile(ConstRef<String> aFilePath, Ptr<Stopwatch> aWatchToRestartWhenFileIsRead = null);
 	
 private:
 	TokenID TryReadSpecialToken(Ref<TokenizerContext> aContext);
 	void ParseComment(Ref<TokenizerContext> aContext);
 	void ParseStringLiteral(Ref<TokenizerContext> aContext);
 	void ParseUnknownStatement(Ref<TokenizerContext> aContext);
-	String ParseLexeme(Ref<TokenizerContext> aContext);
+	String ParseToken(Ref<TokenizerContext> aContext);
 	void ParseCompilerDirective(Ref<TokenizerContext> aContext);
 	void ParseNumberLiteral(Ref<TokenizerContext> context);
 
