@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?> 
+<AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
+  <Type Name="String">
+    <DisplayString>"{&amp;myData[0],[mySize]sub}"[{mySize}]</DisplayString>
+    <StringView>&amp;myData[0],[mySize]sub</StringView>
+
+    <Expand>
+      <Item Name="Length">mySize</Item>
+      <Synthetic Name="Left Padding" Optional="true">
+        <DisplayString>{&amp;myData[0] - &amp;myOwner->myData[0]} Characters</DisplayString>
+      </Synthetic>
+      <Synthetic Name="Right Padding" Optional="true">
+        <DisplayString>{&amp;myData[mySize] - &amp;myOwner->myData[mySize]} Characters</DisplayString>
+      </Synthetic>
+      <Synthetic Name="Null-Terminated" Condition="myData[mySize] == L'\0'">
+        <DisplayString>true</DisplayString>
+      </Synthetic>
+      <Synthetic Name="Null-Terminated" Condition="myData[mySize] != L'\0'">
+        <DisplayString>FALSE</DisplayString>
+      </Synthetic>
+      
+      <Synthetic Name="String">
+        <DisplayString>"{&amp;myData[0],[mySize]sub}"[{mySize}]</DisplayString>
+        <StringView>&amp;myData[0],[mySize]sub</StringView>
+
+        <Expand>
+          <ArrayItems>
+            <Size>mySize</Size>
+            <ValuePointer>&amp;myData[0] </ValuePointer>
+          </ArrayItems>
+        </Expand>
+      </Synthetic>
+    </Expand>
+  </Type>
+
+  <Type Name="StringData">
+    <DisplayString>"{&amp;myData[0],[myData.mySize - 1]sub}"[{myData.mySize - 1}]</DisplayString>
+    <StringView>&amp;myData[0],[myData.mySize - 1]sub</StringView>
+    
+    <Expand>
+      <Item Name="Data">myData</Item>
+      <Item Name="Length">myData.mySize - 1</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="List&lt;*&gt;">
+    <DisplayString>[List&lt;{"$T1",sb}&gt;] {{ Size={mySize} }}</DisplayString>
+    
+    <Expand>
+      <Item Name="[Size]" ExcludeView="simple">mySize</Item>
+      <Item Name="[Capacity]" ExcludeView="simple">myData.mySize</Item>
+      <IndexListItems>
+        <Size>mySize</Size>
+        <ValueNode>myData[$i]</ValueNode>
+      </IndexListItems>
+    </Expand>
+  </Type>
+
+  <Type Name="ResizableArray&lt;*&gt;">
+    <DisplayString>[ResizableArray&lt;{"$T1",sb}&gt;] {{ Size = {mySize} }}</DisplayString>
+
+    <Expand>
+      <Item Name="[Size]">mySize</Item>
+      
+      <ArrayItems>
+        <Size>mySize</Size>
+        <ValuePointer>($T1*)myData.myData</ValuePointer>
+      </ArrayItems>
+    </Expand>
+  </Type>
+
+  <Type Name="ResizableArrayBase">
+    <DisplayString>[Raw Data] {{ Size = {mySize} bytes }}</DisplayString>
+
+    <Expand>
+      <Item Name="Address">(void*)myData</Item>
+      <Item Name="Size">mySize</Item>
+    </Expand>
+  </Type>
+  
+  <Type Name="VirtualList">
+    <DisplayString>{{ Size = {myObjects.mySize} }}</DisplayString>
+
+    <Expand>
+      <IndexListItems>
+        <Size>myObjects.mySize</Size>
+        <ValueNode>*myObjects[$i],na</ValueNode>
+      </IndexListItems>
+    </Expand>
+  </Type>
+
+  <Type Name="LexingContext">
+    <DisplayString>[Lexing Context] {{ PREV({&amp;myCode->myData[myCursor - 1],1sub}) CURR({&amp;myCode->myData[myCursor],1sub}) NEXT({&amp;myCode->myData[myCursor + 1],1sub}) }}</DisplayString>
+
+    <Expand>
+      <Synthetic Name="Previous">
+        <DisplayString>{&amp;myCode->myData[myCursor - 1],1sub} ({myCursor - 2} previous characters)</DisplayString>
+        <Expand>
+          <IndexListItems>
+            <Size>myCursor - 1</Size>
+            <ValueNode>(myCode->myData[$i]),na</ValueNode>
+          </IndexListItems>
+        </Expand>
+      </Synthetic>
+      <Item Name="Current" Optional="true">&amp;myCode->myData[myCursor],1sub</Item>
+      <Synthetic Name="Next">
+        <DisplayString>{&amp;myCode->myData[myCursor + 1],1sub} ({myCode->myData.mySize - myCursor - 1} more characters)</DisplayString>
+        <Expand>
+          <IndexListItems>
+            <Size>myCode->myData.mySize - myCursor</Size>
+            <ValueNode>(myCode->myData[myCursor + 2 + $i]),na</ValueNode>
+          </IndexListItems>
+        </Expand>
+      </Synthetic>
+    </Expand>
+  </Type>
+</AutoVisualizer>
