@@ -1,9 +1,10 @@
 #pragma once
+#include "CodeTokens.h"
 
 class TokenizerContext
 {
 public:
-	TokenizerContext(ConstPtr<StringData> aCode);
+	TokenizerContext(ConstPtr<StringData> aCode, Ref<CodeTokens> aTokens);
 	TokenizerContext(ConstRef<TokenizerContext>) = delete;
 	TokenizerContext(RValue<TokenizerContext>) = delete;
 	Ref<TokenizerContext> operator=(ConstRef<TokenizerContext>) = delete;
@@ -23,8 +24,12 @@ public:
 
 	bool IsAtEnd() const;
 
+	template <typename T>
+	void AddToken(RValue<T> aToken);
+
 private:
 	ConstPtr<StringData> myCode;
+	ConstPtr<CodeTokens> myTokens;
 	i32 myCursor;
 };
 
@@ -64,4 +69,10 @@ inline void TokenizerContext::AdvanceCursor(Const<i32> aAmount)
 inline bool TokenizerContext::IsAtEnd() const
 {
 	return myCursor >= myCode->Size();
+}
+
+template <typename T>
+void TokenizerContext::AddToken(RValue<T> aToken)
+{
+	myTokens->AddToken(aToken);
 }

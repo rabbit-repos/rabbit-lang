@@ -1,12 +1,13 @@
 #include "pch.h"
 #include "TokenizerContext.h"
 
-TokenizerContext::TokenizerContext(ConstPtr<StringData> aCode)
+TokenizerContext::TokenizerContext(ConstPtr<StringData> aCode, Ref<CodeTokens> aTokens)
 {
 	if (aCode == null)
 		abort();
 
 	myCode = aCode;
+	myTokens = &aTokens;
 	myCursor = 0;
 }
 

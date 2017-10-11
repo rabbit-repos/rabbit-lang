@@ -57,6 +57,9 @@
     <ClCompile Include="SymbolMap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="NotImplementedToken.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="json.h">
@@ -129,6 +132,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="TokenID.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="NotImplementedToken.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

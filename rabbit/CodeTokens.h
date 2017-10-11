@@ -20,19 +20,15 @@ public:
 
 	ConstRef<VirtualList<Token>> GetLexemes() const;
 
-	class LexemeListAccesser
-	{
-		friend class Interpreter;
-		template <typename T>
-		static void AddLexeme(RValue<T> aLexeme);
-	};
+	template <typename T>
+	void AddToken(RValue<T> aLexeme);
 
 private:
 	VirtualList<Token> myLexemes;
 };
 
 template <typename T>
-void CodeTokens::LexemeListAccesser::AddLexeme(RValue<T> aLexeme)
+void CodeTokens::AddToken(RValue<T> aLexeme)
 {
-	myLexemes.Add(myLexemes);
+	myLexemes.Add<T>(std::move(aLexeme));
 }

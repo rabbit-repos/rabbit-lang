@@ -16,6 +16,10 @@ SpecialTokenMap<TokenID> CreateSpecialTokens()
 	specialTokens[L"--"] = TokenID::Decrementation;
 	specialTokens[L"<<"] = TokenID::BitShiftLeft; // Will also assign StreamOutput
 	specialTokens[L">>"] = TokenID::BitShiftRight; // Will also assign StreamInput
+	specialTokens[L">"] = TokenID::ClosingAngleBracket;
+	specialTokens[L"<"] = TokenID::OpeningAngleBracket;
+	specialTokens[L"!"] = TokenID::OpeningAngleBracket;
+	specialTokens[L"-"] = TokenID::Hyphen;
 	return specialTokens;
 }
 
@@ -57,7 +61,7 @@ static String ParseUntilString(Ref<TokenizerContext> aContext, ConstRef<String> 
 CodeTokens Tokenizer::TokenizeCode(ConstRef<StringData> aCode)
 {
 	CodeTokens tokens;
-	TokenizerContext context(&aCode);
+	TokenizerContext context(&aCode, tokens);
 
 	while (!context.IsAtEnd())
 	{
@@ -75,7 +79,8 @@ CodeTokens Tokenizer::TokenizeCode(ConstRef<StringData> aCode)
 
 		if (specialToken != TokenID::None)
 		{
-			std::wcout << L"Special Token: \"" << String(aCode).SubString(startSpecial, context.CursorLocation() - startSpecial) << L"\"" << std::endl;
+			tokens.AddToken<Token>(Token(specialToken));
+			// std::wcout << L"Special Token: \"" << String(aCode).SubString(startSpecial, context.CursorLocation() - startSpecial) << L"\"" << std::endl;
 			continue;
 		}
 
@@ -89,14 +94,6 @@ CodeTokens Tokenizer::TokenizeCode(ConstRef<StringData> aCode)
 			break;
 		case L'"':
 			ParseStringLiteral(context);
-			break;
-		case L'!':
-			std::wcout << L"NOT Statement: \"!\"" << std::endl;
-			context.AdvanceCursor();
-			break;
-		case L'-':
-			std::wcout << L"Negation Statement: \"-\"" << std::endl;
-			context.AdvanceCursor();
 			break;
 		case L'0':
 		case L'1':
@@ -167,7 +164,8 @@ void Tokenizer::ParseCompilerDirective(Ref<TokenizerContext> aContext)
 		return;
 
 	String directiveName = ParseLexeme(aContext);
-	std::wcout << L"Compiler Directive: \"" << directiveName << L"\"" << std::endl;
+	aContext.AddToken<CompilerDirectiveToken>(CompilerDirectiveToken(directiveName));
+	// std::wcout << L"Compiler Directive: \"" << directiveName << L"\"" << std::endl;
 }
 
 void Tokenizer::ParseNumberLiteral(Ref<TokenizerContext> aContext)

@@ -36,7 +36,7 @@ Stopwatch::~Stopwatch()
 
 f32 Stopwatch::GetElapsedTimeInSeconds() const
 {
-	return static_cast<f32>(static_cast<f64>(GetCurrentPerformanceTimer() - gFrequency) / gFrequency);
+	return static_cast<f32>(static_cast<f64>(GetCurrentPerformanceTimer() - myStartTime) / gFrequency);
 }
 
 void Stopwatch::Restart()

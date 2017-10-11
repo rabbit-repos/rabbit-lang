@@ -1,10 +1,15 @@
 #pragma once
+#include "TokenID.h"
 
 class Token
 {
 public:
-	Token();
+	Token(Const<TokenID> aTokenID);
 	virtual ~Token();
 
-	virtual void AppendData(Ref<List<u8>> aData) = 0;
+	bool operator==(Const<TokenID> aRight) const;
+	bool operator!=(Const<TokenID> aRight) const;
+
+private:
+	TokenID myTokenID;
 };

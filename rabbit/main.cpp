@@ -48,9 +48,6 @@ i32 main(Const<i32> aArgNum, ConstPtr<char> aArgs[])
 			{
 				Stopwatch watch;
 
-				std::this_thread::sleep_for(std::chrono::seconds(1));
-				std::cout << watch.GetElapsedTimeInSeconds() << std::endl;
-
 				CodeTokens codeTokens = tokenizer.TokenizeFile(L"lexing/lexing.rbt");
 				std::wcout << L"Tokenizer finished in " << watch.GetElapsedTimeInSeconds() * 1000.f << L"ms" << std::endl;
 

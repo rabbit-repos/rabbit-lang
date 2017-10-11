@@ -156,15 +156,16 @@ void VirtualList<T>::Add(RValue<TDerivedType> aObject)
 {
 	static_assert(std::is_move_constructible_v<TDerivedType>, "Types added to a VirtualList must be move constructible!");
 	static_assert(std::is_move_assignable_v<T>, "Value of VirtualList must be move assignable! (operator=(&&))");
+	static_assert(std::is_base_of_v<T, TDerivedType>, "Type added to VirtualList must derive from the VirtualList's type!");
 
-	MakeSizeFor(sizeof TLexemeType);
+	MakeSizeFor(sizeof TDerivedType);
 
 	RawPtr ptr = &myData[myWritePosition];
 	size_t freeSpace = myData.Size() - myWritePosition;
 	std::align(std::alignment_of_v<TDerivedType>, sizeof TDerivedType, ptr, freeSpace);
 	Ptr<TDerivedType> obj = reinterpret_cast<Ptr<TDerivedType>>(ptr);
 	new (obj) TDerivedType(std::move(aObject));
-	myWritePosition = (reinterpret_cast<Ptr<u8>>(ptr) - myData.GetAddress()) + sizeof TLexemeType;
+	myWritePosition = (reinterpret_cast<Ptr<u8>>(ptr) - myData.GetAddress()) + sizeof TDerivedType;
 	
 	myObjects.Add(obj);
 	myCopyFunctions.Add(VirtualCopyHelper<TDerivedType>);
