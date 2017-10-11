@@ -6,6 +6,8 @@
 #include "Tokenizer.h"
 #include "Interpreter.h"
 #include "Token.h"
+#include "Stopwatch.h"
+#include <thread>
 
 i32 main(Const<i32> aArgNum, ConstPtr<char> aArgs[])
 {
@@ -37,14 +39,28 @@ i32 main(Const<i32> aArgNum, ConstPtr<char> aArgs[])
 			}
 			else
 			{
-				std::cout << "Building and running project in the current directory..." << std::endl;
+				std::wcout << L"Building and running project in the current directory..." << std::endl;
 				config = Config(StringData::FromASCII(aArgs[0]));
 			}
 
 			Tokenizer tokenizer(config);
 			Interpreter interpreter(config);
-			CodeTokens codeTokens = tokenizer.TokenizeFile(L"lexing/lexing.rbt");
-			interpreter.Interpret(codeTokens);
+			{
+				Stopwatch watch;
+
+				std::this_thread::sleep_for(std::chrono::seconds(1));
+				std::cout << watch.GetElapsedTimeInSeconds() << std::endl;
+
+				CodeTokens codeTokens = tokenizer.TokenizeFile(L"lexing/lexing.rbt");
+				std::wcout << L"Tokenizer finished in " << watch.GetElapsedTimeInSeconds() * 1000.f << L"ms" << std::endl;
+
+				{
+					Stopwatch interpretWatch;
+					interpreter.Interpret(codeTokens);
+					std::wcout << L"Interpreter finished in " << interpretWatch.GetElapsedTimeInSeconds() * 1000.f << L"ms" << std::endl;
+				}
+				std::wcout << L"Compiler finished in " << watch.GetElapsedTimeInSeconds() * 1000.f << L"ms" << std::endl;
+			}
 
 			// ConstRef<List<StringData>> sourceFiles = config.GetSourceFiles();
 			// for (i32 i = 0; i < sourceFiles.Size(); ++i)
