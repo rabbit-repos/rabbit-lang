@@ -3,6 +3,21 @@
 #include "Token.h"
 #include "CharUtility.h"
 #include "TokenizerContext.h"
+#include "SpecialTokenMap.h"
+
+static SpecialTokenMap<TokenID> CreateSpecialTokens();
+static Const<SpecialTokenMap<TokenID>> gSpecialTokens = CreateSpecialTokens();
+
+SpecialTokenMap<TokenID> CreateSpecialTokens()
+{
+	SpecialTokenMap<TokenID> specialTokens;
+	specialTokens[L"::"] = TokenID::ScopeOperator;
+	specialTokens[L"++"] = TokenID::Incrementation;
+	specialTokens[L"--"] = TokenID::Decrementation;
+	specialTokens[L"<<"] = TokenID::BitShiftLeft; // Will also assign StreamOutput
+	specialTokens[L">>"] = TokenID::BitShiftRight; // Will also assign StreamInput
+	return specialTokens;
+}
 
 Tokenizer::Tokenizer(ConstRef<class Config> aConfig)
 {
@@ -54,6 +69,16 @@ CodeTokens Tokenizer::TokenizeCode(ConstRef<StringData> aCode)
 			continue;
 		}
 
+		Const<i32> startSpecial = context.CursorLocation();
+		// TODO: Find out if this can/should be better optimized
+		Const<TokenID> specialToken = TryReadSpecialToken(context);
+
+		if (specialToken != TokenID::None)
+		{
+			std::wcout << L"Special Token: \"" << String(aCode).SubString(startSpecial, context.CursorLocation() - startSpecial) << L"\"" << std::endl;
+			continue;
+		}
+
 		switch (context.At())
 		{
 		case L'/':
@@ -97,6 +122,23 @@ CodeTokens Tokenizer::TokenizeCode(ConstRef<StringData> aCode)
 	}
 
 	return tokens;
+}
+
+TokenID Tokenizer::TryReadSpecialToken(Ref<TokenizerContext> aContext)
+{
+	Const<i32> maxDepth = gSpecialTokens.GetDepth();
+	ConstPtr<SpecialTokenMap<TokenID>> current = &gSpecialTokens;
+	for (i32 i = 0; i < maxDepth && current != null; ++i)
+	{
+		if (current->GetOurValue() != TokenID::None)
+		{
+			Const<TokenID> specialToken = current->GetOurValue();
+			aContext.AdvanceCursor(i);
+			return specialToken;
+		}
+		current = current->TryGetNextLayer(aContext.At(i));
+	}
+	return TokenID::None;
 }
 
 void Tokenizer::ParseComment(Ref<TokenizerContext> aContext)

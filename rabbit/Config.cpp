@@ -5,7 +5,7 @@
 #include "ResizableArray.h"
 
 json ReadFile(ConstRef<String> aPath);
-Const<json> gDefaultConfig = ReadFile(L"default-project.json");
+static Const<json> gDefaultConfig = ReadFile(L"default-project.json");
 
 Config::Config()
 {

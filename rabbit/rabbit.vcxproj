@@ -200,7 +200,9 @@
     <ClInclude Include="Stopwatch.h" />
     <ClInclude Include="StringFilter.h" />
     <ClInclude Include="SymbolMap.h" />
+    <ClInclude Include="TokenID.h" />
     <ClInclude Include="TokenizerContext.h" />
+    <ClInclude Include="SpecialTokenMap.h" />
     <ClInclude Include="VirtualList.h" />
     <ClInclude Include="Token.h" />
     <ClInclude Include="Tokenizer.h" />

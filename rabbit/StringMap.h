@@ -1,70 +1,106 @@
 #pragma once
 #include "Array.h"
 
-template <typename TType, typename TCharacterMapper>
+template <typename TImpl, typename TType, size TArrayLength>
 class StringMap
 {
-public:
+protected:
 	StringMap();
-	StringMap(RValue<StringMap> aOther);
-	StringMap(ConstRef<StringMap> aOther);
+
+	virtual i32 Map(Const<Char> aCharacter) const = 0;
+
+public:
 	virtual ~StringMap();
 
-	Ref<StringMap> operator=(ConstRef<StringMap> aOther);
+	StringMap(RValue<StringMap> aOther);
 	Ref<StringMap> operator=(RValue<StringMap> aOther);
 
-	Ptr<TType> TryGetValue(ConstRef<String> aString);
-	ConstPtr<TType> TryGetValue(ConstRef<String> aString) const;
+	// Use Copy() instead
+	StringMap(ConstRef<StringMap> aOther) = delete;
+	// Use Copy() instead
+	Ref<StringMap> operator=(ConstRef<StringMap> aOther) = delete;
 
-	Ref<TType> GetOrCreateValue(ConstRef<String> aString);
-	Ref<TType> operator[](ConstRef<String> aString);
+	// void CopyTo(Ref<StringMap> aTarget) const;
+
+	Ptr<TType> TryGetValue(String aString);
+	ConstPtr<TType> TryGetValue(String aString) const;
+
+	Ref<TType> GetOrCreateValue(String aString);
+	Ref<TType> operator[](String aString);
+
+	Ref<TImpl> GetNextLayer(Const<Char> aCharacter);
+	Ptr<TImpl> TryGetNextLayer(Const<Char> aCharacter) const;
+
+	ConstRef<TType> GetOurValue() const;
+	Ref<TType> GetOurValue();
+
+	u16 GetDepth() const;
 
 	// TODO: RemoveValue which deletes empty branches
 	// void RemoveValue(String aString);
 
 private:
 	TType myValue;
-	Ptr<Array<StringMap, TCharacterMapper::ArraySize>> myNextLayer;
+	Ptr<Array<TImpl, TArrayLength>> myNextLayer;
+	u16 myDepth;
 };
 
-template <typename TType, typename TCharacterMapper>
-StringMap<TType, TCharacterMapper>::StringMap()
+template <typename TImpl, typename TType, size TArrayLength>
+Ref<TImpl> StringMap<TImpl, TType, TArrayLength>::GetNextLayer(Const<Char> aCharacter)
+{
+	if (myNextLayer == null)
+	{
+		myNextLayer = new Array<TImpl, TArrayLength>();
+		myDepth = 1;
+	}
+	return (*myNextLayer)[Map(aCharacter)];
+}
+
+template <typename TImpl, typename TType, size TArrayLength>
+Ptr<TImpl> StringMap<TImpl, TType, TArrayLength>::TryGetNextLayer(Const<Char> aCharacter) const
+{
+	if (myNextLayer == null)
+		return nullptr;
+	return &(*myNextLayer)[Map(aCharacter)];
+}
+
+// INCOMPLETE
+// template <typename TType, size TArrayLength>
+// StringMap<TType, TArrayLength> StringMap<TType, TCharacterMapper>::CopyTo(Ref<StringMap> aTarget) const
+// {
+// 	StringMap copy;
+// 
+// 	if (myNextLayer)
+// 	{
+// 		copy.myNextLayer = new StringMap();
+// 		myNextLayer->CopyTo(copy.myNextLayer);
+// 	}
+// 	else
+// 		copy.myNextLayer = null;
+// 
+// 	copy.myValue = myValue;
+// 	copy.myDepth = myDepth;
+// 
+// 	return *this;
+// }
+
+template <typename TImpl, typename TType, size TArrayLength>
+StringMap<TImpl, TType, TArrayLength>::StringMap()
 	: myValue()
 {
+	myDepth = 0;
 	myNextLayer = null;
 }
 
-template <typename TType, typename TCharacterMapper>
-StringMap<TType, TCharacterMapper>::StringMap(ConstRef<StringMap> aOther)
-	: myValue(), myNextLayer(null)
-{
-	*this = aOther;
-}
-
-template <typename TType, typename TCharacterMapper>
-StringMap<TType, TCharacterMapper>::StringMap(RValue<StringMap> aOther)
+template <typename TImpl, typename TType, size TArrayLength>
+StringMap<TImpl, TType, TArrayLength>::StringMap(RValue<StringMap> aOther)
 	: myValue(), myNextLayer(null)
 {
 	*this = std::move(aOther);
 }
 
-template <typename TType, typename TCharacterMapper>
-Ref<StringMap<TType, TCharacterMapper>> StringMap<TType, TCharacterMapper>::operator=(ConstRef<StringMap> aOther)
-{
-	delete myNextLayer;
-
-	if (aOther.myNextLayer)
-		myNextLayer = new SymbolFilter(*aOther.myNextLayer);
-	else
-		myNextLayer = null;
-
-	myValue = aOther.myValue;
-
-	return *this;
-}
-
-template <typename TType, typename TCharacterMapper>
-Ref<StringMap<TType, TCharacterMapper>> StringMap<TType, TCharacterMapper>::operator=(RValue<StringMap<TType, TCharacterMapper>> aOther)
+template <typename TImpl, typename TType, size TArrayLength>
+Ref<StringMap<TImpl, TType, TArrayLength>> StringMap<TImpl, TType, TArrayLength>::operator=(RValue<StringMap<TImpl, TType, TArrayLength>> aOther)
 {
 	delete myNextLayer;
 
@@ -74,17 +110,16 @@ Ref<StringMap<TType, TCharacterMapper>> StringMap<TType, TCharacterMapper>::oper
 	myValue = std::move(aOther.myValue);
 	aOther.myValue = TType();
 
+	myDepth = std::move(aOther.myDepth);
+	aOther.myDepth = 0;
+
 	return *this;
 }
 
-template <typename TType, typename TCharacterMapper>
-Ptr<TType> StringMap<TType, TCharacterMapper>::TryGetValue(ConstRef<String> aString)
+template <typename TImpl, typename TType, size TArrayLength>
+Ptr<TType> StringMap<TImpl, TType, TArrayLength>::TryGetValue(String aString)
 {
-	// Should this even be considered a bad practice? (probably... ): ) 
-	// return const_cast<Ptr<TType>>(static_cast<ConstPtr<SymbolFilter>>(this)->TryGetValue(aString));
-
 	Ptr<StringMap> current = this;
-	bool isFirstCharacter = true;
 	for (;;)
 	{
 		// If we've reached the end of the string we're at the value we're looking for
@@ -94,19 +129,17 @@ Ptr<TType> StringMap<TType, TCharacterMapper>::TryGetValue(ConstRef<String> aStr
 		if (!current->myNextLayer)
 			return nullptr;
 
-		Const<u8> mappedCharacter = Map(aString[0], isFirstCharacter);
+		Const<i32> mappedCharacter = Map(aString[0]);
 		aString = aString.ChopRight(1);
 
 		current = &(*current->myNextLayer)[mappedCharacter];
-		isFirstCharacter = false;
 	}
 }
 
-template <typename TType, typename TCharacterMapper>
-ConstPtr<TType> StringMap<TType, TCharacterMapper>::TryGetValue(ConstRef<String> aString) const
+template <typename TImpl, typename TType, size TArrayLength>
+ConstPtr<TType> StringMap<TImpl, TType, TArrayLength>::TryGetValue(String aString) const
 {
 	ConstPtr<StringMap> current = this;
-	bool isFirstCharacter = true;
 	for (;;)
 	{
 		// If we've reached the end of the string we're at the value we're looking for
@@ -116,25 +149,23 @@ ConstPtr<TType> StringMap<TType, TCharacterMapper>::TryGetValue(ConstRef<String>
 		if (!current->myNextLayer)
 			return nullptr;
 
-		Const<u8> mappedCharacter = Map(aString[0], isFirstCharacter);
+		Const<i32> mappedCharacter = Map(aString[0]);
 		aString = aString.ChopRight(1);
 
 		current = &(*current->myNextLayer)[mappedCharacter];
-		isFirstCharacter = false;
 	}
 }
 
-template <typename TType, typename TCharacterMapper>
-Ref<TType> StringMap<TType, TCharacterMapper>::operator[](ConstRef<String> aString)
+template <typename TImpl, typename TType, size TArrayLength>
+Ref<TType> StringMap<TImpl, TType, TArrayLength>::operator[](String aString)
 {
 	return GetOrCreateValue(aString);
 }
 
-template <typename TType, typename TCharacterMapper>
-Ref<TType> StringMap<TType, TCharacterMapper>::GetOrCreateValue(ConstRef<String> aString)
+template <typename TImpl, typename TType, size TArrayLength>
+Ref<TType> StringMap<TImpl, TType, TArrayLength>::GetOrCreateValue(String aString)
 {
 	Ptr<StringMap> current = this;
-	bool isFirstCharacter = true;
 	for (;;)
 	{
 		// If we've reached the end of the string we're at the value we're looking for
@@ -143,23 +174,43 @@ Ref<TType> StringMap<TType, TCharacterMapper>::GetOrCreateValue(ConstRef<String>
 
 		if (!current->myNextLayer)
 		{
-			current->myNextLayer = new Array<SymbolFilter, ArraySize>();
+			current->myNextLayer = new Array<TImpl, TArrayLength>();
 
 			// TODO: Look into, can probably only happen will malloc, new probably throws
 			if (!current->myNextLayer)
 				abort();
+
+			myDepth++;
 		}
 
-		Const<u8> mappedCharacter = Map(aString[0], isFirstCharacter);
+		Const<i32> mappedCharacter = Map(aString[0]);
 		aString = aString.ChopRight(1);
 		
 		current = &(*current->myNextLayer)[mappedCharacter];
-		isFirstCharacter = false;
 	}
 }
 
-template <typename TType, typename TCharacterMapper>
-StringMap<TType, TCharacterMapper>::~StringMap()
+
+template <typename TImpl, typename TType, size TArrayLength>
+Ref<TType> StringMap<TImpl, TType, TArrayLength>::GetOurValue()
+{
+	return myValue;
+}
+
+template <typename TImpl, typename TType, size TArrayLength>
+ConstRef<TType> StringMap<TImpl, TType, TArrayLength>::GetOurValue() const
+{
+	return myValue;
+}
+
+template <typename TImpl, typename TType, size TArrayLength>
+u16 StringMap<TImpl, TType, TArrayLength>::GetDepth() const
+{
+	return myDepth;
+}
+
+template <typename TImpl, typename TType, size TArrayLength>
+StringMap<TImpl, TType, TArrayLength>::~StringMap()
 {
 	delete myNextLayer;
 #ifdef _DEBUG

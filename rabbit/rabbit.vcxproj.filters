@@ -125,6 +125,12 @@
     <ClInclude Include="SymbolMap.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="SpecialTokenMap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TokenID.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="rabbit.natvis" />

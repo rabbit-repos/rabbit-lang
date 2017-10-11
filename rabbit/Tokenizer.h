@@ -1,6 +1,7 @@
 #pragma once
 #include "VirtualList.h"
 #include "CodeTokens.h"
+#include "TokenID.h"
 
 class TokenizerContext;
 
@@ -12,8 +13,9 @@ public:
 
 	CodeTokens TokenizeCode(ConstRef<StringData> aCode);
 	CodeTokens TokenizeFile(ConstRef<String> aFilePath);
-
+	
 private:
+	TokenID TryReadSpecialToken(Ref<TokenizerContext> aContext);
 	void ParseComment(Ref<TokenizerContext> aContext);
 	void ParseStringLiteral(Ref<TokenizerContext> aContext);
 	void ParseUnknownStatement(Ref<TokenizerContext> aContext);
