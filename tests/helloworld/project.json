@@ -1,0 +1,15 @@
+{
+    "projectName" : "Hello World!",
+    "projectType" : "executable",
+
+    "outputExecutionTime" : true,
+
+    "outputDirectory" : "bin",
+    "workingDirectory" : "bin",
+
+    "outputLexResult" : true,
+    
+    "sourceFiles" : [
+        "source.rbt"
+    ]
+}

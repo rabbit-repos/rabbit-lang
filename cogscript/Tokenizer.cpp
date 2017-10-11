@@ -257,6 +257,7 @@ CodeTokens Tokenizer::TokenizeFile(ConstRef<String> aFilePath, Ptr<Stopwatch> aW
 	if (f.good())
 	{
 		std::wcout << aFilePath << std::endl;
+		std::wcout.flush();
 	}
 	else
 	{

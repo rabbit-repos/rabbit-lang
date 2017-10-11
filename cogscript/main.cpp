@@ -7,7 +7,6 @@
 #include "Interpreter.h"
 #include "Token.h"
 #include "Stopwatch.h"
-#include <thread>
 
 i32 main(Const<i32> aArgNum, ConstPtr<char> aArgs[])
 {
@@ -48,7 +47,7 @@ i32 main(Const<i32> aArgNum, ConstPtr<char> aArgs[])
 			{
 				Stopwatch watch;
 
-				CodeTokens codeTokens = tokenizer.TokenizeFile(L"lexing/lexing.rbt", &watch);
+				CodeTokens codeTokens = tokenizer.TokenizeFile(L"helloworld/source.rbt", &watch);
 				Const<float> time = watch.GetElapsedTimeInSeconds() * 1000.f;
 				std::wcout << L"Tokenizer finished in " << time << L"ms" << std::endl;
 
