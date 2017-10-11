@@ -16,7 +16,7 @@ public:
 	CodeTokens TokenizeFile(ConstRef<String> aFilePath, Ptr<Stopwatch> aWatchToRestartWhenFileIsRead = null);
 	
 private:
-	TokenID TryReadSpecialToken(Ref<TokenizerContext> aContext);
+	TokenID TryReadSpecialToken(Ref<TokenizerContext> aContext, Out<String> aSpecialTokenFound);
 	void ParseComment(Ref<TokenizerContext> aContext);
 	void ParseStringLiteral(Ref<TokenizerContext> aContext);
 	void ParseUnknownStatement(Ref<TokenizerContext> aContext);

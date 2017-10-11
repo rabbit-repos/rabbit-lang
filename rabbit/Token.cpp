@@ -10,6 +10,11 @@ Token::~Token()
 {
 }
 
+TokenID Token::GetTokenID() const
+{
+	return myTokenID;
+}
+
 bool Token::operator==(Const<TokenID> aRight) const
 {
 	return myTokenID == aRight;

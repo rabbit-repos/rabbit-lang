@@ -24,7 +24,7 @@ CodeTokens CodeTokens::Copy() const
 	return copy;
 }
 
-ConstRef<VirtualList<Token>> CodeTokens::GetLexemes() const
+ConstRef<VirtualList<Token>> CodeTokens::GetTokens() const
 {
 	return myLexemes;
 }

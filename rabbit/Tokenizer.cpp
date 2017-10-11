@@ -7,6 +7,7 @@
 #include "NotImplementedToken.h"
 #include "Stopwatch.h"
 #include <thread>
+#include "TokenID.h"
 
 static SpecialTokenMap<TokenID> CreateSpecialTokens();
 static Const<SpecialTokenMap<TokenID>> gSpecialTokens = CreateSpecialTokens();
@@ -77,12 +78,13 @@ CodeTokens Tokenizer::TokenizeCode(ConstRef<StringData> aCode)
 		}
 
 		Const<i32> startSpecial = context.CursorLocation();
+		String specialTokenString;
 		// TODO: Find out if this can/should be better optimized
-		Const<TokenID> specialToken = TryReadSpecialToken(context);
+		Const<TokenID> specialToken = TryReadSpecialToken(context, specialTokenString);
 
 		if (specialToken != TokenID::None)
 		{
-			tokens.AddToken<Token>(Token(specialToken));
+			tokens.AddToken<NotImplementedToken>(NotImplementedToken(TokenID::None, specialTokenString));
 			// std::wcout << L"Special Token: \"" << String(aCode).SubString(startSpecial, context.CursorLocation() - startSpecial) << L"\"" << std::endl;
 			continue;
 		}
@@ -124,7 +126,7 @@ CodeTokens Tokenizer::TokenizeCode(ConstRef<StringData> aCode)
 	return tokens;
 }
 
-TokenID Tokenizer::TryReadSpecialToken(Ref<TokenizerContext> aContext)
+TokenID Tokenizer::TryReadSpecialToken(Ref<TokenizerContext> aContext, Out<String> aSpecialTokenFound)
 {
 	Const<i32> maxDepth = gSpecialTokens.GetDepth();
 	ConstPtr<SpecialTokenMap<TokenID>> current = &gSpecialTokens;
@@ -133,6 +135,7 @@ TokenID Tokenizer::TryReadSpecialToken(Ref<TokenizerContext> aContext)
 		if (current->GetOurValue() != TokenID::None)
 		{
 			Const<TokenID> specialToken = current->GetOurValue();
+			aSpecialTokenFound = aContext.Peek(i);
 			aContext.AdvanceCursor(i);
 			return specialToken;
 		}
@@ -167,7 +170,10 @@ void Tokenizer::ParseCompilerDirective(Ref<TokenizerContext> aContext)
 		return;
 
 	String directiveName = ParseToken(aContext);
-	aContext.AddToken<NotImplementedToken>(NotImplementedToken(TokenID::CompilerDirective, L"Implement token Compiler Directive"));
+	StringData data(L"Compiler Directive Parsing (Data = \"");
+	data.Append(directiveName);
+	data.Append(L"\")");
+	aContext.AddToken<NotImplementedToken>(NotImplementedToken(TokenID::CompilerDirective, std::move(data)));
 	// std::wcout << L"Compiler Directive: \"" << directiveName << L"\"" << std::endl;
 }
 
@@ -178,7 +184,10 @@ void Tokenizer::ParseNumberLiteral(Ref<TokenizerContext> aContext)
 
 	Const<String> number = ParseUntil(aContext, [](Const<Char> aChar) { return CharUtility::IsDigit(aChar); });
 	// std::wcout << L"Literal Number: " << number << std::endl;
-	aContext.AddToken<NotImplementedToken>(NotImplementedToken(TokenID::NumberLiteral, L"Token not implemented"));
+	StringData data(L"Number Literal Parsing (Data = \"");
+	data.Append(number);
+	data.Append(L"\")");
+	aContext.AddToken<NotImplementedToken>(NotImplementedToken(TokenID::NumberLiteral, std::move(data)));
 }
 
 // TODO: Rewrite using ParseUntil
@@ -200,7 +209,10 @@ void Tokenizer::ParseStringLiteral(Ref<TokenizerContext> aContext)
 	} while (aContext.At(length) != L'"' || isEscaping && !aContext.IsAtEnd());
 
 	// std::wcout << L"String literal: \"" << aContext.Peek(length) << L"\"" << std::endl;
-	aContext.AddToken<NotImplementedToken>(NotImplementedToken(TokenID::StringLiteral, L"Token not implemented"));
+	StringData data(L"String Literal Parsing (Data = \"");
+	data.Append(aContext.Peek(length));
+	data.Append(L"\")");
+	aContext.AddToken<NotImplementedToken>(NotImplementedToken(TokenID::StringLiteral, std::move(data)));
 
 	aContext.AdvanceCursor(length + 1);
 }
@@ -211,7 +223,10 @@ void Tokenizer::ParseUnknownStatement(Ref<TokenizerContext> aContext)
 
 	if (statement.Size() > 0)
 	{
-		aContext.AddToken<NotImplementedToken>(NotImplementedToken(TokenID::None, L"Unhandled Statement"));
+		StringData data(L"Unhandled Statement ( Data = \"");
+		data.Append(statement);
+		data.Append(L"\")");
+		aContext.AddToken<NotImplementedToken>(NotImplementedToken(TokenID::None, std::move(data)));
 	}
 }
 

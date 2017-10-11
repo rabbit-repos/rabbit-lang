@@ -10,6 +10,8 @@ public:
 	bool operator==(Const<TokenID> aRight) const;
 	bool operator!=(Const<TokenID> aRight) const;
 
+	TokenID GetTokenID() const;
+
 private:
 	TokenID myTokenID;
 };

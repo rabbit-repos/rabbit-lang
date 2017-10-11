@@ -18,7 +18,7 @@ public:
 
 	CodeTokens Copy() const;
 
-	ConstRef<VirtualList<Token>> GetLexemes() const;
+	ConstRef<VirtualList<Token>> GetTokens() const;
 
 	template <typename T>
 	void AddToken(RValue<T> aLexeme);

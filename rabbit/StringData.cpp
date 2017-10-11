@@ -220,7 +220,7 @@ void StringData::AppendChar(Const<Char> aCharacter)
 
 std::wostream & operator<<(Ref<std::wostream> aOut, ConstRef<StringData> aString)
 {
-	aOut << *aString;
+	aOut.write(aString.GetAddress(), aString.Size());
 	return aOut;
 }
 
