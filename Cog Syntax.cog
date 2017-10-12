@@ -1,0 +1,80 @@
+object Game -- implicitly extends Object
+	has World;
+	
+	-- Declares an event called Render, objects which directly or indirectly require a Game instance can subscribe to this event
+	event Render();
+	
+	-- The Run event is declared as a global in Object and is implicitly invoked when all global objects have been initialized, because it is an event a program may have multiple entry points; the order in which they run is undefined unless a mechanic that determines subscribers priority is implemented
+	event Run()
+		local Stopwatch;
+		Render();
+		Console.WriteLine("Render took {0}ms", Stopwatch.GetElapsedTime().InMilliseconds());
+	end
+end
+
+--[[ 
+	Global is used to instantiate a type in the global scope; this will be accessible in all files in the project; if this is not desired "local Game;" could be used instead.
+	This could also be declared as global object Game --[[ contents ]] end in order to not split up 
+]]
+global Game;
+
+object World
+	requires Game;
+	has VirtualList<GameObject> Objects;
+	has Interface;
+	
+	contains CordinateFunctions;
+end
+
+object GameObject
+	requires World;
+end
+
+object Character extends GameObject
+	has StaticModel;
+end
+
+object Player extends Character
+	has NameplateComponent;
+	
+end
+
+object NameplateComponent
+	requires Interface; -- Could also be "requires Interface from World;" to specify what this is in reference to if ambigious or for clarity; otherwise it is inferred through Player -> Character -> GameObject which has a requirement of World
+	requires Player;
+	
+	event Render()
+		Interface.RenderText(World.WorldToViewport(Player.Location), 
+	end
+end
+
+object Array<T, i32 Size>
+	-- e.g. "has 10 i32 as MyData", then "i32[X]" or "MyData[X]" could be used to access it, also does bounds checking automatically, sizeof T should probably be required to be known at compile-time
+	has Size T as MyData;
+
+	function Ref<T> operator[](i32 index)
+		return MyData[index];
+	end
+	
+	function i32 GetSize() pure
+		return Size;
+	end
+end
+
+object IntArray<i32 Size> = Array<i32, Size>;
+
+--[[ 
+	requires <Object Type> [from <Object Type>] [as <Member Name> = Object Type]
+		* Throws error if it can't be found
+]]
+
+--[[
+	has <Object Type> (as <Member Name> = [Object Type])
+		* Accessed through "Member Name" which if not specified defaults to the Object Type's name, e.g. Player
+		* If an object has multiple members of the same type as is not optional as it would otherwise be ambigious
+			* This holds true even when the "contains" keyword is used to import functions from another type
+]] 
+
+--[[
+	contains <Object Type>
+]]
