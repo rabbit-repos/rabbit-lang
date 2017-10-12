@@ -1,0 +1,41 @@
+object Game -- implicitly extends Object
+	has World;
+	
+	-- Declares an event called Render, objects which directly or indirectly require a Game instance can react on this event
+	event Render;
+	
+	event Run()
+	{
+		Render();
+	}
+end
+
+object World
+	require Game;
+	has VirtualList<GameObject> Objects;
+	has Interface;
+	
+	contains CordinateFunctions;
+end
+
+object GameObject
+	requires World;
+end
+
+object Character extends GameObject
+	has StaticModel;
+end
+
+object Player extends Character
+	has NameplateComponent;
+	
+end
+
+object NameplateComponent
+	requires Interface;
+	requires Player;
+	
+	event Render()
+		Interface.RenderText(World.WorldToViewport(Player.Location), 
+	end
+end
