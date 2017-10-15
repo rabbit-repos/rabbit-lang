@@ -1,5 +1,5 @@
 {
-    "projectName" : "Hello World!",
+    "projectName" : "Hello World",
     "projectType" : "executable",
 
     "outputExecutionTime" : true,
@@ -10,6 +10,6 @@
     "outputLexResult" : true,
     
     "sourceFiles" : [
-        "source.rbt"
+        "hello.cog"
     ]
 }

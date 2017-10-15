@@ -1,8 +1,0 @@
-
-object Program
-{
-	entry :: int(string[] aArguments)
-	{
-		Console::WriteLine("Hello World!");
-	}
-}

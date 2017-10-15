@@ -89,8 +89,8 @@
     </Expand>
   </Type>
 
-  <Type Name="LexingContext">
-    <DisplayString>[Lexing Context] {{ PREV({&amp;myCode->myData[myCursor - 1],1sub}) CURR({&amp;myCode->myData[myCursor],1sub}) NEXT({&amp;myCode->myData[myCursor + 1],1sub}) }}</DisplayString>
+  <Type Name="TokenizerContext">
+    <DisplayString>[Tokenizer Context] {{ PREV({&amp;myCode->myData[myCursor - 1],1sub}) CURR({&amp;myCode->myData[myCursor],1sub}) NEXT({&amp;myCode->myData[myCursor + 1],1sub}) }}</DisplayString>
 
     <Expand>
       <Synthetic Name="Previous">

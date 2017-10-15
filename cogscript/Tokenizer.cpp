@@ -40,7 +40,7 @@ template <typename TConditionChecker>
 static String ParseUntil(Ref<TokenizerContext> aContext, ConstRef<TConditionChecker> aContinueCondition)
 {
 	i32 length = 0;
-	while (!aContext.IsAtEnd() && aContinueCondition(aContext.At(length)))
+	while (!aContext.IsAtEnd() && aContinueCondition(length))
 		++length;
 	String str = aContext.Peek(length);
 	aContext.AdvanceCursor(length);
@@ -77,6 +77,9 @@ CodeTokens Tokenizer::TokenizeCode(ConstRef<StringData> aCode)
 			continue;
 		}
 
+		if (context.At() == L'-')
+			ParseComment(context);
+
 		Const<i32> startSpecial = context.CursorLocation();
 		String specialTokenString;
 		// TODO: Find out if this can/should be better optimized
@@ -91,9 +94,6 @@ CodeTokens Tokenizer::TokenizeCode(ConstRef<StringData> aCode)
 
 		switch (context.At())
 		{
-		case L'/':
-			ParseComment(context);
-			break;
 		case L'#':
 			ParseCompilerDirective(context);
 			break;
@@ -146,21 +146,17 @@ TokenID Tokenizer::TryReadSpecialToken(Ref<TokenizerContext> aContext, Out<Strin
 
 void Tokenizer::ParseComment(Ref<TokenizerContext> aContext)
 {
-	if (aContext.At() != L'/')
+	if (aContext.Peek(2) != L"--")
 		return;
 
-	if (aContext.At(1) == L'/')
+	if (aContext.StringAt(2, 2) == L"[[")
 	{
-		ParseUntil(aContext, [](Char aChar) { return aChar != L'\n'; } );
+		ParseUntil(aContext, [&aContext](Const<i32> aIndex) { return aContext.StringAt(aIndex, 2) == L"]]"; } );
 	}
-	else if (aContext.At(1) == L'*')
+	else
 	{
 		aContext.AdvanceCursor(2);
-
-		do
-		{
-			aContext.AdvanceCursor();
-		} while (aContext.Peek(2) == L"*/" && !aContext.IsAtEnd());
+		ParseUntil(aContext, [&aContext](Const<i32> aIndex) { return aContext.At(aIndex) != L'\n'; });
 	}
 }
 
@@ -179,10 +175,10 @@ void Tokenizer::ParseCompilerDirective(Ref<TokenizerContext> aContext)
 
 void Tokenizer::ParseNumberLiteral(Ref<TokenizerContext> aContext)
 {
-	if (!CharUtility::IsDigit(aContext.At()))
+	if (!CharUtility::IsDigit(aContext.At())) 
 		return;
 
-	Const<String> number = ParseUntil(aContext, [](Const<Char> aChar) { return CharUtility::IsDigit(aChar); });
+	Const<String> number = ParseUntil(aContext, [&aContext](Const<i32> aIndex) { return CharUtility::IsDigit(aContext.At(aIndex)); });
 	// std::wcout << L"Literal Number: " << number << std::endl;
 	StringData data(L"Number Literal Parsing (Data = \"");
 	data.Append(number);
@@ -276,5 +272,5 @@ CodeTokens Tokenizer::TokenizeFile(ConstRef<String> aFilePath, Ptr<Stopwatch> aW
 	if (aWatchToRestartWhenFileIsRead)
 		aWatchToRestartWhenFileIsRead->Restart();
 	
-	return TokenizeCode(std::move(code));
+	return TokenizeCode(code);
 }

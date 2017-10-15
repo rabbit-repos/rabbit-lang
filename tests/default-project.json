@@ -1,14 +1,14 @@
 {
-    "projectName" : "Another Rabbit Project",
+    "projectName" : "Another Cog Project",
     "projectType" : "executable",
 
     "outputDirectory" : "bin",
-    "workingDirectory" : "/",
+    "workingDirectory" : "bin",
 
     "outputLexResult" : false,
     "outputExecutionTime" : false,
     
     "sourceFiles" : [
-        "src/**.rbt"
+        "src/**.cog"
     ]
 }

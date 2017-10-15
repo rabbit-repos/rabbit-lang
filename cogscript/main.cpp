@@ -47,7 +47,7 @@ i32 main(Const<i32> aArgNum, ConstPtr<char> aArgs[])
 			{
 				Stopwatch watch;
 
-				CodeTokens codeTokens = tokenizer.TokenizeFile(L"helloworld/source.rbt", &watch);
+				CodeTokens codeTokens = tokenizer.TokenizeFile(L"helloworld/hello.cog", &watch);
 				Const<float> time = watch.GetElapsedTimeInSeconds() * 1000.f;
 				std::wcout << L"Tokenizer finished in " << time << L"ms" << std::endl;
 

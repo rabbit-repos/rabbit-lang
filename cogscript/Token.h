@@ -4,7 +4,7 @@
 class Token
 {
 public:
-	Token(Const<TokenID> aTokenID);
+	Token(Const<TokenID> aTokenID, ConstRef<String> aTokenData);
 	virtual ~Token();
 
 	bool operator==(Const<TokenID> aRight) const;
@@ -13,5 +13,6 @@ public:
 	TokenID GetTokenID() const;
 
 private:
+	String myTokenData;
 	TokenID myTokenID;
 };

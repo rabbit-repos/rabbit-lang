@@ -263,11 +263,8 @@ bool String::EqualsIgnoreCase(ConstRef<String> aOther) const
 
 bool String::operator==(ConstPtr<char> aOther) const
 {
-	Const<i32> length = static_cast<i32>(strlen(aOther));
-	if (length != Size())
-		return false;
-	for (i32 i = 0; i < length; ++i)
-		if (static_cast<Char>(aOther[i]) != myData[i])
+	for (i32 i = 0; i < mySize; ++i)
+		if (aOther[i] == '\0' || static_cast<Char>(aOther[i]) != myData[i])
 			return false;
 	return true;
 }
@@ -279,7 +276,10 @@ bool String::operator!=(ConstPtr<char> aOther) const
 
 bool String::operator==(ConstPtr<wchar_t> aOther) const
 {
-	return wcscmp(static_cast<ConstPtr<Char>>(aOther), myData) == 0;
+	for (i32 i = 0; i < mySize; ++i)
+		if (aOther[i] == L'\0' || myData[i] != aOther[i])
+			return false;
+	return true;
 }
 
 bool String::operator!=(ConstPtr<wchar_t> aOther) const
