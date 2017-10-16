@@ -22,6 +22,5 @@ String TokenizerContext::Peek(Const<i32> aLength) const
 
 String TokenizerContext::StringAt(Const<i32> aOffset, Const<i32> aSize) const
 {
-	Const<i32> index = Clamp(myCursor + aOffset, 0, myCode->Size());
-	return String(*myCode).SubString(myCursor, Min(aSize, myCode->Size() - myCursor));
+	return String(*myCode).SubString(Max<i32>(0, myCursor + aOffset), Min(aSize, myCode->Size() - myCursor));
 }

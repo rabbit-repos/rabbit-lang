@@ -2,6 +2,7 @@
 
 #include <cstdlib>
 #include "Array.h"
+#include <type_traits>
 
 class ResizableArrayBase
 {
@@ -32,7 +33,7 @@ private:
 	size mySize;
 };
 
-template <typename T>
+template <typename T = std::is_copy_assignable_v<T>>
 class ResizableArray
 {
 public:
@@ -40,13 +41,13 @@ public:
 	ResizableArray(Const<size> aLength);
 	~ResizableArray();
 	
-	ResizableArray(RValue<ResizableArray<T>> aOther);
-	ResizableArray & operator=(RValue<ResizableArray<T>> aOther);
+	ResizableArray(RValue<ResizableArray> aOther);
+	ResizableArray & operator=(RValue<ResizableArray> aOther);
 	
 	// Use Copy() instead
-	ResizableArray(ConstRef<ResizableArray<T>> aOther) = delete;
+	ResizableArray(ConstRef<ResizableArray> aOther) = delete;
 	// Use Copy() instead
-	ResizableArray & operator=(ConstRef<ResizableArray<T>> aOther) = delete;
+	ResizableArray & operator=(ConstRef<ResizableArray> aOther) = delete;
 
 	ResizableArray Copy() const;
 
@@ -86,8 +87,8 @@ ConstPtr<T> ResizableArray<T>::GetAddress() const
 
 template <typename T>
 ResizableArray<T>::ResizableArray(RValue<ResizableArray<T>> aOther)
-	: ResizableArray()
 {
+	mySize = 0;
 	*this = std::move(aOther);
 }
 

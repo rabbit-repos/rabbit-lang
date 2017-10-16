@@ -13,7 +13,7 @@ public:
 	~Tokenizer();
 
 	CodeTokens TokenizeCode(ConstRef<StringData> aCode);
-	CodeTokens TokenizeFile(ConstRef<String> aFilePath, Ptr<Stopwatch> aWatchToRestartWhenFileIsRead = null);
+	CodeTokens TokenizeFile(ConstRef<String> aFilePath, Ref<StringData> aFileContent, Ptr<Stopwatch> aWatchToRestartWhenFileIsRead = null);
 	
 private:
 	TokenID TryReadSpecialToken(Ref<TokenizerContext> aContext, Out<String> aSpecialTokenFound);

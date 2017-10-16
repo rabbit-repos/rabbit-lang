@@ -1,7 +1,7 @@
 #pragma once
 #include "ResizableArray.h"
 
-template <typename T>
+template <typename T = std::is_copy_assignable_v<T>>
 class List
 {
 public:
@@ -18,6 +18,8 @@ public:
 	Ref<List> operator=(ConstRef<List> aOther) = delete;
 
 	List Copy() const;
+
+	void Emplace(RValue<T> aItem);
 
 	void Add(ConstRef<T> aItem);
 	void Add(RValue<T> aItem);
@@ -158,7 +160,7 @@ void List<T>::RemoveAtIndex(Const<i32> aIndex)
 	
 	--mySize;
 
-	new (&myData[mySize]) T();
+	new (myData[mySize]) T();
 }
 
 template <typename T>
@@ -166,6 +168,15 @@ void List<T>::Clear()
 {
 	myData.Reset();
 	mySize = 0;
+}
+
+template <typename T>
+void List<T>::Emplace(RValue<T> aItem)
+{
+	mySize++;
+	if (mySize >= Capacity())
+		Reserve(Max(8, Capacity() * 2));
+	new (myData[mySize - 1]) T(std::move(aItem));
 }
 
 template <typename T>

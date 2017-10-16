@@ -2,7 +2,6 @@
 #include "Interpreter.h"
 #include "Config.h"
 #include "CodeTokens.h"
-#include "NotImplementedToken.h"
 
 Transpiler::Transpiler(ConstRef<Config> aConfiguration)
 {
@@ -18,20 +17,13 @@ InterpretationResult Transpiler::Interpret(ConstRef<CodeTokens> aCodeTokens) con
 	ConstRef<VirtualList<Token>> list = aCodeTokens.GetTokens();
 	for (i32 i = 0; i < list.Size(); ++i)
 	{
-		if (list[i]->GetTokenID() == TokenID::None)
+		switch (list[i]->GetTokenID())
 		{
-			std::wcout << "TokenizerNotImplemented: \"" << static_cast<Ptr<NotImplementedToken>>(list[i])->GetTokenString() << L"\"" << std::endl;
-		}
-		else
-		{
-			switch (aCodeTokens.GetTokens()[i]->GetTokenID())
-			{
-			default:
-				std::wcout << "Handle token " << static_cast<size>(aCodeTokens.GetTokens()[i]->GetTokenID()) << std::endl;
-				break;
-				// TODO: Remove when no longer neccessary
+		default:
+			std::wcout << "Handle token " << static_cast<size>(list[i]->GetTokenID()) << L" Data(" << list[i]->GetContext().GetData() << L")" << std::endl;
+			break;
+			// TODO: Remove when no longer neccessary
 #pragma warning ( suppress : 4065 )
-			}
 		}
 	}
 

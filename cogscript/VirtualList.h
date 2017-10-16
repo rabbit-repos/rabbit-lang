@@ -157,8 +157,8 @@ template <typename TDerivedType>
 void VirtualList<T>::Add(RValue<TDerivedType> aObject)
 {
 	static_assert(std::is_move_constructible_v<TDerivedType>, "Types added to a VirtualList must be move constructible!");
-	static_assert(std::is_move_assignable_v<T>, "Value of VirtualList must be move assignable! (operator=(&&))");
-	static_assert(std::is_copy_constructible_v<T>, "Value of VirtualList must be copy constructible! (operator=(&&))");
+	static_assert(std::is_move_assignable_v<TDerivedType>, "Value of VirtualList must be move assignable! (operator=(&&))");
+	static_assert(std::is_copy_constructible_v<TDerivedType>, "Value of VirtualList must be copy constructible! (BaseType(const&))");
 	static_assert(std::is_base_of_v<T, TDerivedType>, "Type added to VirtualList must derive from the VirtualList's type!");
 
 	MakeSizeFor(sizeof TDerivedType);

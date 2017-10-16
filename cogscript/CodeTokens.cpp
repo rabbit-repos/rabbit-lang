@@ -13,20 +13,25 @@ CodeTokens::CodeTokens(RValue<CodeTokens> aMove)
 
 Ref<CodeTokens> CodeTokens::operator=(RValue<CodeTokens> aMove)
 {
-	myLexemes = std::move(aMove.myLexemes);
+	myTokens = std::move(aMove.myTokens);
 	return *this;
 }
 
 CodeTokens CodeTokens::Copy() const
 {
 	CodeTokens copy;
-	copy.myLexemes = myLexemes.Copy();
+	copy.myTokens = myTokens.Copy();
 	return copy;
 }
 
 ConstRef<VirtualList<Token>> CodeTokens::GetTokens() const
 {
-	return myLexemes;
+	return myTokens;
+}
+
+void CodeTokens::AddToken(Token aToken)
+{
+	myTokens.Add(std::move(aToken));
 }
 
 CodeTokens::~CodeTokens()

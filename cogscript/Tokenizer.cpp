@@ -4,7 +4,6 @@
 #include "CharUtility.h"
 #include "TokenizerContext.h"
 #include "SpecialTokenMap.h"
-#include "NotImplementedToken.h"
 #include "Stopwatch.h"
 #include <thread>
 #include "TokenID.h"
@@ -40,7 +39,7 @@ template <typename TConditionChecker>
 static String ParseUntil(Ref<TokenizerContext> aContext, ConstRef<TConditionChecker> aContinueCondition)
 {
 	i32 length = 0;
-	while (!aContext.IsAtEnd() && aContinueCondition(length))
+	while (!aContext.IsAtEnd() && !aContinueCondition(length))
 		++length;
 	String str = aContext.Peek(length);
 	aContext.AdvanceCursor(length);
@@ -87,7 +86,7 @@ CodeTokens Tokenizer::TokenizeCode(ConstRef<StringData> aCode)
 
 		if (specialToken != TokenID::None)
 		{
-			tokens.AddToken<NotImplementedToken>(NotImplementedToken(TokenID::None, specialTokenString));
+			tokens.AddToken(Token(TokenID::None, TokenContext(specialTokenString)));
 			// std::wcout << L"Special Token: \"" << String(aCode).SubString(startSpecial, context.CursorLocation() - startSpecial) << L"\"" << std::endl;
 			continue;
 		}
@@ -151,12 +150,13 @@ void Tokenizer::ParseComment(Ref<TokenizerContext> aContext)
 
 	if (aContext.StringAt(2, 2) == L"[[")
 	{
-		ParseUntil(aContext, [&aContext](Const<i32> aIndex) { return aContext.StringAt(aIndex, 2) == L"]]"; } );
+		ParseUntil(aContext, [&aContext](Const<i32> aIndex) { return aContext.StringAt(aIndex, 2) == L"]]"; });
+		aContext.AdvanceCursor(2);
 	}
 	else
 	{
 		aContext.AdvanceCursor(2);
-		ParseUntil(aContext, [&aContext](Const<i32> aIndex) { return aContext.At(aIndex) != L'\n'; });
+		ParseUntil(aContext, [&aContext](Const<i32> aIndex) { return aContext.At(aIndex) == L'\n'; });
 	}
 }
 
@@ -166,10 +166,7 @@ void Tokenizer::ParseCompilerDirective(Ref<TokenizerContext> aContext)
 		return;
 
 	String directiveName = ParseToken(aContext);
-	StringData data(L"Compiler Directive Parsing (Data = \"");
-	data.Append(directiveName);
-	data.Append(L"\")");
-	aContext.AddToken<NotImplementedToken>(NotImplementedToken(TokenID::CompilerDirective, std::move(data)));
+	aContext.AddToken(Token(TokenID::CompilerDirective, directiveName));
 	// std::wcout << L"Compiler Directive: \"" << directiveName << L"\"" << std::endl;
 }
 
@@ -179,11 +176,7 @@ void Tokenizer::ParseNumberLiteral(Ref<TokenizerContext> aContext)
 		return;
 
 	Const<String> number = ParseUntil(aContext, [&aContext](Const<i32> aIndex) { return CharUtility::IsDigit(aContext.At(aIndex)); });
-	// std::wcout << L"Literal Number: " << number << std::endl;
-	StringData data(L"Number Literal Parsing (Data = \"");
-	data.Append(number);
-	data.Append(L"\")");
-	aContext.AddToken<NotImplementedToken>(NotImplementedToken(TokenID::NumberLiteral, std::move(data)));
+	aContext.AddToken(Token(TokenID::NumberLiteral, TokenContext(number)));
 }
 
 // TODO: Rewrite using ParseUntil
@@ -204,26 +197,24 @@ void Tokenizer::ParseStringLiteral(Ref<TokenizerContext> aContext)
 		++length;
 	} while (aContext.At(length) != L'"' || isEscaping && !aContext.IsAtEnd());
 
-	// std::wcout << L"String literal: \"" << aContext.Peek(length) << L"\"" << std::endl;
-	StringData data(L"String Literal Parsing (Data = \"");
-	data.Append(aContext.Peek(length));
-	data.Append(L"\")");
-	aContext.AddToken<NotImplementedToken>(NotImplementedToken(TokenID::StringLiteral, std::move(data)));
+	aContext.AddToken(Token(TokenID::StringLiteral, aContext.Peek(length)));
 
 	aContext.AdvanceCursor(length + 1);
 }
 
 void Tokenizer::ParseUnknownStatement(Ref<TokenizerContext> aContext)
 {
+	if (CharUtility::IsWhiteSpace(aContext.At()))
+	{
+		ParseUntil(aContext, [&aContext](Const<i32> aOffset) { return CharUtility::IsWhiteSpace(aContext.At(aOffset)); });
+		
+		return;
+	}
+
 	String statement = ParseToken(aContext);
 
 	if (statement.Size() > 0)
-	{
-		StringData data(L"Unhandled Statement ( Data = \"");
-		data.Append(statement);
-		data.Append(L"\")");
-		aContext.AddToken<NotImplementedToken>(NotImplementedToken(TokenID::None, std::move(data)));
-	}
+		aContext.AddToken(Token(TokenID::None, statement));
 }
 
 String Tokenizer::ParseToken(Ref<TokenizerContext> aContext)
@@ -246,7 +237,7 @@ String Tokenizer::ParseToken(Ref<TokenizerContext> aContext)
 	}
 }
 
-CodeTokens Tokenizer::TokenizeFile(ConstRef<String> aFilePath, Ptr<Stopwatch> aWatchToRestartWhenFileIsRead /*= null*/)
+CodeTokens Tokenizer::TokenizeFile(ConstRef<String> aFilePath, Ref<StringData> aFileContent, Ptr<Stopwatch> aWatchToRestartWhenFileIsRead /*= null*/)
 {
 	std::wifstream f(aFilePath.ToWideString());
 	
@@ -261,16 +252,15 @@ CodeTokens Tokenizer::TokenizeFile(ConstRef<String> aFilePath, Ptr<Stopwatch> aW
 		return CodeTokens();
 	}
 
-	StringData code;
 	std::wstring line;
 	while (std::getline(f, line))
 	{
-		code.Append(line.data(), static_cast<i32>(line.size()));
-		code.AppendChar(L'\n');
+		aFileContent.Append(line.data(), static_cast<i32>(line.size()));
+		aFileContent.AppendChar(L'\n');
 	}
 
 	if (aWatchToRestartWhenFileIsRead)
 		aWatchToRestartWhenFileIsRead->Restart();
 	
-	return TokenizeCode(code);
+	return TokenizeCode(aFileContent);
 }

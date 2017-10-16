@@ -10,11 +10,11 @@
 
 i32 main(Const<i32> aArgNum, ConstPtr<char> aArgs[])
 {
-	std::cout << "CogScript Language v0.0" << std::endl;
+	std::cout << "Cog Language v0.0" << std::endl;
 
 	if (aArgNum > 1)
 	{
-		if (strcmp("-run", aArgs[1]) == 0)
+		if (strcmp("run", aArgs[1]) == 0)
 		{
 			Config config;
 
@@ -47,7 +47,8 @@ i32 main(Const<i32> aArgNum, ConstPtr<char> aArgs[])
 			{
 				Stopwatch watch;
 
-				CodeTokens codeTokens = tokenizer.TokenizeFile(L"helloworld/hello.cog", &watch);
+				StringData code;
+				CodeTokens codeTokens = tokenizer.TokenizeFile(L"helloworld/hello.cog", code, &watch);
 				Const<float> time = watch.GetElapsedTimeInSeconds() * 1000.f;
 				std::wcout << L"Tokenizer finished in " << time << L"ms" << std::endl;
 

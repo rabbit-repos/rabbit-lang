@@ -5,5 +5,5 @@ object Program
 	end
 end
 
--- Declares a global object of the Program type, it can implicitly be accessed through it's type name "Program"
+-- Declares a global object of the Program type, it can implicitly be accessed through it's type name "Program" 
 global Program;

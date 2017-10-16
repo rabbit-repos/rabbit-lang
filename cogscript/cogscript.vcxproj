@@ -171,10 +171,10 @@
     <ClCompile Include="Config.cpp" />
     <ClCompile Include="Interpreter.cpp" />
     <ClCompile Include="CodeTokens.cpp" />
-    <ClCompile Include="NotImplementedToken.cpp" />
     <ClCompile Include="Stopwatch.cpp" />
     <ClCompile Include="SymbolMap.cpp" />
     <ClCompile Include="Token.cpp" />
+    <ClCompile Include="TokenContext.cpp" />
     <ClCompile Include="Tokenizer.cpp" />
     <ClCompile Include="TokenizerContext.cpp" />
     <ClCompile Include="main.cpp" />
@@ -199,10 +199,10 @@
     <ClInclude Include="json.h" />
     <ClInclude Include="Array.h" />
     <ClInclude Include="CodeTokens.h" />
-    <ClInclude Include="NotImplementedToken.h" />
     <ClInclude Include="Stopwatch.h" />
     <ClInclude Include="StringFilter.h" />
     <ClInclude Include="SymbolMap.h" />
+    <ClInclude Include="TokenContext.h" />
     <ClInclude Include="TokenID.h" />
     <ClInclude Include="TokenizerContext.h" />
     <ClInclude Include="SpecialTokenMap.h" />
