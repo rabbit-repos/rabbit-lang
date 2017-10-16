@@ -191,6 +191,7 @@
     <ClCompile Include="String.cpp" />
     <ClCompile Include="ResizableArray.cpp" />
     <ClCompile Include="StringData.cpp" />
+    <ClCompile Include="TranspilerContext.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CharUtility.h" />
@@ -206,6 +207,7 @@
     <ClInclude Include="TokenID.h" />
     <ClInclude Include="TokenizerContext.h" />
     <ClInclude Include="SpecialTokenMap.h" />
+    <ClInclude Include="TranspilerContext.h" />
     <ClInclude Include="VirtualList.h" />
     <ClInclude Include="Token.h" />
     <ClInclude Include="Tokenizer.h" />

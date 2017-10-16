@@ -2,6 +2,7 @@
 #include "Interpreter.h"
 #include "Config.h"
 #include "CodeTokens.h"
+#include "TranspilerContext.h"
 
 Transpiler::Transpiler(ConstRef<Config> aConfiguration)
 {
@@ -15,8 +16,13 @@ Transpiler::~Transpiler()
 InterpretationResult Transpiler::Interpret(ConstRef<CodeTokens> aCodeTokens) const
 {
 	ConstRef<VirtualList<Token>> list = aCodeTokens.GetTokens();
+	
+	TranspilerContext context(aCodeTokens);
+	
 	for (i32 i = 0; i < list.Size(); ++i)
 	{
+		ParseGlobalScope(context);
+
 		switch (list[i]->GetTokenID())
 		{
 		default:
@@ -32,4 +38,9 @@ InterpretationResult Transpiler::Interpret(ConstRef<CodeTokens> aCodeTokens) con
 	result.ErrorMessage = StringData(L"Compiler Not Implemented");
 	result.ErrorType = ErrorType::CompilerNotImplemented;
 	return result;
+}
+
+void Transpiler::ParseGlobalScope(ConstRef<TranspilerContext> aContext) const
+{
+
 }

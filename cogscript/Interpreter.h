@@ -8,6 +8,7 @@ enum class ErrorType
 };
 
 class CodeTokens;
+class TranspilerContext;
 
 struct InterpretationResult
 {
@@ -26,4 +27,5 @@ public:
 
 private:
 	ConstPtr<class Config> myConfig;
+	void ParseGlobalScope(ConstRef<TranspilerContext> aContext) const;
 };
