@@ -19,7 +19,8 @@ public:
 
 	List Copy() const;
 
-	void Emplace(RValue<T> aItem);
+	template <typename ...TArgs>
+	Ref<T> Emplace(TArgs ... aArgs);
 
 	void Add(ConstRef<T> aItem);
 	void Add(RValue<T> aItem);
@@ -171,12 +172,14 @@ void List<T>::Clear()
 }
 
 template <typename T>
-void List<T>::Emplace(RValue<T> aItem)
+template <typename ...TArgs>
+Ref<T> List<T>::Emplace(TArgs ... aArgs)
 {
 	mySize++;
 	if (mySize >= Capacity())
 		Reserve(Max(8, Capacity() * 2));
-	new (myData[mySize - 1]) T(std::move(aItem));
+	new (myData[mySize - 1]) T(aArgs...);
+	return *myData[mySize - 1];
 }
 
 template <typename T>

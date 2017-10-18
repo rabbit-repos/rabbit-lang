@@ -21,7 +21,7 @@ TokenID CharUtility::GetDigitLexemeID(Const<Char> aChar, Const<bool> aIsFirstCha
 {
 	if (!aIsFirstCharacter && IsDigit(aChar))
 		return static_cast<TokenID>(static_cast<u8>(TokenIDRanges::FirstDigit) + (aChar - L'0'));
-	return TokenID::None;
+	return TokenID::Invalid;
 }
 
 bool CharUtility::IsDigit(Const<Char> aChar)
@@ -31,17 +31,17 @@ bool CharUtility::IsDigit(Const<Char> aChar)
 
 bool CharUtility::IsValidLexemeCharacter(Const<Char> aChar, Const<bool> aIsFirstCharacter)
 {
-	return GetTokenIDFromCharacter(aChar, aIsFirstCharacter) > TokenID::None;
+	return GetTokenIDFromCharacter(aChar, aIsFirstCharacter) < TokenID::Count;
 }
 
 TokenID CharUtility::GetTokenIDFromCharacter(Const<Char> aChar, Const<bool> aIsFirstCharacter)
 {
 	Const<TokenID> letterID = GetLetterLexemeID(aChar);
-	if (letterID > TokenID::None)
+	if (letterID < TokenID::Count)
 		return letterID;
 
 	Const<TokenID> digitID = GetDigitLexemeID(aChar, aIsFirstCharacter);
-	if (digitID > TokenID::None)
+	if (digitID < TokenID::Count)
 		return digitID;
 	
 	switch (aChar)
@@ -117,7 +117,7 @@ TokenID CharUtility::GetTokenIDFromCharacter(Const<Char> aChar, Const<bool> aIsF
 		}
 	}
 
-	return TokenID::None;
+	return TokenID::Invalid;
 }
 
 bool CharUtility::IsValidFirstSymbolCharacter(Const<Char> aChar)
@@ -141,12 +141,12 @@ TokenID CharUtility::GetLetterLexemeID(Const<Char> aChar)
 	{
 		return static_cast<TokenID>((LastUpperCaseLetter - FirstUpperCaseLetter + 2) + aChar - FirstLowerCaseLetter);
 	}
-	return TokenID::None;
+	return TokenID::Invalid;
 }
 
 bool CharUtility::IsLetter(Const<Char> aChar)
 {
-	return GetLetterLexemeID(aChar) > TokenID::None;
+	return GetLetterLexemeID(aChar) < TokenID::Count;
 }
 
 Char CharUtility::ToLower(Const<Char> aChar)

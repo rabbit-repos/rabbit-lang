@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "Interpreter.h"
+#include "Transpiler.h"
 #include "Config.h"
 #include "CodeTokens.h"
 #include "TranspilerContext.h"
@@ -15,23 +15,21 @@ Transpiler::~Transpiler()
 
 InterpretationResult Transpiler::Interpret(ConstRef<CodeTokens> aCodeTokens) const
 {
-	ConstRef<VirtualList<Token>> list = aCodeTokens.GetTokens();
-	
 	TranspilerContext context(aCodeTokens);
 	
-	for (i32 i = 0; i < list.Size(); ++i)
+	do
 	{
+		Const<i32> beginCursor = context.GetCursorLocation();
+
 		ParseGlobalScope(context);
 
-		switch (list[i]->GetTokenID())
+		Const<i32> endCursor = context.GetCursorLocation();
+		if (endCursor == beginCursor)
 		{
-		default:
-			std::wcout << "Handle token " << static_cast<size>(list[i]->GetTokenID()) << L" Data(" << list[i]->GetContext().GetData() << L")" << std::endl;
-			break;
-			// TODO: Remove when no longer neccessary
-#pragma warning ( suppress : 4065 )
+			PrintLine(L"Transpiler did not progress at token \"", context.At().ToString(), L"\" (Data = \"", context.At().GetContext().GetData(), L"\")");
+			abort();
 		}
-	}
+	} while (!context.IsAtEnd());
 
 
 	InterpretationResult result;
@@ -42,5 +40,12 @@ InterpretationResult Transpiler::Interpret(ConstRef<CodeTokens> aCodeTokens) con
 
 void Transpiler::ParseGlobalScope(ConstRef<TranspilerContext> aContext) const
 {
-
+	switch (aContext.At().GetTokenID())
+	{
+	default:
+		PrintLine("Handle token ", static_cast<size>(aContext.At().GetTokenID()), L" Data(", aContext.At().GetContext().GetData(), L")");;
+		break;
+		// TODO: Remove when no longer neccessary
+#pragma warning ( suppress : 4065 )
+	}
 }

@@ -17,11 +17,11 @@ template <typename T>
 class SpecialTokenMap : public StringMap<SpecialTokenMap<T>, T, SpecialTokenMapData::ArraySize>
 {
 protected:
-	i32 Map(Const<Char> aCharacter) const final;
+	i32 Map(Const<Char> aCharacter, Const<i32> aIndex) const final;
 };
 
 template <typename T>
-i32 SpecialTokenMap<T>::Map(Const<Char> aCharacter) const
+i32 SpecialTokenMap<T>::Map(Const<Char> aCharacter, Const<i32> /*aIndex*/) const
 {
 	static_assert(sizeof TokenID <= sizeof i32, "TokenID must fit in an i32");
 	return static_cast<u8>(CharUtility::GetTokenIDFromCharacter(aCharacter, true));

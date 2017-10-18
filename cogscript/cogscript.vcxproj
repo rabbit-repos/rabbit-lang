@@ -104,6 +104,9 @@
       <DisableSpecificWarnings>4702</DisableSpecificWarnings>
       <PreprocessorDefinitions>_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -119,6 +122,9 @@
       <DisableSpecificWarnings>4702</DisableSpecificWarnings>
       <PreprocessorDefinitions>_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -141,6 +147,7 @@
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <SubSystem>Windows</SubSystem>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -164,14 +171,18 @@
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <SubSystem>Windows</SubSystem>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="CharUtility.cpp" />
+    <ClCompile Include="CodeGraphEntry.cpp" />
+    <ClCompile Include="CodeGraphNode.cpp" />
     <ClCompile Include="Config.cpp" />
-    <ClCompile Include="Interpreter.cpp" />
+    <ClCompile Include="Transpiler.cpp" />
     <ClCompile Include="CodeTokens.cpp" />
     <ClCompile Include="Stopwatch.cpp" />
+    <ClCompile Include="Symbol.cpp" />
     <ClCompile Include="SymbolMap.cpp" />
     <ClCompile Include="Token.cpp" />
     <ClCompile Include="TokenContext.cpp" />
@@ -195,13 +206,16 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CharUtility.h" />
+    <ClInclude Include="CodeGraphEntry.h" />
+    <ClInclude Include="CodeGraphNode.h" />
     <ClInclude Include="Config.h" />
-    <ClInclude Include="Interpreter.h" />
+    <ClInclude Include="Transpiler.h" />
     <ClInclude Include="json.h" />
     <ClInclude Include="Array.h" />
     <ClInclude Include="CodeTokens.h" />
     <ClInclude Include="Stopwatch.h" />
     <ClInclude Include="StringFilter.h" />
+    <ClInclude Include="Symbol.h" />
     <ClInclude Include="SymbolMap.h" />
     <ClInclude Include="TokenContext.h" />
     <ClInclude Include="TokenID.h" />

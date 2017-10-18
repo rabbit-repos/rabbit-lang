@@ -8,7 +8,7 @@ static LONGLONG GetFrequency()
 
 	if (!QueryPerformanceFrequency(&frequency))
 	{
-		std::wcout << "Failed to query performance frequency, all timers will always return 0" << std::endl;
+		PrintLine(L"Failed to query performance frequency, all timers will always return 0");
 		return 0;
 	}
 

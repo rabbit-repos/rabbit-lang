@@ -20,6 +20,8 @@ public:
 
 	Token Copy() const;
 
+	String ToString() const;
+
 private:
 	TokenContext myContext;
 	TokenID myTokenID;

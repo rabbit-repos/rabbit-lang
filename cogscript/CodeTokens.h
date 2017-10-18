@@ -1,5 +1,5 @@
-
 #pragma once
+
 #include "VirtualList.h"
 #include "Token.h"
 

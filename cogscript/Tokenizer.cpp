@@ -84,9 +84,9 @@ CodeTokens Tokenizer::TokenizeCode(ConstRef<StringData> aCode)
 		// TODO: Find out if this can/should be better optimized
 		Const<TokenID> specialToken = TryReadSpecialToken(context, specialTokenString);
 
-		if (specialToken != TokenID::None)
+		if (specialTokenString.Size() > 0)
 		{
-			tokens.AddToken(Token(TokenID::None, TokenContext(specialTokenString)));
+			tokens.AddToken(Token(TokenID::Invalid, TokenContext(specialTokenString)));
 			// std::wcout << L"Special Token: \"" << String(aCode).SubString(startSpecial, context.CursorLocation() - startSpecial) << L"\"" << std::endl;
 			continue;
 		}
@@ -117,7 +117,7 @@ CodeTokens Tokenizer::TokenizeCode(ConstRef<StringData> aCode)
 
 		if (context.CursorLocation() == initialLocation)
 		{
-			std::wcout << L"Tokenizer did not progress at: \"" << context.Peek(5) << L"\"..." << std::endl;
+			PrintLine(L"Tokenizer did not progress at: \"", context.Peek(5), L"\"...");
 			abort();
 		}
 	}
@@ -131,7 +131,7 @@ TokenID Tokenizer::TryReadSpecialToken(Ref<TokenizerContext> aContext, Out<Strin
 	ConstPtr<SpecialTokenMap<TokenID>> current = &gSpecialTokens;
 	for (i32 i = 0; i < maxDepth && current != null; ++i)
 	{
-		if (current->GetOurValue() != TokenID::None)
+		if (current->GetOurValue() < TokenID::Count)
 		{
 			Const<TokenID> specialToken = current->GetOurValue();
 			aSpecialTokenFound = aContext.Peek(i);
@@ -140,7 +140,7 @@ TokenID Tokenizer::TryReadSpecialToken(Ref<TokenizerContext> aContext, Out<Strin
 		}
 		current = current->TryGetNextLayer(aContext.At(i));
 	}
-	return TokenID::None;
+	return TokenID::Invalid;
 }
 
 void Tokenizer::ParseComment(Ref<TokenizerContext> aContext)
@@ -214,7 +214,7 @@ void Tokenizer::ParseUnknownStatement(Ref<TokenizerContext> aContext)
 	String statement = ParseToken(aContext);
 
 	if (statement.Size() > 0)
-		aContext.AddToken(Token(TokenID::None, statement));
+		aContext.AddToken(Token(TokenID::Invalid, statement));
 }
 
 String Tokenizer::ParseToken(Ref<TokenizerContext> aContext)
@@ -243,12 +243,11 @@ CodeTokens Tokenizer::TokenizeFile(ConstRef<String> aFilePath, Ref<StringData> a
 	
 	if (f.good())
 	{
-		std::wcout << aFilePath << std::endl;
-		std::wcout.flush();
+		PrintLine(aFilePath);
 	}
 	else
 	{
-		std::wcout << L"Failed to open file " << aFilePath << std::endl;
+		PrintLine(L"Failed to open file ", aFilePath);
 		return CodeTokens();
 	}
 

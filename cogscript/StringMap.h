@@ -7,7 +7,7 @@ class StringMap
 protected:
 	StringMap();
 
-	virtual i32 Map(Const<Char> aCharacter) const = 0;
+	virtual i32 Map(Const<Char> aCharacter, Const<i32> aIndex) const = 0;
 
 public:
 	virtual ~StringMap();
@@ -34,7 +34,7 @@ public:
 	ConstRef<TType> GetOurValue() const;
 	Ref<TType> GetOurValue();
 
-	u16 GetDepth() const;
+	i32 GetDepth() const;
 
 	// TODO: RemoveValue which deletes empty branches
 	// void RemoveValue(String aString);
@@ -42,7 +42,7 @@ public:
 private:
 	TType myValue;
 	Ptr<Array<TImpl, TArrayLength>> myNextLayer;
-	u16 myDepth;
+	i32 myDepth;
 };
 
 template <typename TImpl, typename TType, size TArrayLength>
@@ -53,7 +53,7 @@ Ref<TImpl> StringMap<TImpl, TType, TArrayLength>::GetNextLayer(Const<Char> aChar
 		myNextLayer = new Array<TImpl, TArrayLength>();
 		myDepth = 1;
 	}
-	return (*myNextLayer)[Map(aCharacter)];
+	return (*myNextLayer)[Map(aCharacter, myDepth)];
 }
 
 template <typename TImpl, typename TType, size TArrayLength>
@@ -61,7 +61,7 @@ Ptr<TImpl> StringMap<TImpl, TType, TArrayLength>::TryGetNextLayer(Const<Char> aC
 {
 	if (myNextLayer == null)
 		return nullptr;
-	return &(*myNextLayer)[Map(aCharacter)];
+	return &(*myNextLayer)[Map(aCharacter, myDepth)];
 }
 
 // INCOMPLETE
@@ -129,7 +129,7 @@ Ptr<TType> StringMap<TImpl, TType, TArrayLength>::TryGetValue(String aString)
 		if (!current->myNextLayer)
 			return nullptr;
 
-		Const<i32> mappedCharacter = Map(aString[0]);
+		Const<i32> mappedCharacter = Map(aString[0], myDepth);
 		aString = aString.ChopRight(1);
 
 		current = &(*current->myNextLayer)[mappedCharacter];
@@ -149,7 +149,7 @@ ConstPtr<TType> StringMap<TImpl, TType, TArrayLength>::TryGetValue(String aStrin
 		if (!current->myNextLayer)
 			return nullptr;
 
-		Const<i32> mappedCharacter = Map(aString[0]);
+		Const<i32> mappedCharacter = Map(aString[0], myDepth);
 		aString = aString.ChopRight(1);
 
 		current = &(*current->myNextLayer)[mappedCharacter];
@@ -183,7 +183,7 @@ Ref<TType> StringMap<TImpl, TType, TArrayLength>::GetOrCreateValue(String aStrin
 			myDepth++;
 		}
 
-		Const<i32> mappedCharacter = Map(aString[0]);
+		Const<i32> mappedCharacter = Map(aString[0], myDepth);
 		aString = aString.ChopRight(1);
 		
 		current = &(*current->myNextLayer)[mappedCharacter];
@@ -204,7 +204,7 @@ ConstRef<TType> StringMap<TImpl, TType, TArrayLength>::GetOurValue() const
 }
 
 template <typename TImpl, typename TType, size TArrayLength>
-u16 StringMap<TImpl, TType, TArrayLength>::GetDepth() const
+i32 StringMap<TImpl, TType, TArrayLength>::GetDepth() const
 {
 	return myDepth;
 }

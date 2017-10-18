@@ -1,45 +1,56 @@
 #include "pch.h"
-#include <iostream>
-#include "StringData.h"
-#include "String.h"
 #include "Config.h"
 #include "Tokenizer.h"
-#include "Interpreter.h"
+#include "Transpiler.h"
 #include "Token.h"
 #include "Stopwatch.h"
 
-i32 main(Const<i32> aArgNum, ConstPtr<char> aArgs[])
+INT WinMain(HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstance*/,
+	PSTR /*lpCmdLine*/, INT /*nCmdShow*/)
 {
-	std::cout << "Cog Language v0.0" << std::endl;
+	LPWSTR *args;
+	i32 argNum;
 
-	if (aArgNum > 1)
+	args = CommandLineToArgvW(GetCommandLineW(), &argNum);
+	if (args == nullptr)
 	{
-		if (strcmp("run", aArgs[1]) == 0)
+		wprintf(L"CommandLineToArgvW failed\n");
+		return 0;
+	}
+
+	// Free memory allocated for CommandLineToArgvW arguments.
+
+	
+	PrintLine(L"Cog Language v0.0");
+
+	if (argNum > 1)
+	{
+		if (String(L"run") == args[1])
 		{
 			Config config;
 
-			if (aArgNum > 2)
+			if (argNum > 2)
 			{
-				if (strcmp("help", aArgs[2]) == 0)
+				if (String(L"help") == args[2])
 				{
-					std::cout << "Compiles and executes the project in the specified, or current directory." << std::endl
-						<< "Usage:" << std::endl
-						<< "rbt -run [project-dir]" << std::endl;
+					PrintLine(L"Compiles and executes the project in the specified, or current directory.");
+					PrintLine(L"Usage:");
+					PrintLine(L"rbt -run [project-dir]");
 
 					return 0;
 				}
 				else
 				{
-					std::cout << "Building and running project \"" << aArgs[2] << "\"..." << std::endl;
+					PrintLine(L"Building and running project \"", String(StringData(args[2])), L"\"...");
 
-					StringData projectPath = StringData::FromASCII(aArgs[2]);
+					StringData projectPath = StringData(args[2]);
 					config = Config(projectPath);
 				}
 			}
 			else
 			{
-				std::wcout << L"Building and running project in the current directory..." << std::endl;
-				config = Config(StringData::FromASCII(aArgs[0]));
+				PrintLine(L"Building and running project in the current directory...");
+				config = Config(StringData(args[0]));
 			}
 
 			Tokenizer tokenizer(config);
@@ -50,15 +61,15 @@ i32 main(Const<i32> aArgNum, ConstPtr<char> aArgs[])
 				StringData code;
 				CodeTokens codeTokens = tokenizer.TokenizeFile(L"helloworld/hello.cog", code, &watch);
 				Const<float> time = watch.GetElapsedTimeInSeconds() * 1000.f;
-				std::wcout << L"Tokenizer finished in " << time << L"ms" << std::endl;
+				PrintLine(L"Tokenizer finished in ", time, L"ms");
 
 				{
 					Stopwatch interpretWatch;
 					interpreter.Interpret(codeTokens);
 					Const<float> interpretTime = watch.GetElapsedTimeInSeconds() * 1000.f;
-					std::wcout << L"Interpreter finished in " << interpretTime << L"ms" << std::endl;
+					PrintLine(L"Interpreter finished in ", interpretTime, L"ms");
 				}
-				std::wcout << L"Compiler finished in " << watch.GetElapsedTimeInSeconds() * 1000.f << L"ms" << std::endl;
+				PrintLine(L"Compiler finished in ", watch.GetElapsedTimeInSeconds() * 1000.f, L"ms");
 			}
 
 			// ConstRef<List<StringData>> sourceFiles = config.GetSourceFiles();
@@ -68,12 +79,11 @@ i32 main(Const<i32> aArgNum, ConstPtr<char> aArgs[])
 		}
 		else
 		{
-			std::cout << "Unknown parameter: " << aArgs[1] << std::endl;
+			PrintLine(L"Unknown parameter: ", String(StringData(args[1])));
 		}
 	}
 
-	std::cout << "Press Return to quit" << std::endl;
-	std::cin.get();
+	LocalFree(args);
 
 	return 0;
 }

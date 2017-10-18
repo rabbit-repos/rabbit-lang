@@ -65,7 +65,7 @@ StringData::~StringData()
 #ifdef _DEBUG
 	if (myNumReferences > 0)
 	{
-		std::cout << "There are still references remaining!" << std::endl;
+		PrintLine("There are still references remaining!");
 		abort();
 	}
 #endif
@@ -76,7 +76,7 @@ Ref<StringData> StringData::operator=(RValue<StringData> aOther)
 #ifdef _DEBUG
 	if (aOther.myNumReferences > 0)
 	{
-		std::cout << "There are still references remaining!" << std::endl;
+		PrintLine("There are still references remaining!");
 		abort();
 	}
 
@@ -204,7 +204,7 @@ void StringData::CheckForReferences() const
 #ifdef _DEBUG
 	if (myNumReferences > 0)
 	{
-		std::cout << "This operation is not allowed while there are references to this data!" << std::endl;
+		PrintLine(L"This operation is not allowed while there are references to this data!");
 		abort();
 	}
 #endif

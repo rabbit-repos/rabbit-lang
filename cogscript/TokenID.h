@@ -10,7 +10,7 @@ enum class TokenIDRanges : u8
 
 enum class TokenID : u8
 {
-	None,
+	Text,
 	FirstValid,
 	// 1 - XXX is the alphabet
 	Alphabet = FirstValid,
@@ -61,5 +61,6 @@ enum class TokenID : u8
 	NumberLiteral,
 	StringLiteral,
 
-	Count
+	Count,
+	Invalid = MaxOf<u8>
 };
