@@ -214,7 +214,7 @@ void Tokenizer::ParseUnknownStatement(Ref<TokenizerContext> aContext)
 	String statement = ParseToken(aContext);
 
 	if (statement.Size() > 0)
-		aContext.AddToken(Token(TokenID::Invalid, statement));
+		aContext.AddToken(Token(TokenID::Text, statement));
 }
 
 String Tokenizer::ParseToken(Ref<TokenizerContext> aContext)

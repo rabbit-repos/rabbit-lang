@@ -18,9 +18,6 @@ INT WinMain(HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstance*/,
 		return 0;
 	}
 
-	// Free memory allocated for CommandLineToArgvW arguments.
-
-	
 	PrintLine(L"Cog Language v0.0");
 
 	if (argNum > 1)

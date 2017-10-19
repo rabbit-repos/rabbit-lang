@@ -31,6 +31,12 @@ ConstRef<VirtualList<Token>> CodeTokens::GetTokens() const
 
 void CodeTokens::AddToken(Token aToken)
 {
+	if (aToken.GetTokenID() == TokenID::Invalid)
+	{
+		PrintLine(L"The Tokenizer may not generate tokens with TokenID set to TokenID::Invalid");
+		abort();
+	}
+
 	myTokens.Add(std::move(aToken));
 }
 
