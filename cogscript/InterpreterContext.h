@@ -5,11 +5,11 @@ class CodeTokens;
 class Token;
 class TokenContext;
 
-class TranspilerContext
+class InterpreterContext
 {
 public:
-	TranspilerContext(ConstRef<CodeTokens> aCodeTokens);
-	~TranspilerContext();
+	InterpreterContext(ConstRef<CodeTokens> aCodeTokens);
+	~InterpreterContext();
 
 	ConstRef<Token> At(Const<i32> aOffset = 0) const;
 	ConstRef<TokenContext> ContextAt(Const<i32> aOffset = 0) const;

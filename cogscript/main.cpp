@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "Config.h"
 #include "Tokenizer.h"
-#include "Transpiler.h"
+#include "Interpreter.h"
 #include "Token.h"
 #include "Stopwatch.h"
 
@@ -51,7 +51,7 @@ INT WinMain(HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstance*/,
 			}
 
 			Tokenizer tokenizer(config);
-			Transpiler interpreter(config);
+			Interpreter interpreter(config);
 			{
 				Stopwatch watch;
 

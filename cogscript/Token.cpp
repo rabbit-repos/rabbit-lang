@@ -45,7 +45,7 @@ Token Token::Copy() const
 }
 
 
-String Token::ToString() const
+String Token::TypeToString() const
 {
 	switch (myTokenID)
 	{

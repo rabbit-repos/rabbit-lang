@@ -20,7 +20,7 @@ public:
 
 	Token Copy() const;
 
-	String ToString() const;
+	String TypeToString() const;
 
 private:
 	TokenContext myContext;

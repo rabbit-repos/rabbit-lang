@@ -8,7 +8,7 @@ enum class ErrorType
 };
 
 class CodeTokens;
-class TranspilerContext;
+class InterpreterContext;
 
 struct InterpretationResult
 {
@@ -17,15 +17,15 @@ struct InterpretationResult
 	class CodeTree * InterpretedTree;
 };
 
-class Transpiler
+class Interpreter
 {
 public:
-	Transpiler(ConstRef<class Config> aConfiguration);
-	~Transpiler();
+	Interpreter(ConstRef<class Config> aConfiguration);
+	~Interpreter();
 
 	InterpretationResult Interpret(ConstRef<CodeTokens> aCodeTokens) const;
 
 private:
 	ConstPtr<class Config> myConfig;
-	void ParseGlobalScope(ConstRef<TranspilerContext> aContext) const;
+	void ParseGlobalScope(ConstRef<InterpreterContext> aContext) const;
 };

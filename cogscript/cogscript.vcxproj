@@ -179,7 +179,7 @@
     <ClCompile Include="CodeGraphEntry.cpp" />
     <ClCompile Include="CodeGraphNode.cpp" />
     <ClCompile Include="Config.cpp" />
-    <ClCompile Include="Transpiler.cpp" />
+    <ClCompile Include="Interpreter.cpp" />
     <ClCompile Include="CodeTokens.cpp" />
     <ClCompile Include="Stopwatch.cpp" />
     <ClCompile Include="Symbol.cpp" />
@@ -202,14 +202,14 @@
     <ClCompile Include="String.cpp" />
     <ClCompile Include="ResizableArray.cpp" />
     <ClCompile Include="StringData.cpp" />
-    <ClCompile Include="TranspilerContext.cpp" />
+    <ClCompile Include="InterpreterContext.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CharUtility.h" />
     <ClInclude Include="CodeGraphEntry.h" />
     <ClInclude Include="CodeGraphNode.h" />
     <ClInclude Include="Config.h" />
-    <ClInclude Include="Transpiler.h" />
+    <ClInclude Include="Interpreter.h" />
     <ClInclude Include="json.h" />
     <ClInclude Include="Array.h" />
     <ClInclude Include="CodeTokens.h" />
@@ -221,7 +221,7 @@
     <ClInclude Include="TokenID.h" />
     <ClInclude Include="TokenizerContext.h" />
     <ClInclude Include="SpecialTokenMap.h" />
-    <ClInclude Include="TranspilerContext.h" />
+    <ClInclude Include="InterpreterContext.h" />
     <ClInclude Include="VirtualList.h" />
     <ClInclude Include="Token.h" />
     <ClInclude Include="Tokenizer.h" />
