@@ -15,9 +15,9 @@ public:
 	StringMap(RValue<StringMap> aOther);
 	Ref<StringMap> operator=(RValue<StringMap> aOther);
 
-	// Use Copy() instead
+	// Use CopyTo() instead
 	StringMap(ConstRef<StringMap> aOther) = delete;
-	// Use Copy() instead
+	// Use CopyTo() instead
 	Ref<StringMap> operator=(ConstRef<StringMap> aOther) = delete;
 
 	// void CopyTo(Ref<StringMap> aTarget) const;

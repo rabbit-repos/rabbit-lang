@@ -65,8 +65,8 @@ public:
 	Ref<T> operator*();
 	ConstRef<T> operator*() const;
 
-	Ref<T> operator[](Const<u64> aIndex);
-	ConstRef<T> operator[](Const<u64> aIndex) const;
+	Ref<T> operator[](Const<size> aIndex);
+	ConstRef<T> operator[](Const<size> aIndex) const;
 
 private:
 	ResizableArrayBase myData;

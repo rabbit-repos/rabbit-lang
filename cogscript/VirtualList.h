@@ -73,7 +73,7 @@ VirtualList<T>::VirtualList()
 #ifdef _DEBUG
 	myData.Resize(32);
 #else
-	myData.Resize(MegaByte * 10);
+	myData.Resize(MegaByte / 2);
 #endif
 }
 

@@ -23,5 +23,6 @@ private:
 	ConstPtr<class Config> myConfig;
 	void ParseGlobalScope(Ref<InterpreterContext> aContext) const;
 	void ParseExpression(Ref<InterpreterContext> aContext) const;
+	void ParseTypeModifiers(Ref<InterpreterContext> aContext) const;
 	void ParseObject(Ref<InterpreterContext> aContext) const;
 };

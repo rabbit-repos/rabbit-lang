@@ -8,7 +8,7 @@
 #else
 	#define LOOP_HINT(n)
 	#define LOOP_HINT_IVDEP()
-	#define FatalError() abort();
+	#define FatalError() { __builtin_trap(); abort(); }
 #endif
 
 #include <string>
@@ -19,11 +19,7 @@
 #include <type_traits>
 #include <random>
 #include <strstream>
-
-#define CHECK_ENUM_BITFIELD_LENGTH ,\
-	ZInternal_LastAdded,\
-	ZInternal_Previous = ZInternal_LastAdded - 1\
-	static_assert(std::numeric_limits<std::underlying_type_t<decltype(ZInternal_LastAdded)>> > Z_InternalPrevious, "Bitfield does not fit in enum");
+#include <intrin.h>
 
 // For now (hopefully)
 #include <Windows.h>
@@ -43,6 +39,8 @@ using json = nlohmann::json;
 #define cout __USE__PRINT
 
 #define ERROR(e) { PrintLine(e); FatalError(); }
+
+#include "EnumBitwiseHelper.h"
 
 constexpr size_t KiloByte = 1024;
 constexpr size_t MegaByte = KiloByte * 1024;

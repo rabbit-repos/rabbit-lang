@@ -1,18 +1,14 @@
 #pragma once
 
-namespace TypeModifiers
+enum class TypeModifiers : u8
 {
-	enum Type : u8
-	{
-		Global = 1 << 0,
-		// Not Named = 1 << 1,
-		// Global = 1 << 2,
-		// Global = 1 << 3,
-		// Global = 1 << 4,
-		// Global = 1 << 5,
-		// Global = 1 << 6,
-		// Global = 1 << 7,
-
-		CHECK_ENUM_BITFIELD_LENGTH
-	};
-}
+	None = 0,
+	Global = 1 << 0,
+	Internal = 1 << 1
+	// NotUsed = 1 << 2,
+	// NotUsed = 1 << 3,
+	// NotUsed = 1 << 4,
+	// NotUsed = 1 << 5,
+	// NotUsed = 1 << 6,
+	// NotUsed = 1 << 7
+};

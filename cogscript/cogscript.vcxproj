@@ -216,6 +216,7 @@
     <ClInclude Include="CodeGraphEntry.h" />
     <ClInclude Include="CodeGraphNode.h" />
     <ClInclude Include="Config.h" />
+    <ClInclude Include="EnumBitwiseHelper.h" />
     <ClInclude Include="ErrorCode.h" />
     <ClInclude Include="Interpreter.h" />
     <ClInclude Include="Array.h" />

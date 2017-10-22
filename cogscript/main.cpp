@@ -5,7 +5,7 @@
 #include "Token.h"
 #include "Stopwatch.h"
 
-INT WinMain(HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstance*/,
+INT __stdcall WinMain(HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstance*/,
 	PSTR /*lpCmdLine*/, INT /*nCmdShow*/)
 {
 	LPWSTR *args;

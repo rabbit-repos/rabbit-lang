@@ -5,6 +5,7 @@
 #include "InterpreterContext.h"
 #include "Namespace.h"
 #include "KeywordID.h"
+#include "TypeModifiers.h"
 
 Interpreter::Interpreter(ConstRef<Config> aConfiguration)
 {
@@ -33,7 +34,6 @@ InterpretationResult Interpreter::Interpret(ConstRef<CodeTokens> aCodeTokens) co
 		}
 	} while (!context.IsAtEnd());
 
-	
 	InterpretationResult result;
 	return result;
 }
@@ -79,7 +79,23 @@ void Interpreter::ParseExpression(Ref<InterpreterContext> aContext) const
 	}
 }
 
+void Interpreter::ParseTypeModifiers(Ref<InterpreterContext> aContext) const
+{
+	TypeModifiers modifiers = TypeModifiers::None;
+	
+	i32 i = 0;
+	do
+	{
+		switch (aContext.KeywordAt(i))
+		{
+		case KeywordID::Global:
+			modifiers |= TypeModifiers::Global;
+		}
+		++i;
+	} while (!aContext.IsAtEnd());
+}
+
 void Interpreter::ParseObject(Ref<InterpreterContext> aContext) const
 {
-	aContext;
+	ParseTypeModifiers(aContext);
 }
