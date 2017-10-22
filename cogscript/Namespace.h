@@ -7,8 +7,8 @@
 class NamespaceMapIndices
 {
 public:
-	static constexpr u8 MinValue = static_cast<u8>(TokenID::FirstValid);
-	static constexpr u8 MaxValue = static_cast<u8>(TokenID::Modulus);
+	static constexpr u8 MinValue = static_cast<u8>(TokenID::AlphabetStart);
+	static constexpr u8 MaxValue = static_cast<u8>(TokenID::Underscore);
 	static constexpr u8 ArraySize = MaxValue - MinValue + 1;
 };
 
@@ -19,7 +19,10 @@ public:
 	~Namespace();
 
 	template <typename TSymbolType>
-	void AddSymbol(RValue<TSymbolType> aSymbol);
+	Ref<TSymbolType> AddSymbol(RValue<TSymbolType> aSymbol);
+	
+	template <typename TImpl, typename TType, size TArrayLength>
+	friend class StringMap;
 
 protected:
 	VirtualList<Symbol> myData;
@@ -27,9 +30,10 @@ protected:
 };
 
 template <typename TSymbolType>
-void Namespace::AddSymbol(RValue<TSymbolType> aSymbol)
+Ref<TSymbolType> Namespace::AddSymbol(RValue<TSymbolType> aSymbol)
 {
-	Ref<TSymbolType> newSymbol = myData.Emplace(std::move(aSymbol));
+	Ref<TSymbolType> newSymbol = myData.Add<TSymbolType>(std::move(aSymbol));
 	GetOrCreateValue(aSymbol.GetIdentifier()) = &newSymbol;
+	return newSymbol;
 }
 

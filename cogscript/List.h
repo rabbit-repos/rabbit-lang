@@ -24,6 +24,7 @@ public:
 
 	void Add(ConstRef<T> aItem);
 	void Add(RValue<T> aItem);
+	Ref<T> Emplace(RValue<T> aItem);
 
 	void AddRange(ConstPtr<T> aItemList, i32 aNumberOfItems);
 
@@ -179,7 +180,7 @@ Ref<T> List<T>::Emplace(TArgs ... aArgs)
 	if (mySize >= Capacity())
 		Reserve(Max(8, Capacity() * 2));
 	new (myData[mySize - 1]) T(aArgs...);
-	return *myData[mySize - 1];
+	return myData[mySize - 1];
 }
 
 template <typename T>
@@ -198,6 +199,17 @@ void List<T>::Add(RValue<T> aItem)
 	if (mySize >= Capacity())
 		Reserve(Max(8, Capacity() * 2));
 	myData[mySize - 1] = std::move(aItem);
+}
+
+
+template <typename T>
+Ref<T> List<T>::Emplace(RValue<T> aItem)
+{
+	mySize++;
+	if (mySize >= Capacity())
+		Reserve(Max(8, Capacity() * 2));
+	myData[mySize - 1] = std::move(aItem);
+	return myData[mySize - 1];
 }
 
 template <typename T>

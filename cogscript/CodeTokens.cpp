@@ -11,22 +11,26 @@ CodeTokens::CodeTokens(RValue<CodeTokens> aMove)
 	*this = std::move(aMove);
 }
 
+CodeTokens::CodeTokens(RValue<Super> aMove)
+	: Super(std::move(aMove))
+{
+}
+
 Ref<CodeTokens> CodeTokens::operator=(RValue<CodeTokens> aMove)
 {
-	myTokens = std::move(aMove.myTokens);
+	Super::operator=(std::move(aMove));
 	return *this;
 }
 
 CodeTokens CodeTokens::Copy() const
 {
-	CodeTokens copy;
-	copy.myTokens = myTokens.Copy();
-	return copy;
+	CodeTokens tokens(Super::Copy());
+	return tokens;
 }
 
 ConstRef<VirtualList<Token>> CodeTokens::GetTokens() const
 {
-	return myTokens;
+	return *this;
 }
 
 void CodeTokens::AddToken(Token aToken)
@@ -37,7 +41,7 @@ void CodeTokens::AddToken(Token aToken)
 		FatalError();
 	}
 
-	myTokens.Add(std::move(aToken));
+	Add(std::move(aToken));
 }
 
 CodeTokens::~CodeTokens()

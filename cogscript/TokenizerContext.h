@@ -31,6 +31,7 @@ private:
 	ConstPtr<StringData> myCode;
 	Ptr<CodeTokens> myTokens;
 	i32 myCursor;
+	i32 myLineNumber;
 };
 
 inline Char TokenizerContext::At() const
@@ -56,14 +57,17 @@ inline i32 TokenizerContext::CursorLocation() const
 inline void TokenizerContext::AdvanceCursor()
 {
 	if (!IsAtEnd())
+	{
+		if ((*myCode)[myCursor] == L'\n')
+			++myLineNumber;
 		++myCursor;
+	}
 }
 
 inline void TokenizerContext::AdvanceCursor(Const<i32> aAmount)
 {
-	myCursor += aAmount;
-	if (myCursor > myCode->Size())
-		myCursor = myCode->Size();
+	for (i32 i = 0; i < aAmount; ++i)
+		AdvanceCursor();
 }
 
 inline bool TokenizerContext::IsAtEnd() const

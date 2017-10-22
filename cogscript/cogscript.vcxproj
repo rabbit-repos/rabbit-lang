@@ -187,6 +187,7 @@
     <ClCompile Include="Interpreter.cpp" />
     <ClCompile Include="CodeTokens.cpp" />
     <ClCompile Include="KeywordMap.cpp" />
+    <ClCompile Include="ObjectSymbol.cpp" />
     <ClCompile Include="Stopwatch.cpp" />
     <ClCompile Include="Symbol.cpp" />
     <ClCompile Include="Namespace.cpp" />
@@ -223,6 +224,7 @@
     <ClInclude Include="CodeTokens.h" />
     <ClInclude Include="KeywordID.h" />
     <ClInclude Include="KeywordMap.h" />
+    <ClInclude Include="ObjectSymbol.h" />
     <ClInclude Include="Type.h" />
     <ClInclude Include="TypeModifiers.h" />
     <ClInclude Include="Stopwatch.h" />

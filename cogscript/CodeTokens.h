@@ -3,7 +3,7 @@
 #include "VirtualList.h"
 #include "Token.h"
 
-class CodeTokens
+class CodeTokens final : private VirtualList<Token>
 {
 public:
 	CodeTokens();
@@ -18,11 +18,12 @@ public:
 	Ref<CodeTokens> operator=(RValue<CodeTokens> aMove);
 
 	CodeTokens Copy() const;
-
+	
 	ConstRef<VirtualList<Token>> GetTokens() const;
 
 	void AddToken(Token aToken);
 
 private:
-	VirtualList<Token> myTokens;
+	using Super = VirtualList<Token>;
+	CodeTokens(RValue<Super> aMove);
 };

@@ -8,7 +8,7 @@ protected:
 public:
 	virtual ~Symbol();
 
-	virtual String GetIdentifier() = 0;
+	ConstRef<String> GetIdentifier() const;
 
 private:
 	String myIdentifier;

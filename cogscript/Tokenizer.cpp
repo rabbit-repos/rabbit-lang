@@ -175,7 +175,7 @@ void Tokenizer::ParseNumberLiteral(Ref<TokenizerContext> aContext)
 	if (!CharUtility::IsDigit(aContext.At())) 
 		return;
 
-	Const<String> number = ParseUntil(aContext, [&aContext](Const<i32> aIndex) { return CharUtility::IsDigit(aContext.At(aIndex)); });
+	Const<String> number = ParseUntil(aContext, [&aContext](Const<i32> aIndex) { return !CharUtility::IsDigit(aContext.At(aIndex)); });
 	aContext.AddToken(Token(TokenID::NumberLiteral, TokenContext(number)));
 }
 

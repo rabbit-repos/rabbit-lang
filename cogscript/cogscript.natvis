@@ -114,4 +114,14 @@
       </Synthetic>
     </Expand>
   </Type>
+
+  <Type Name="InterpreterContext">
+    <DisplayString>[Interpreter Context]</DisplayString>
+
+    <Expand>
+      <Synthetic Name="Cursor">
+        <DisplayString>{myCursor}</DisplayString>
+      </Synthetic>
+    </Expand>
+  </Type>
 </AutoVisualizer>

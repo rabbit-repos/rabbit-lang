@@ -25,8 +25,8 @@ public:
 	ConstRef<Ptr<T>> operator[](Const<i32> aIndex) const;
 
 	template <typename TDerivedType>
-	void Add(RValue<TDerivedType> aLexeme);
-
+	Ref<TDerivedType> Add(RValue<TDerivedType> aLexeme);
+	
 	i32 Size() const;
 	void Clear();
 
@@ -154,7 +154,7 @@ Ref<VirtualList<T>> VirtualList<T>::operator=(RValue<VirtualList> aCopy)
 
 template <typename T>
 template <typename TDerivedType>
-void VirtualList<T>::Add(RValue<TDerivedType> aObject)
+Ref<TDerivedType> VirtualList<T>::Add(RValue<TDerivedType> aObject)
 {
 	static_assert(std::is_move_constructible_v<TDerivedType>, "Types added to a VirtualList must be move constructible!");
 	static_assert(std::is_move_assignable_v<TDerivedType>, "Value of VirtualList must be move assignable! (operator=(&&))");
@@ -172,4 +172,5 @@ void VirtualList<T>::Add(RValue<TDerivedType> aObject)
 	
 	myObjects.Add(obj);
 	myCopyFunctions.Add(VirtualCopyHelper<TDerivedType>);
+	return *obj;
 }

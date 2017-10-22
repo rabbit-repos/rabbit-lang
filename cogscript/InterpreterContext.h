@@ -21,8 +21,11 @@ public:
 	Ref<TokenContext> ContextAt(Const<i32> aOffset = 0);
 	ConstRef<TokenContext> ContextAt(Const<i32> aOffset = 0) const;
 
+	void AdvanceCursor();
+	void AdvanceCursor(Const<i32> aAmount);
+
 	i32 GetCursorLocation() const;
-	bool IsAtEnd() const;
+	bool IsAtEnd(Const<i32> aOffset = 0) const;
 
 	Ref<Namespace> GetGlobalNamespace();
 	ConstRef<Namespace> GetGlobalNamespace() const;

@@ -9,3 +9,8 @@ Symbol::Symbol(String aIdentifier)
 Symbol::~Symbol()
 {
 }
+
+ConstRef<String> Symbol::GetIdentifier() const
+{
+	return myIdentifier;
+}

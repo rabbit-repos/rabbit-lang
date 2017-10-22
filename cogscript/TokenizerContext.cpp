@@ -9,6 +9,7 @@ TokenizerContext::TokenizerContext(ConstPtr<StringData> aCode, Ref<CodeTokens> a
 	myCode = aCode;
 	myTokens = &aTokens;
 	myCursor = 0;
+	myLineNumber = 0;
 }
 
 TokenizerContext::~TokenizerContext()

@@ -14,7 +14,7 @@ INT __stdcall WinMain(HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstance*/,
 	args = CommandLineToArgvW(GetCommandLineW(), &argNum);
 	if (args == nullptr)
 	{
-		wprintf(L"CommandLineToArgvW failed\n");
+		PrintLine(L"CommandLineToArgvW failed");
 		return 0;
 	}
 
@@ -72,7 +72,6 @@ INT __stdcall WinMain(HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstance*/,
 			// ConstRef<List<StringData>> sourceFiles = config.GetSourceFiles();
 			// for (i32 i = 0; i < sourceFiles.Size(); ++i)
 			// 	tokenizer.TokenizeFile(sourceFiles[i]);
-
 		}
 		else
 		{

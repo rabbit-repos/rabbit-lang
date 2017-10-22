@@ -45,14 +45,28 @@ Ref<TokenContext> InterpreterContext::ContextAt(Const<i32> aOffset /*= 0*/)
 	return At(aOffset).GetContext();
 }
 
+void InterpreterContext::AdvanceCursor()
+{
+	if (IsAtEnd())
+		return;
+
+	myCursor++;
+}
+
+void InterpreterContext::AdvanceCursor(Const<i32> aAmount)
+{
+	for (i32 i = 0; i < aAmount; ++i)
+		AdvanceCursor();
+}
+
 i32 InterpreterContext::GetCursorLocation() const
 {
 	return myCursor;
 }
 
-bool InterpreterContext::IsAtEnd() const
+bool InterpreterContext::IsAtEnd(Const<i32> aOffset /*= 0*/) const
 {
-	return myCursor >= myTokens->GetTokens().Size();
+	return myCursor + aOffset >= myTokens->GetTokens().Size();
 }
 
 Ref<Namespace> InterpreterContext::GetGlobalNamespace()

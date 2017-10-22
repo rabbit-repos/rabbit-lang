@@ -6,6 +6,7 @@
 #include "Namespace.h"
 #include "KeywordID.h"
 #include "TypeModifiers.h"
+#include "ObjectSymbol.h"
 
 Interpreter::Interpreter(ConstRef<Config> aConfiguration)
 {
@@ -29,7 +30,7 @@ InterpretationResult Interpreter::Interpret(ConstRef<CodeTokens> aCodeTokens) co
 		Const<i32> endCursor = context.GetCursorLocation();
 		if (endCursor == beginCursor)
 		{
-			PrintLine(L"Interpreter did not progress at token \"", context.At().TypeToString(), L"\" (Data = \"", context.At().GetContext().GetData(), L"\")");
+			PrintLine(L"Interpreter did not progress at \"", context.At().GetContext().GetData(), L"\" (Token ID = ", context.At().TypeToString(), L")");
 			FatalError();
 		}
 	} while (!context.IsAtEnd());
@@ -43,7 +44,7 @@ void Interpreter::ParseGlobalScope(Ref<InterpreterContext> aContext) const
 	switch (aContext.At().GetTokenID())
 	{
 	case TokenID::Text:
-		ParseExpression(aContext);
+		ParseDeclaration(aContext);
 		break;
 
 	default:
@@ -54,48 +55,73 @@ void Interpreter::ParseGlobalScope(Ref<InterpreterContext> aContext) const
 	}
 }
 
-void Interpreter::ParseExpression(Ref<InterpreterContext> aContext) const
+void Interpreter::ParseDeclaration(Ref<InterpreterContext> aContext) const
 {
 	if (aContext.At().GetTokenID() == TokenID::Text)
 	{
-		Const<KeywordID> keyword = aContext.KeywordAt();
+		Const<TypeModifiers> modifiers = ParseTypeModifiers(aContext);
 
+		Const<KeywordID> keyword = aContext.KeywordAt();
 		switch (keyword)
 		{
-		case KeywordID::Global:
-		case KeywordID::Pure:
-		case KeywordID::Internal:
-		case KeywordID::Type:
-			// ParseType(aContext);
 		case KeywordID::Object:
-			ParseObject(aContext);
+			ParseObject(aContext, modifiers);
 			break;
 
 		default:
-			// TODO: Remove the not implemented part of this when the language is done. See you in 10 years or more likely never as the compiler will most likely be rewritten from "scratch".
-			aContext.ReportError(ErrorCode::UnexpectedKeyword, L"This keyword is not valid at this location or is not implemented.", 0);
+			PrintLine(L"Declarations using", static_cast<i32>(keyword), L" is not implemented");
+			FatalError();
 			break;
 		}
 	}
 }
 
-void Interpreter::ParseTypeModifiers(Ref<InterpreterContext> aContext) const
+TypeModifiers Interpreter::ParseTypeModifiers(Ref<InterpreterContext> aContext) const
 {
 	TypeModifiers modifiers = TypeModifiers::None;
 	
 	i32 i = 0;
 	do
 	{
-		switch (aContext.KeywordAt(i))
+		switch (aContext.KeywordAt())
 		{
 		case KeywordID::Global:
 			modifiers |= TypeModifiers::Global;
+			aContext.AdvanceCursor();
+			break;
+		case KeywordID::Internal:
+			modifiers |= TypeModifiers::Internal;
+			aContext.AdvanceCursor();
+			break;
+
+		default:
+			return modifiers;
 		}
 		++i;
 	} while (!aContext.IsAtEnd());
+
+	return modifiers;
 }
 
-void Interpreter::ParseObject(Ref<InterpreterContext> aContext) const
+Ref<ObjectSymbol> Interpreter::ParseObject(Ref<InterpreterContext> aContext, TypeModifiers aModifiers) const
 {
-	ParseTypeModifiers(aContext);
+	// Default objects to internal scope
+	if (!FlagIsSet(aModifiers, TypeModifiers::Global))
+		SetFlag(aModifiers, TypeModifiers::Internal);
+
+#ifdef _DEBUG
+	if (FlagIsSet(aModifiers, TypeModifiers::Global) && FlagIsSet(aModifiers, TypeModifiers::Internal))
+	{
+		PrintLine(L"Object is marked as both global and internal");
+		FatalError();
+	}
+#endif
+
+	ObjectSymbol newSymbol(aContext.ContextAt().GetData());
+	
+	aContext.AdvanceCursor();
+
+	// Parse declarations
+
+	return aContext.GetGlobalNamespace().AddSymbol(std::move(newSymbol));
 }

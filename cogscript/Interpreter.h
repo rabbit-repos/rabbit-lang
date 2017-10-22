@@ -3,6 +3,9 @@
 
 class CodeTokens;
 class InterpreterContext;
+class ObjectSymbol;
+enum class TypeModifiers : u8;
+enum class KeywordID : u8;
 
 struct InterpretationResult
 {
@@ -22,7 +25,7 @@ public:
 private:
 	ConstPtr<class Config> myConfig;
 	void ParseGlobalScope(Ref<InterpreterContext> aContext) const;
-	void ParseExpression(Ref<InterpreterContext> aContext) const;
-	void ParseTypeModifiers(Ref<InterpreterContext> aContext) const;
-	void ParseObject(Ref<InterpreterContext> aContext) const;
+	void ParseDeclaration(Ref<InterpreterContext> aContext) const;
+	TypeModifiers ParseTypeModifiers(Ref<InterpreterContext> aContext) const;
+	Ref<ObjectSymbol> ParseObject(Ref<InterpreterContext> aContext, TypeModifiers aModifiers) const;
 };
