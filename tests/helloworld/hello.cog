@@ -1,10 +1,16 @@
 
-type Program
+--[[
+	Compiles into:
+	internal type Program
+		event Run()
+			Console.WriteLine("Hello World!");
+		end
+	end
+	
+	global Program;
+]]
+object Program
 	event Run()
 		Console.WriteLine("Hello World!");
 	end
 end
-
--- Declares a global object of the Program type, it can implicitly be accessed through it's type name "Program"
--- Something to note is that the type Program is not global, meaning it's only accessible in this scope; this following declaration will however expose it, however only through the object name, not the type itself (ie you can't create new instances of it) 
-global Program;

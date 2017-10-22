@@ -14,10 +14,15 @@ enum class KeywordID : u8
 	Return,
 	Returns,
 	Alias,
-	Mutable,
 	Static,
 	FlowControl,
 	SkipWhen,
 	RepeatWhen,
-	Mixin
+	Mixin,
+	Mutable,
+	Const,
+	Pure,
+	Object,
+
+	Last
 };

@@ -23,6 +23,7 @@ i32 KeywordMap::Map(Const<Char> aCharacter, Const<i32> aIndex) const
 		// This value was not able to be mapped to a symbol
 		abort();
 	}
+
 	return static_cast<u8>(mappedValue);
 }
 

@@ -8,7 +8,7 @@ class KeywordMapIndices
 {
 public:
 	static constexpr u8 MinValue = static_cast<u8>(TokenID::AlphabetStart);
-	static constexpr u8 MaxValue = static_cast<u8>(TokenID::AlphabetEnd);
+	static constexpr u8 MaxValue = static_cast<u8>(TokenID::AlphabetEnd) + 1;
 	static constexpr u8 ArraySize = MaxValue - MinValue + 1;
 };
 

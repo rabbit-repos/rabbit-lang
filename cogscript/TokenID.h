@@ -2,7 +2,7 @@
 
 enum class TokenIDRanges : u8
 {
-	FirstLetter = 1,
+	FirstLetter = 2,
 	LastLetter = FirstLetter + ('Z' - 'A') + ('z' - 'a') + 1,
 	FirstDigit = LastLetter + 1,
 	LastDigit = FirstDigit + 9
@@ -10,10 +10,10 @@ enum class TokenIDRanges : u8
 
 enum class TokenID : u8
 {
-	Text,
 	FirstValid,
+	Text = FirstValid,
 	// 1 - XXX is the alphabet
-	AlphabetStart = FirstValid,
+	AlphabetStart,
 	AlphabetEnd = static_cast<u8>(TokenIDRanges::LastDigit) + 1,
 	// XXX - XXX is the digits
 	Digits = static_cast<u8>(TokenIDRanges::FirstDigit),

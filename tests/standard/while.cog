@@ -1,5 +1,5 @@
 
-global flow_control while(flag pCondition)
-    skip_when pCondition.IsNotMet
-    repeat_when pCondition.IsMet
+global flow_control while(bool pCondition)
+    skip_when !pCondition
+    repeat_when pCondition
 end

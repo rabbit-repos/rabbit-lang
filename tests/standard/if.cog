@@ -1,4 +1,4 @@
 
-global flow_control if (flag pCondition)
-    skip when pCondition.IsNotMet
+global flow_control if (bool pCondition)
+    skip when pCondition
 end
