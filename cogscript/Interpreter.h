@@ -1,19 +1,13 @@
 #pragma once
-
-enum class ErrorType
-{
-	CompilerNotImplemented,
-
-	Count
-};
+#include "ErrorCode.h"
 
 class CodeTokens;
 class InterpreterContext;
 
 struct InterpretationResult
 {
-	StringData ErrorMessage;
-	ErrorType ErrorType;
+	List<StringData> Errors;
+	List<StringData> Warnings;
 	class CodeTree * InterpretedTree;
 };
 
@@ -27,5 +21,7 @@ public:
 
 private:
 	ConstPtr<class Config> myConfig;
-	void ParseGlobalScope(ConstRef<InterpreterContext> aContext) const;
+	void ParseGlobalScope(Ref<InterpreterContext> aContext) const;
+	void ParseExpression(Ref<InterpreterContext> aContext) const;
+	void ParseObject(Ref<InterpreterContext> aContext) const;
 };

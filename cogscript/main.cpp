@@ -57,13 +57,13 @@ INT WinMain(HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstance*/,
 
 				StringData code;
 				CodeTokens codeTokens = tokenizer.TokenizeFile(L"helloworld/hello.cog", code, &watch);
-				Const<float> time = watch.GetElapsedTimeInSeconds() * 1000.f;
+				Const<f32> time = watch.GetElapsedTimeInSeconds() * 1000.f;
 				PrintLine(L"Tokenizer finished in ", time, L"ms");
 
 				{
 					Stopwatch interpretWatch;
 					interpreter.Interpret(codeTokens);
-					Const<float> interpretTime = watch.GetElapsedTimeInSeconds() * 1000.f;
+					Const<f32> interpretTime = watch.GetElapsedTimeInSeconds() * 1000.f;
 					PrintLine(L"Interpreter finished in ", interpretTime, L"ms");
 				}
 				PrintLine(L"Compiler finished in ", watch.GetElapsedTimeInSeconds() * 1000.f, L"ms");

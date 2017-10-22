@@ -1,16 +1,16 @@
 #include "pch.h"
-#include "SymbolMap.h"
+#include "Namespace.h"
 
-SymbolMap::SymbolMap()
+Namespace::Namespace()
 {
 }
 
 
-SymbolMap::~SymbolMap()
+Namespace::~Namespace()
 {
 }
 
-i32 SymbolMap::Map(Const<Char> aCharacter, Const<i32> aIndex) const
+i32 Namespace::Map(Const<Char> aCharacter, Const<i32> aIndex) const
 {
 	Const<TokenID> mappedValue = CharUtility::GetTokenIDFromCharacter(aCharacter, aIndex);
 	if (mappedValue == TokenID::Invalid)

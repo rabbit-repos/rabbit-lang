@@ -47,7 +47,7 @@ json ReadFile(ConstRef<String> aPath)
 	else
 	{
 		// TODO: Find suitable project file within directory
-		PrintLine("Not implemented");
+		PrintLine(L"Not implemented");
 		abort();
 	}
 

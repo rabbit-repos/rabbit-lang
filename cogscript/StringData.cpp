@@ -65,7 +65,7 @@ StringData::~StringData()
 #ifdef _DEBUG
 	if (myNumReferences > 0)
 	{
-		PrintLine("There are still references remaining!");
+		PrintLine(L"There are still references remaining!");
 		abort();
 	}
 #endif
@@ -76,7 +76,7 @@ Ref<StringData> StringData::operator=(RValue<StringData> aOther)
 #ifdef _DEBUG
 	if (aOther.myNumReferences > 0)
 	{
-		PrintLine("There are still references remaining!");
+		PrintLine(L"There are still references remaining!");
 		abort();
 	}
 
@@ -189,6 +189,62 @@ void StringData::Append(ConstRef<String> aString)
 	Append(aString.GetAddress(), aString.Size());
 }
 
+void StringData::Append(ConstRef<std::wstring> aString)
+{
+	Append(aString.c_str(), static_cast<i32>(aString.length()));
+}
+
+void StringData::Append(Const<u64> aValue)
+{
+	Append(std::to_wstring(aValue));
+}
+
+void StringData::Append(Const<i64> aValue)
+{
+	Append(std::to_wstring(aValue));
+}
+
+void StringData::Append(Const<u32> aValue)
+{
+	Append(std::to_wstring(aValue));
+}
+
+
+void StringData::Append(Const<i32> aValue)
+{
+	Append(std::to_wstring(aValue));
+}
+
+void StringData::Append(Const<u16> aValue)
+{
+	Append(std::to_wstring(aValue));
+}
+
+void StringData::Append(Const<i16> aValue)
+{
+	Append(std::to_wstring(aValue));
+}
+
+void StringData::Append(Const<u8> aValue)
+{
+	Append(std::to_wstring(aValue));
+}
+
+void StringData::Append(Const<i8> aValue)
+{
+	Append(std::to_wstring(aValue));
+}
+
+void StringData::Append(Const<f32> aValue)
+{
+	Append(std::to_wstring(aValue));
+}
+
+void StringData::Append(Const<f64> aValue)
+{
+	Append(std::to_wstring(aValue));
+}
+
 void StringData::MakeSizeFor(Const<i32> aAdditionalData)
 {
 	Const<i32> desiredSize = Size() + 1 + aAdditionalData;
@@ -210,12 +266,28 @@ void StringData::CheckForReferences() const
 #endif
 }
 
-void StringData::AppendChar(Const<Char> aCharacter)
+void StringData::AppendChar(Const<Char> aCharacter, Const<i32> aRepeat /*= 1*/)
 {
 	CheckForReferences();
 
-	myData.Add(L'\0');
-	myData[Size() - 1] = aCharacter;
+	MakeSizeFor(aRepeat);
+
+	for (i32 i = 0; i < aRepeat; ++i)
+	{
+		myData.Add(L'\0');
+		myData[Size() - 1] = aCharacter;
+	}
+}
+
+ConstPtr<Char> StringData::ToCString() const
+{
+	if (Size() == 0)
+		return L"";
+#ifdef _DEBUG
+	if (myData[Size()] != L'\0')
+		abort();
+#endif
+	return myData.GetAddress();
 }
 
 std::wostream & operator<<(Ref<std::wostream> aOut, ConstRef<StringData> aString)

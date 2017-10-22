@@ -3,7 +3,7 @@
 class Symbol
 {
 protected:
-	Symbol();
+	Symbol(String aIdentifier);
 
 public:
 	virtual ~Symbol();
@@ -11,5 +11,5 @@ public:
 	virtual String GetIdentifier() = 0;
 
 private:
-
+	String myIdentifier;
 };

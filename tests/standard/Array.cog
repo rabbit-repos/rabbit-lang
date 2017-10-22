@@ -1,0 +1,9 @@
+
+global type Array<type T, i32 Size>
+    global function Size returns i32
+        return mySize;
+    end
+
+    -- Actually compiles as eg "32 i32 myData;" (as in 32 32 bit integers aliased as myData)
+    Size T myData;
+end

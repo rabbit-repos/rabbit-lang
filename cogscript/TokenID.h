@@ -13,9 +13,11 @@ enum class TokenID : u8
 	Text,
 	FirstValid,
 	// 1 - XXX is the alphabet
-	Alphabet = FirstValid,
+	AlphabetStart = FirstValid,
+	AlphabetEnd = static_cast<u8>(TokenIDRanges::LastDigit) + 1,
 	// XXX - XXX is the digits
 	Digits = static_cast<u8>(TokenIDRanges::FirstDigit),
+	DigitsEnd = static_cast<u8>(TokenIDRanges::LastDigit) + 1,
 
 	Underscore = Digits + 10,
 	CompilerDirective,

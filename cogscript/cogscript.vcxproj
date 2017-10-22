@@ -179,11 +179,13 @@
     <ClCompile Include="CodeGraphEntry.cpp" />
     <ClCompile Include="CodeGraphNode.cpp" />
     <ClCompile Include="Config.cpp" />
+    <ClCompile Include="ErrorCode.cpp" />
     <ClCompile Include="Interpreter.cpp" />
     <ClCompile Include="CodeTokens.cpp" />
+    <ClCompile Include="KeywordMap.cpp" />
     <ClCompile Include="Stopwatch.cpp" />
     <ClCompile Include="Symbol.cpp" />
-    <ClCompile Include="SymbolMap.cpp" />
+    <ClCompile Include="Namespace.cpp" />
     <ClCompile Include="Token.cpp" />
     <ClCompile Include="TokenContext.cpp" />
     <ClCompile Include="Tokenizer.cpp" />
@@ -203,20 +205,26 @@
     <ClCompile Include="ResizableArray.cpp" />
     <ClCompile Include="StringData.cpp" />
     <ClCompile Include="InterpreterContext.cpp" />
+    <ClCompile Include="Type.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CharUtility.h" />
     <ClInclude Include="CodeGraphEntry.h" />
     <ClInclude Include="CodeGraphNode.h" />
     <ClInclude Include="Config.h" />
+    <ClInclude Include="ErrorCode.h" />
     <ClInclude Include="Interpreter.h" />
     <ClInclude Include="json.h" />
     <ClInclude Include="Array.h" />
     <ClInclude Include="CodeTokens.h" />
+    <ClInclude Include="KeywordID.h" />
+    <ClInclude Include="KeywordMap.h" />
+    <ClInclude Include="Type.h" />
+    <ClInclude Include="TypeModifiers.h" />
     <ClInclude Include="Stopwatch.h" />
     <ClInclude Include="StringFilter.h" />
     <ClInclude Include="Symbol.h" />
-    <ClInclude Include="SymbolMap.h" />
+    <ClInclude Include="Namespace.h" />
     <ClInclude Include="TokenContext.h" />
     <ClInclude Include="TokenID.h" />
     <ClInclude Include="TokenizerContext.h" />

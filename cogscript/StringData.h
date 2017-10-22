@@ -25,6 +25,7 @@ public:
 	Ref<StringData> operator=(ConstRef<StringData>) = delete;
 
 	static StringData FromASCII(ConstPtr<char> aString);
+	ConstPtr<Char> ToCString() const;
 
 	void Resize(Const<i32> aLength);
 	bool Reserve(Const<i32> aLength);
@@ -44,7 +45,20 @@ public:
 	void Append(ConstRef<String> aString);
 	void Append(ConstPtr<Char> aString);
 	void Append(ConstPtr<Char> aString, Const<i32> aLength);
-	void AppendChar(Const<Char> aCharacter);
+	void Append(ConstRef<std::wstring> aString);
+	void Append(Const<u64> aValue);
+	void Append(Const<i64> aValue);
+	void Append(Const<u32> aValue);
+	void Append(Const<i32> aValue);
+	void Append(Const<u16> aValue);
+	void Append(Const<i16> aValue);
+	void Append(Const<u8> aValue);
+	void Append(Const<i8> aValue);
+	void Append(Const<f32> aValue);
+	void Append(Const<f64> aValue);
+
+
+	void AppendChar(Const<Char> aCharacter, Const<i32> aRepeat = 1);
 
 private:
 	List<Char> myData;
@@ -58,13 +72,6 @@ private:
 	mutable int32_t myNumReferences;
 #endif
 };
-
-// template <size_t N>
-// MutableStringBlob::MutableStringBlob(const Char aString[N])
-// {
-// 	myData.Resize(N, false);
-// 	memcpy(*myData, aString, sizeof Char * N);
-// }
 
 Ref<std::wostream> operator<<(Ref<std::wostream> aOut, ConstRef<StringData> aString);
 Ref<std::ostream> operator<<(Ref<std::ostream> aOut, ConstRef<StringData> aString);

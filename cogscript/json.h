@@ -52,7 +52,7 @@ SOFTWARE.
 #include <numeric> // accumulate
 #include <sstream> // stringstream
 #include <string> // getline, stoi, string, to_wstring
-#include <type_traits> // add_pointer, conditional, decay, enable_if, false_type, integral_constant, is_arithmetic, is_base_of, is_const, is_constructible, is_convertible, is_default_constructible, is_enum, is_floating_point, is_integral, is_nothrow_move_assignable, is_nothrow_move_constructible, is_pointer, is_reference, is_same, is_scalar, is_signed, remove_const, remove_cv, remove_pointer, remove_reference, true_type, underlying_type
+#include <type_traits> // add_pointer, conditional, decay, enable_if, false_type, integral_constant, is_arithmetic, is_base_of, is_const, is_constructible, is_convertible, is_default_constructible, is_enum, is_f32ing_point, is_integral, is_nothrow_move_assignable, is_nothrow_move_constructible, is_pointer, is_reference, is_same, is_scalar, is_signed, remove_const, remove_cv, remove_pointer, remove_reference, true_type, underlying_type
 #include <utility> // declval, forward, make_pair, move, pair, swap
 #include <valarray> // valarray
 #include <vector> // vector
@@ -68,10 +68,10 @@ SOFTWARE.
 #endif
 #endif
 
-// disable float-equal warnings on GCC/clang
+// disable f32-equal warnings on GCC/clang
 #if defined(__clang__) || defined(__GNUC__) || defined(__GNUG__)
 #pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wfloat-equal"
+#pragma GCC diagnostic ignored "-Wf32-equal"
 #endif
 
 // disable documentation warnings on clang
@@ -126,7 +126,7 @@ namespace nlohmann
 		class StringType = std::wstring, class BooleanType = bool,
 		class NumberIntegerType = std::int64_t,
 		class NumberUnsignedType = std::uint64_t,
-		class NumberFloatType = double,
+		class Numberf32Type = f64,
 		template<typename U> class AllocatorType = std::allocator,
 		template<typename T, typename SFINAE = void> class JSONSerializer =
 		adl_serializer>
@@ -139,13 +139,13 @@ namespace nlohmann
     template<template<typename, typename, typename...> class ObjectType,   \
              template<typename, typename...> class ArrayType,              \
              class StringType, class BooleanType, class NumberIntegerType, \
-             class NumberUnsignedType, class NumberFloatType,              \
+             class NumberUnsignedType, class Numberf32Type,              \
              template<typename> class AllocatorType,                       \
              template<typename, typename = void> class JSONSerializer>
 
 #define NLOHMANN_BASIC_JSON_TPL                                            \
     basic_json<ObjectType, ArrayType, StringType, BooleanType,             \
-    NumberIntegerType, NumberUnsignedType, NumberFloatType,                \
+    NumberIntegerType, NumberUnsignedType, Numberf32Type,                \
     AllocatorType, JSONSerializer>
 
 
@@ -490,15 +490,15 @@ namespace nlohmann
 		@ref basic_json::is_object(), @ref basic_json::is_array(),
 		@ref basic_json::is_string(), @ref basic_json::is_boolean(),
 		@ref basic_json::is_number() (with @ref basic_json::is_number_integer(),
-		@ref basic_json::is_number_unsigned(), and @ref basic_json::is_number_float()),
+		@ref basic_json::is_number_unsigned(), and @ref basic_json::is_number_f32()),
 		@ref basic_json::is_discarded(), @ref basic_json::is_primitive(), and
 		@ref basic_json::is_structured() rely on it.
 
 		@note There are three enumeration entries (number_integer, number_unsigned, and
-		number_float), because the library distinguishes these three types for numbers:
+		number_f32), because the library distinguishes these three types for numbers:
 		@ref basic_json::number_unsigned_t is used for unsigned integers,
 		@ref basic_json::number_integer_t is used for signed integers, and
-		@ref basic_json::number_float_t is used for floating-point numbers or to
+		@ref basic_json::number_f32_t is used for f32ing-point numbers or to
 		approximate integers which do not fit in the limits of their respective type.
 
 		@sa @ref basic_json::basic_json(const value_t value_type) -- create a JSON
@@ -515,7 +515,7 @@ namespace nlohmann
 			boolean,          ///< boolean value
 			number_integer,   ///< number value (signed integer)
 			number_unsigned,  ///< number value (unsigned integer)
-			number_float,     ///< number value (floating-point)
+			number_f32,     ///< number value (f32ing-point)
 			discarded         ///< discarded by the the parser callback function
 		};
 
@@ -538,7 +538,7 @@ namespace nlohmann
 					1, // boolean
 					2, // integer
 					2, // unsigned
-					2, // float
+					2, // f32
 				}
 			};
 
@@ -661,12 +661,12 @@ namespace nlohmann
 		};
 
 		template<>
-		struct external_constructor<value_t::number_float>
+		struct external_constructor<value_t::number_f32>
 		{
 			template<typename BasicJsonType>
-			static void construct(BasicJsonType& j, typename BasicJsonType::number_float_t val) noexcept
+			static void construct(BasicJsonType& j, typename BasicJsonType::number_f32_t val) noexcept
 			{
-				j.m_type = value_t::number_float;
+				j.m_type = value_t::number_f32;
 				j.m_value = val;
 				j.assert_invariant();
 			}
@@ -966,11 +966,11 @@ namespace nlohmann
 			external_constructor<value_t::string>::construct(j, std::move(s));
 		}
 
-		template<typename BasicJsonType, typename FloatType,
-			enable_if_t<std::is_floating_point<FloatType>::value, int> = 0>
-			void to_json(BasicJsonType& j, FloatType val) noexcept
+		template<typename BasicJsonType, typename f32Type,
+			enable_if_t<std::is_floating_point<f32Type>::value, int> = 0>
+			void to_json(BasicJsonType& j, f32Type val) noexcept
 		{
-			external_constructor<value_t::number_float>::construct(j, static_cast<typename BasicJsonType::number_float_t>(val));
+			external_constructor<value_t::number_f32>::construct(j, static_cast<typename BasicJsonType::number_f32_t>(val));
 		}
 
 		template <
@@ -1095,9 +1095,9 @@ namespace nlohmann
 				val = static_cast<ArithmeticType>(*j.template get_ptr<const typename BasicJsonType::number_integer_t*>());
 				break;
 			}
-			case value_t::number_float:
+			case value_t::number_f32:
 			{
-				val = static_cast<ArithmeticType>(*j.template get_ptr<const typename BasicJsonType::number_float_t*>());
+				val = static_cast<ArithmeticType>(*j.template get_ptr<const typename BasicJsonType::number_f32_t*>());
 				break;
 			}
 
@@ -1132,7 +1132,7 @@ namespace nlohmann
 		}
 
 		template<typename BasicJsonType>
-		void from_json(const BasicJsonType& j, typename BasicJsonType::number_float_t& val)
+		void from_json(const BasicJsonType& j, typename BasicJsonType::number_f32_t& val)
 		{
 			get_arithmetic_value(j, val);
 		}
@@ -1284,7 +1284,7 @@ namespace nlohmann
 			std::is_arithmetic<ArithmeticType>::value and
 			not std::is_same<ArithmeticType, typename BasicJsonType::number_unsigned_t>::value and
 			not std::is_same<ArithmeticType, typename BasicJsonType::number_integer_t>::value and
-			not std::is_same<ArithmeticType, typename BasicJsonType::number_float_t>::value and
+			not std::is_same<ArithmeticType, typename BasicJsonType::number_f32_t>::value and
 			not std::is_same<ArithmeticType, typename BasicJsonType::boolean_t>::value,
 			int> = 0>
 			void from_json(const BasicJsonType& j, ArithmeticType& val)
@@ -1301,9 +1301,9 @@ namespace nlohmann
 				val = static_cast<ArithmeticType>(*j.template get_ptr<const typename BasicJsonType::number_integer_t*>());
 				break;
 			}
-			case value_t::number_float:
+			case value_t::number_f32:
 			{
-				val = static_cast<ArithmeticType>(*j.template get_ptr<const typename BasicJsonType::number_float_t*>());
+				val = static_cast<ArithmeticType>(*j.template get_ptr<const typename BasicJsonType::number_f32_t*>());
 				break;
 			}
 			case value_t::boolean:
@@ -1682,7 +1682,7 @@ namespace nlohmann
 		{
 			using number_integer_t = typename BasicJsonType::number_integer_t;
 			using number_unsigned_t = typename BasicJsonType::number_unsigned_t;
-			using number_float_t = typename BasicJsonType::number_float_t;
+			using number_f32_t = typename BasicJsonType::number_f32_t;
 
 		public:
 			/// token types for the parser
@@ -1695,7 +1695,7 @@ namespace nlohmann
 				value_string,     ///< a string -- use get_string() for actual value
 				value_unsigned,   ///< an unsigned integer -- use get_number_unsigned() for actual value
 				value_integer,    ///< a signed integer -- use get_number_integer() for actual value
-				value_float,      ///< an floating point number -- use get_number_float() for actual value
+				value_f32,      ///< an f32ing point number -- use get_number_f32() for actual value
 				begin_array,      ///< the character for array begin `[`
 				begin_object,     ///< the character for object begin `{`
 				end_array,        ///< the character for array end `]`
@@ -1724,7 +1724,7 @@ namespace nlohmann
 					return L"string literal";
 				case lexer::token_type::value_unsigned:
 				case lexer::token_type::value_integer:
-				case lexer::token_type::value_float:
+				case lexer::token_type::value_f32:
 					return L"number literal";
 				case token_type::begin_array:
 					return L"'['";
@@ -2302,12 +2302,12 @@ namespace nlohmann
 				}
 			}
 
-			static void strtof(float& f, const wchar_t* str, wchar_t** endptr) noexcept
+			static void strtof(f32& f, const wchar_t* str, wchar_t** endptr) noexcept
 			{
 				f = std::wcstof(str, endptr);
 			}
 
-			static void strtof(double& f, const wchar_t* str, wchar_t** endptr) noexcept
+			static void strtof(f64& f, const wchar_t* str, wchar_t** endptr) noexcept
 			{
 				f = std::wcstod(str, endptr);
 			}
@@ -2347,10 +2347,10 @@ namespace nlohmann
 
 			During scanning, the read bytes are stored in yytext. This string is
 			then converted to a signed integer, an unsigned integer, or a
-			floating-point number.
+			f32ing-point number.
 
 			@return token_type::value_unsigned, token_type::value_integer, or
-			token_type::value_float if number could be successfully scanned,
+			token_type::value_f32 if number could be successfully scanned,
 			token_type::parse_error otherwise
 
 			@note The scanner is independent of the current locale. Internally, the
@@ -2493,7 +2493,7 @@ namespace nlohmann
 
 			scan_number_decimal1:
 				// state: we just parsed a decimal point
-				number_type = token_type::value_float;
+				number_type = token_type::value_f32;
 				switch (get())
 				{
 				case L'0':
@@ -2550,7 +2550,7 @@ namespace nlohmann
 
 			scan_number_exponent:
 				// we just parsed an exponent
-				number_type = token_type::value_float;
+				number_type = token_type::value_f32;
 				switch (get())
 				{
 				case L'+':
@@ -2645,7 +2645,7 @@ namespace nlohmann
 				wchar_t* endptr = nullptr;
 				errno = 0;
 
-				// try to parse integers first and fall back to floats
+				// try to parse integers first and fall back to f32s
 				if (number_type == token_type::value_unsigned)
 				{
 					const auto x = std::wcstoull(yytext.data(), &endptr, 10);
@@ -2679,14 +2679,14 @@ namespace nlohmann
 					}
 				}
 
-				// this code is reached if we parse a floating-point number or if an
+				// this code is reached if we parse a f32ing-point number or if an
 				// integer conversion above failed
-				strtof(value_float, yytext.data(), &endptr);
+				strtof(value_f32, yytext.data(), &endptr);
 
 				// we checked the number format before
 				assert(endptr == yytext.data() + yylen);
 
-				return token_type::value_float;
+				return token_type::value_f32;
 			}
 
 			/*!
@@ -2758,10 +2758,10 @@ namespace nlohmann
 				return value_unsigned;
 			}
 
-			/// return floating-point value
-			constexpr number_float_t get_number_float() const noexcept
+			/// return f32ing-point value
+			constexpr number_f32_t get_number_f32() const noexcept
 			{
-				return value_float;
+				return value_f32;
 			}
 
 			/// return string value
@@ -2914,7 +2914,7 @@ namespace nlohmann
 			// number values
 			number_integer_t value_integer = 0;
 			number_unsigned_t value_unsigned = 0;
-			number_float_t value_float = 0;
+			number_f32_t value_f32 = 0;
 
 			/// the decimal point
 			const wchar_t decimal_point_char = '.';
@@ -2930,7 +2930,7 @@ namespace nlohmann
 		{
 			using number_integer_t = typename BasicJsonType::number_integer_t;
 			using number_unsigned_t = typename BasicJsonType::number_unsigned_t;
-			using number_float_t = typename BasicJsonType::number_float_t;
+			using number_f32_t = typename BasicJsonType::number_f32_t;
 			using lexer_t = lexer<BasicJsonType>;
 			using token_type = typename lexer_t::token_type;
 
@@ -3245,13 +3245,13 @@ namespace nlohmann
 					break;
 				}
 
-				case token_type::value_float:
+				case token_type::value_f32:
 				{
-					result.m_type = value_t::number_float;
-					result.m_value = m_lexer.get_number_float();
+					result.m_type = value_t::number_f32;
+					result.m_value = m_lexer.get_number_f32();
 
 					// throw in case of infinity or NAN
-					if (JSON_UNLIKELY(not std::isfinite(result.m_value.number_float)))
+					if (JSON_UNLIKELY(not std::isfinite(result.m_value.number_f32)))
 					{
 						if (allow_exceptions)
 						{
@@ -3385,10 +3385,10 @@ namespace nlohmann
 					}
 				}
 
-				case token_type::value_float:
+				case token_type::value_f32:
 				{
 					// reject infinity or NAN
-					return std::isfinite(m_lexer.get_number_float());
+					return std::isfinite(m_lexer.get_number_f32());
 				}
 
 				case token_type::literal_false:
@@ -4833,7 +4833,7 @@ namespace nlohmann
 					return value_t::null;
 				}
 
-				case 0xf9: // Half-Precision Float (two-byte IEEE 754)
+				case 0xf9: // Half-Precision f32 (two-byte IEEE 754)
 				{
 					const int byte1 = get();
 					check_eof();
@@ -4841,17 +4841,17 @@ namespace nlohmann
 					check_eof();
 
 					// code from RFC 7049, Appendix D, Figure 3:
-					// As half-precision floating-point numbers were only added
+					// As half-precision f32ing-point numbers were only added
 					// to IEEE 754 in 2008, today's programming platforms often
 					// still only have limited support for them. It is very
 					// easy to include at least decoding support for them even
 					// without such support. An example of a small decoder for
-					// half-precision floating-point numbers in the C language
+					// half-precision f32ing-point numbers in the C language
 					// is shown in Fig. 3.
 					const int half = (byte1 << 8) + byte2;
 					const int exp = (half >> 10) & 0x1f;
 					const int mant = half & 0x3ff;
-					double val;
+					f64 val;
 					if (exp == 0)
 					{
 						val = std::ldexp(mant, -24);
@@ -4862,20 +4862,20 @@ namespace nlohmann
 					}
 					else
 					{
-						val = (mant == 0) ? std::numeric_limits<double>::infinity()
-							: std::numeric_limits<double>::quiet_NaN();
+						val = (mant == 0) ? std::numeric_limits<f64>::infinity()
+							: std::numeric_limits<f64>::quiet_NaN();
 					}
 					return (half & 0x8000) != 0 ? -val : val;
 				}
 
-				case 0xfa: // Single-Precision Float (four-byte IEEE 754)
+				case 0xfa: // Single-Precision f32 (four-byte IEEE 754)
 				{
-					return get_number<float>();
+					return get_number<f32>();
 				}
 
-				case 0xfb: // Double-Precision Float (eight-byte IEEE 754)
+				case 0xfb: // f64-Precision f32 (eight-byte IEEE 754)
 				{
-					return get_number<double>();
+					return get_number<f64>();
 				}
 
 				default: // anything else (0xFF is handled inside the other types)
@@ -5112,11 +5112,11 @@ namespace nlohmann
 				case 0xc3: // true
 					return true;
 
-				case 0xca: // float 32
-					return get_number<float>();
+				case 0xca: // f32 32
+					return get_number<f32>();
 
-				case 0xcb: // float 64
-					return get_number<double>();
+				case 0xcb: // f32 64
+					return get_number<f64>();
 
 				case 0xcc: // uint 8
 					return get_number<uint8_t>();
@@ -5680,10 +5680,10 @@ namespace nlohmann
 					break;
 				}
 
-				case value_t::number_float: // Double-Precision Float
+				case value_t::number_f32: // f64-Precision f32
 				{
 					oa->write_character(static_cast<CharType>(0xfb));
-					write_number(j.m_value.number_float);
+					write_number(j.m_value.number_f32);
 					break;
 				}
 
@@ -5940,10 +5940,10 @@ namespace nlohmann
 					break;
 				}
 
-				case value_t::number_float: // float 64
+				case value_t::number_f32: // f32 64
 				{
 					oa->write_character(static_cast<CharType>(0xcb));
-					write_number(j.m_value.number_float);
+					write_number(j.m_value.number_f32);
 					break;
 				}
 
@@ -6091,7 +6091,7 @@ namespace nlohmann
 		class serializer
 		{
 			using string_t = typename BasicJsonType::string_t;
-			using number_float_t = typename BasicJsonType::number_float_t;
+			using number_f32_t = typename BasicJsonType::number_f32_t;
 			using number_integer_t = typename BasicJsonType::number_integer_t;
 			using number_unsigned_t = typename BasicJsonType::number_unsigned_t;
 		public:
@@ -6119,7 +6119,7 @@ namespace nlohmann
 
 			- strings and object keys are escaped using `escape_string()`
 			- integer numbers are converted implicitly via `operator<<`
-			- floating-point numbers are converted to a string using `"%g"` format
+			- f32ing-point numbers are converted to a string using `"%g"` format
 
 			@param[in] val             value to serialize
 			@param[in] pretty_print    whether the output shall be pretty-printed
@@ -6298,9 +6298,9 @@ namespace nlohmann
 					return;
 				}
 
-				case value_t::number_float:
+				case value_t::number_f32:
 				{
-					dump_float(val.m_value.number_float);
+					dump_f32(val.m_value.number_f32);
 					return;
 				}
 
@@ -6692,14 +6692,14 @@ namespace nlohmann
 			}
 
 			/*!
-			@brief dump a floating-point number
+			@brief dump a f32ing-point number
 
-			Dump a given floating-point number to output stream @a o. Works internally
+			Dump a given f32ing-point number to output stream @a o. Works internally
 			with @a number_buffer.
 
-			@param[in] x  floating-point number to dump
+			@param[in] x  f32ing-point number to dump
 			*/
-			void dump_float(number_float_t x)
+			void dump_f32(number_f32_t x)
 			{
 				// NaN / inf
 				if (not std::isfinite(x) or std::isnan(x))
@@ -6708,8 +6708,8 @@ namespace nlohmann
 					return;
 				}
 
-				// get number of digits for a text -> float -> text round-trip
-				static constexpr auto d = std::numeric_limits<number_float_t>::digits10;
+				// get number of digits for a text -> f32 -> text round-trip
+				static constexpr auto d = std::numeric_limits<number_f32_t>::digits10;
 
 				// the actual conversion
 				std::ptrdiff_t len = swprintf(number_buffer.data(), number_buffer.size(), L"%.*g", d, x);
@@ -7226,8 +7226,8 @@ namespace nlohmann
 	default; will be used in @ref number_integer_t)
 	@tparam NumberUnsignedType type for JSON unsigned integer numbers (@c
 	`uint64_t` by default; will be used in @ref number_unsigned_t)
-	@tparam NumberFloatType type for JSON floating-point numbers (`double` by
-	default; will be used in @ref number_float_t)
+	@tparam Numberf32Type type for JSON f32ing-point numbers (`f64` by
+	default; will be used in @ref number_f32_t)
 	@tparam AllocatorType type of the allocator to use (`std::allocator` by
 	default)
 	@tparam JSONSerializer the serializer to resolve internal calls to `to_json()`
@@ -7728,11 +7728,11 @@ namespace nlohmann
 		> cannot be represented in the grammar below (such as Infinity and NaN)
 		> are not permitted.
 
-		This description includes both integer and floating-point numbers.
+		This description includes both integer and f32ing-point numbers.
 		However, C++ allows more precise storage if it is known whether the number
-		is a signed integer, an unsigned integer or a floating-point number.
+		is a signed integer, an unsigned integer or a f32ing-point number.
 		Therefore, three different types, @ref number_integer_t, @ref
-		number_unsigned_t and @ref number_float_t are used.
+		number_unsigned_t and @ref number_f32_t are used.
 
 		To store integer numbers in C++, a type is defined by the template
 		parameter @a NumberIntegerType which chooses the type to use.
@@ -7766,7 +7766,7 @@ namespace nlohmann
 		that are out of range will yield over/underflow when used in a
 		constructor. During deserialization, too large or small integer numbers
 		will be automatically be stored as @ref number_unsigned_t or @ref
-		number_float_t.
+		number_f32_t.
 
 		[RFC 7159](http://rfc7159.net/rfc7159) further states:
 		> Note that when such software is used, numbers that are integers and are
@@ -7780,7 +7780,7 @@ namespace nlohmann
 
 		Integer number values are stored directly inside a @ref basic_json type.
 
-		@sa @ref number_float_t -- type for number values (floating-point)
+		@sa @ref number_f32_t -- type for number values (f32ing-point)
 
 		@sa @ref number_unsigned_t -- type for number values (unsigned integer)
 
@@ -7800,11 +7800,11 @@ namespace nlohmann
 		> cannot be represented in the grammar below (such as Infinity and NaN)
 		> are not permitted.
 
-		This description includes both integer and floating-point numbers.
+		This description includes both integer and f32ing-point numbers.
 		However, C++ allows more precise storage if it is known whether the number
-		is a signed integer, an unsigned integer or a floating-point number.
+		is a signed integer, an unsigned integer or a f32ing-point number.
 		Therefore, three different types, @ref number_integer_t, @ref
-		number_unsigned_t and @ref number_float_t are used.
+		number_unsigned_t and @ref number_f32_t are used.
 
 		To store unsigned integer numbers in C++, a type is defined by the
 		template parameter @a NumberUnsignedType which chooses the type to use.
@@ -7837,7 +7837,7 @@ namespace nlohmann
 		number that can be stored is `0`. Integer numbers that are out of range
 		will yield over/underflow when used in a constructor. During
 		deserialization, too large or small integer numbers will be automatically
-		be stored as @ref number_integer_t or @ref number_float_t.
+		be stored as @ref number_integer_t or @ref number_f32_t.
 
 		[RFC 7159](http://rfc7159.net/rfc7159) further states:
 		> Note that when such software is used, numbers that are integers and are
@@ -7852,7 +7852,7 @@ namespace nlohmann
 
 		Integer number values are stored directly inside a @ref basic_json type.
 
-		@sa @ref number_float_t -- type for number values (floating-point)
+		@sa @ref number_f32_t -- type for number values (f32ing-point)
 		@sa @ref number_integer_t -- type for number values (integer)
 
 		@since version 2.0.0
@@ -7860,7 +7860,7 @@ namespace nlohmann
 		using number_unsigned_t = NumberUnsignedType;
 
 		/*!
-		@brief a type for a number (floating-point)
+		@brief a type for a number (f32ing-point)
 
 		[RFC 7159](http://rfc7159.net/rfc7159) describes numbers as follows:
 		> The representation of numbers is similar to that used in most
@@ -7871,30 +7871,30 @@ namespace nlohmann
 		> cannot be represented in the grammar below (such as Infinity and NaN)
 		> are not permitted.
 
-		This description includes both integer and floating-point numbers.
+		This description includes both integer and f32ing-point numbers.
 		However, C++ allows more precise storage if it is known whether the number
-		is a signed integer, an unsigned integer or a floating-point number.
+		is a signed integer, an unsigned integer or a f32ing-point number.
 		Therefore, three different types, @ref number_integer_t, @ref
-		number_unsigned_t and @ref number_float_t are used.
+		number_unsigned_t and @ref number_f32_t are used.
 
-		To store floating-point numbers in C++, a type is defined by the template
-		parameter @a NumberFloatType which chooses the type to use.
+		To store f32ing-point numbers in C++, a type is defined by the template
+		parameter @a Numberf32Type which chooses the type to use.
 
 		#### Default type
 
-		With the default values for @a NumberFloatType (`double`), the default
-		value for @a number_float_t is:
+		With the default values for @a Numberf32Type (`f64`), the default
+		value for @a number_f32_t is:
 
 		@code {.cpp}
-		double
+		f64
 		@endcode
 
 		#### Default behavior
 
 		- The restrictions about leading zeros is not enforced in C++. Instead,
-		leading zeros in floating-point literals will be ignored. Internally,
+		leading zeros in f32ing-point literals will be ignored. Internally,
 		the value will be stored as decimal number. For instance, the C++
-		floating-point literal `01.2` will be serialized to `1.2`. During
+		f32ing-point literal `01.2` will be serialized to `1.2`. During
 		deserialization, leading zeros yield an error.
 		- Not-a-number (NaN) values will be serialized to `null`.
 
@@ -7903,20 +7903,20 @@ namespace nlohmann
 		[RFC 7159](http://rfc7159.net/rfc7159) states:
 		> This specification allows implementations to set limits on the range and
 		> precision of numbers accepted. Since software that implements IEEE
-		> 754-2008 binary64 (double precision) numbers is generally available and
+		> 754-2008 binary64 (f64 precision) numbers is generally available and
 		> widely used, good interoperability can be achieved by implementations
 		> that expect no more precision or range than these provide, in the sense
 		> that implementations will approximate JSON numbers within the expected
 		> precision.
 
-		This implementation does exactly follow this approach, as it uses double
-		precision floating-point numbers. Note values smaller than
+		This implementation does exactly follow this approach, as it uses f64
+		precision f32ing-point numbers. Note values smaller than
 		`-1.79769313486232e+308` and values greater than `1.79769313486232e+308`
 		will be stored as NaN internally and be serialized to `null`.
 
 		#### Storage
 
-		Floating-point number values are stored directly inside a @ref basic_json
+		f32ing-point number values are stored directly inside a @ref basic_json
 		type.
 
 		@sa @ref number_integer_t -- type for number values (integer)
@@ -7925,7 +7925,7 @@ namespace nlohmann
 
 		@since version 1.0.0
 		*/
-		using number_float_t = NumberFloatType;
+		using number_f32_t = Numberf32Type;
 
 		/// @}
 
@@ -7965,7 +7965,7 @@ namespace nlohmann
 		boolean   | boolean         | @ref boolean_t
 		number    | number_integer  | @ref number_integer_t
 		number    | number_unsigned | @ref number_unsigned_t
-		number    | number_float    | @ref number_float_t
+		number    | number_f32    | @ref number_f32_t
 		null      | null            | *no value is stored*
 
 		@note Variable-length types (objects, arrays, and strings) are stored as
@@ -7988,8 +7988,8 @@ namespace nlohmann
 			number_integer_t number_integer;
 			/// number (unsigned integer)
 			number_unsigned_t number_unsigned;
-			/// number (floating-point)
-			number_float_t number_float;
+			/// number (f32ing-point)
+			number_f32_t number_f32;
 
 			/// default constructor (for null values)
 			json_value() = default;
@@ -7999,8 +7999,8 @@ namespace nlohmann
 			json_value(number_integer_t v) noexcept : number_integer(v) {}
 			/// constructor for numbers (unsigned)
 			json_value(number_unsigned_t v) noexcept : number_unsigned(v) {}
-			/// constructor for numbers (floating-point)
-			json_value(number_float_t v) noexcept : number_float(v) {}
+			/// constructor for numbers (f32ing-point)
+			json_value(number_f32_t v) noexcept : number_f32(v) {}
 			/// constructor for empty values of a given type
 			json_value(value_t t)
 			{
@@ -8042,9 +8042,9 @@ namespace nlohmann
 					break;
 				}
 
-				case value_t::number_float:
+				case value_t::number_f32:
 				{
-					number_float = number_float_t(0.0);
+					number_f32 = number_f32_t(0.0);
 					break;
 				}
 
@@ -8305,8 +8305,8 @@ namespace nlohmann
 		- **strings**: @ref string_t, string literals, and all compatible string
 		containers can be used.
 		- **numbers**: @ref number_integer_t, @ref number_unsigned_t,
-		@ref number_float_t, and all convertible number types such as `int`,
-		`size_t`, `int64_t`, `float` or `double` can be used.
+		@ref number_f32_t, and all convertible number types such as `int`,
+		`size_t`, `int64_t`, `f32` or `f64` can be used.
 		- **boolean**: @ref boolean_t / `bool` can be used.
 
 		See the examples below.
@@ -8668,7 +8668,7 @@ namespace nlohmann
 			switch (m_type)
 			{
 			case value_t::boolean:
-			case value_t::number_float:
+			case value_t::number_f32:
 			case value_t::number_integer:
 			case value_t::number_unsigned:
 			case value_t::string:
@@ -8699,9 +8699,9 @@ namespace nlohmann
 				break;
 			}
 
-			case value_t::number_float:
+			case value_t::number_f32:
 			{
-				m_value.number_float = first.m_object->m_value.number_float;
+				m_value.number_f32 = first.m_object->m_value.number_f32;
 				break;
 			}
 
@@ -8818,9 +8818,9 @@ namespace nlohmann
 				break;
 			}
 
-			case value_t::number_float:
+			case value_t::number_f32:
 			{
-				m_value = other.m_value.number_float;
+				m_value = other.m_value.number_f32;
 				break;
 			}
 
@@ -9009,7 +9009,7 @@ namespace nlohmann
 		string                    | value_t::string
 		number (integer)          | value_t::number_integer
 		number (unsigned integer) | value_t::number_unsigned
-		number (foating-point)    | value_t::number_float
+		number (foating-point)    | value_t::number_f32
 		object                    | value_t::object
 		array                     | value_t::array
 		discarded                 | value_t::discarded
@@ -9137,10 +9137,10 @@ namespace nlohmann
 		@brief return whether value is a number
 
 		This function returns true if and only if the JSON value is a number. This
-		includes both integer (signed and unsigned) and floating-point values.
+		includes both integer (signed and unsigned) and f32ing-point values.
 
 		@return `true` if type is number (regardless whether integer, unsigned
-		integer or floating-type), `false` otherwise.
+		integer or f32ing-type), `false` otherwise.
 
 		@complexity Constant.
 
@@ -9154,20 +9154,20 @@ namespace nlohmann
 		integer number
 		@sa @ref is_number_unsigned() -- check if value is an unsigned integer
 		number
-		@sa @ref is_number_float() -- check if value is a floating-point number
+		@sa @ref is_number_f32() -- check if value is a f32ing-point number
 
 		@since version 1.0.0
 		*/
 		constexpr bool is_number() const noexcept
 		{
-			return is_number_integer() or is_number_float();
+			return is_number_integer() or is_number_f32();
 		}
 
 		/*!
 		@brief return whether value is an integer number
 
 		This function returns true if and only if the JSON value is a signed or
-		unsigned integer number. This excludes floating-point values.
+		unsigned integer number. This excludes f32ing-point values.
 
 		@return `true` if type is an integer or unsigned integer number, `false`
 		otherwise.
@@ -9183,7 +9183,7 @@ namespace nlohmann
 		@sa @ref is_number() -- check if value is a number
 		@sa @ref is_number_unsigned() -- check if value is an unsigned integer
 		number
-		@sa @ref is_number_float() -- check if value is a floating-point number
+		@sa @ref is_number_f32() -- check if value is a f32ing-point number
 
 		@since version 1.0.0
 		*/
@@ -9196,7 +9196,7 @@ namespace nlohmann
 		@brief return whether value is an unsigned integer number
 
 		This function returns true if and only if the JSON value is an unsigned
-		integer number. This excludes floating-point and signed integer values.
+		integer number. This excludes f32ing-point and signed integer values.
 
 		@return `true` if type is an unsigned integer number, `false` otherwise.
 
@@ -9211,7 +9211,7 @@ namespace nlohmann
 		@sa @ref is_number() -- check if value is a number
 		@sa @ref is_number_integer() -- check if value is an integer or unsigned
 		integer number
-		@sa @ref is_number_float() -- check if value is a floating-point number
+		@sa @ref is_number_f32() -- check if value is a f32ing-point number
 
 		@since version 2.0.0
 		*/
@@ -9221,20 +9221,20 @@ namespace nlohmann
 		}
 
 		/*!
-		@brief return whether value is a floating-point number
+		@brief return whether value is a f32ing-point number
 
 		This function returns true if and only if the JSON value is a
-		floating-point number. This excludes signed and unsigned integer values.
+		f32ing-point number. This excludes signed and unsigned integer values.
 
-		@return `true` if type is a floating-point number, `false` otherwise.
+		@return `true` if type is a f32ing-point number, `false` otherwise.
 
 		@complexity Constant.
 
 		@exceptionsafety No-throw guarantee: this member function never throws
 		exceptions.
 
-		@liveexample{The following code exemplifies `is_number_float()` for all
-		JSON types.,is_number_float}
+		@liveexample{The following code exemplifies `is_number_f32()` for all
+		JSON types.,is_number_f32}
 
 		@sa @ref is_number() -- check if value is number
 		@sa @ref is_number_integer() -- check if value is an integer number
@@ -9243,9 +9243,9 @@ namespace nlohmann
 
 		@since version 1.0.0
 		*/
-		constexpr bool is_number_float() const noexcept
+		constexpr bool is_number_f32() const noexcept
 		{
-			return (m_type == value_t::number_float);
+			return (m_type == value_t::number_f32);
 		}
 
 		/*!
@@ -9457,16 +9457,16 @@ namespace nlohmann
 			return is_number_unsigned() ? &m_value.number_unsigned : nullptr;
 		}
 
-		/// get a pointer to the value (floating-point number)
-		number_float_t* get_impl_ptr(number_float_t* /*unused*/) noexcept
+		/// get a pointer to the value (f32ing-point number)
+		number_f32_t* get_impl_ptr(number_f32_t* /*unused*/) noexcept
 		{
-			return is_number_float() ? &m_value.number_float : nullptr;
+			return is_number_f32() ? &m_value.number_f32 : nullptr;
 		}
 
-		/// get a pointer to the value (floating-point number)
-		constexpr const number_float_t* get_impl_ptr(const number_float_t* /*unused*/) const noexcept
+		/// get a pointer to the value (f32ing-point number)
+		constexpr const number_f32_t* get_impl_ptr(const number_f32_t* /*unused*/) const noexcept
 		{
-			return is_number_float() ? &m_value.number_float : nullptr;
+			return is_number_f32() ? &m_value.number_f32 : nullptr;
 		}
 
 		/*!
@@ -9554,7 +9554,7 @@ namespace nlohmann
 		@throw what @ref json_serializer<ValueType> `from_json()` method throws
 
 		@liveexample{The example below shows several conversions from JSON values
-		to other types. There a few things to note: (1) Floating-point numbers can
+		to other types. There a few things to note: (1) f32ing-point numbers can
 		be converted to integers\, (2) A JSON array can be converted to a standard
 		`std::vector<short>`\, (3) A JSON object can be converted to C++
 		associative containers such as `std::unordered_map<std::wstring\,
@@ -9642,7 +9642,7 @@ namespace nlohmann
 
 		@tparam PointerType pointer type; must be a pointer to @ref array_t, @ref
 		object_t, @ref string_t, @ref boolean_t, @ref number_integer_t,
-		@ref number_unsigned_t, or @ref number_float_t.
+		@ref number_unsigned_t, or @ref number_f32_t.
 
 		@return pointer to the internally stored JSON value if the requested
 		pointer type @a PointerType fits to the JSON value; `nullptr` otherwise
@@ -9689,7 +9689,7 @@ namespace nlohmann
 
 		@tparam PointerType pointer type; must be a pointer to @ref array_t, @ref
 		object_t, @ref string_t, @ref boolean_t, @ref number_integer_t,
-		@ref number_unsigned_t, or @ref number_float_t. Enforced by a static
+		@ref number_unsigned_t, or @ref number_f32_t. Enforced by a static
 		assertion.
 
 		@return pointer to the internally stored JSON value if the requested
@@ -9720,7 +9720,7 @@ namespace nlohmann
 				or std::is_same<boolean_t, pointee_t>::value
 				or std::is_same<number_integer_t, pointee_t>::value
 				or std::is_same<number_unsigned_t, pointee_t>::value
-				or std::is_same<number_float_t, pointee_t>::value
+				or std::is_same<number_f32_t, pointee_t>::value
 				, "incompatible pointer type");
 
 			// delegate the call to get_impl_ptr<>()
@@ -9748,7 +9748,7 @@ namespace nlohmann
 				or std::is_same<boolean_t, pointee_t>::value
 				or std::is_same<number_integer_t, pointee_t>::value
 				or std::is_same<number_unsigned_t, pointee_t>::value
-				or std::is_same<number_float_t, pointee_t>::value
+				or std::is_same<number_f32_t, pointee_t>::value
 				, "incompatible pointer type");
 
 			// delegate the call to get_impl_ptr<>() const
@@ -9766,7 +9766,7 @@ namespace nlohmann
 
 		@tparam ReferenceType reference type; must be a reference to @ref array_t,
 		@ref object_t, @ref string_t, @ref boolean_t, @ref number_integer_t, or
-		@ref number_float_t. Enforced by static assertion.
+		@ref number_f32_t. Enforced by static assertion.
 
 		@return reference to the internally stored JSON value if the requested
 		reference type @a ReferenceType fits to the JSON value; throws
@@ -9823,7 +9823,7 @@ namespace nlohmann
 		@complexity Linear in the size of the JSON value.
 
 		@liveexample{The example below shows several conversions from JSON values
-		to other types. There a few things to note: (1) Floating-point numbers can
+		to other types. There a few things to note: (1) f32ing-point numbers can
 		be converted to integers\, (2) A JSON array can be converted to a standard
 		`std::vector<short>`\, (3) A JSON object can be converted to C++
 		associative containers such as `std::unordered_map<std::wstring\,
@@ -10612,7 +10612,7 @@ namespace nlohmann
 			switch (m_type)
 			{
 			case value_t::boolean:
-			case value_t::number_float:
+			case value_t::number_f32:
 			case value_t::number_integer:
 			case value_t::number_unsigned:
 			case value_t::string:
@@ -10717,7 +10717,7 @@ namespace nlohmann
 			switch (m_type)
 			{
 			case value_t::boolean:
-			case value_t::number_float:
+			case value_t::number_f32:
 			case value_t::number_integer:
 			case value_t::number_unsigned:
 			case value_t::string:
@@ -11520,9 +11520,9 @@ namespace nlohmann
 				break;
 			}
 
-			case value_t::number_float:
+			case value_t::number_f32:
 			{
-				m_value.number_float = 0.0;
+				m_value.number_f32 = 0.0;
 				break;
 			}
 
@@ -12335,17 +12335,17 @@ namespace nlohmann
 		- Two JSON values are equal if (1) they are from the same type and (2)
 		their stored values are the same according to their respective
 		`operator==`.
-		- Integer and floating-point numbers are automatically converted before
+		- Integer and f32ing-point numbers are automatically converted before
 		comparison. Note than two NaN values are always treated as unequal.
 		- Two JSON null values are equal.
 
-		@note Floating-point inside JSON values numbers are compared with
-		`json::number_float_t::operator==` which is `double::operator==` by
-		default. To compare floating-point while respecting an epsilon, an alternative
-		[comparison function](https://github.com/mariokonrad/marnav/blob/master/src/marnav/math/floatingpoint.hpp#L34-#L39)
+		@note f32ing-point inside JSON values numbers are compared with
+		`json::number_f32_t::operator==` which is `f64::operator==` by
+		default. To compare f32ing-point while respecting an epsilon, an alternative
+		[comparison function](https://github.com/mariokonrad/marnav/blob/master/src/marnav/math/f32ingpoint.hpp#L34-#L39)
 		could be used, for instance
 		@code {.cpp}
-		template <typename T, typename = typename std::enable_if<std::is_floating_point<T>::value, T>::type>
+		template <typename T, typename = typename std::enable_if<std::is_f32ing_point<T>::value, T>::type>
 		inline bool is_same(T a, T b, T epsilon = std::numeric_limits<T>::epsilon()) noexcept
 		{
 		return std::abs(a - b) <= epsilon;
@@ -12397,28 +12397,28 @@ namespace nlohmann
 				case value_t::number_unsigned:
 					return (lhs.m_value.number_unsigned == rhs.m_value.number_unsigned);
 
-				case value_t::number_float:
-					return (lhs.m_value.number_float == rhs.m_value.number_float);
+				case value_t::number_f32:
+					return (lhs.m_value.number_f32 == rhs.m_value.number_f32);
 
 				default:
 					return false;
 				}
 			}
-			else if (lhs_type == value_t::number_integer and rhs_type == value_t::number_float)
+			else if (lhs_type == value_t::number_integer and rhs_type == value_t::number_f32)
 			{
-				return (static_cast<number_float_t>(lhs.m_value.number_integer) == rhs.m_value.number_float);
+				return (static_cast<number_f32_t>(lhs.m_value.number_integer) == rhs.m_value.number_f32);
 			}
-			else if (lhs_type == value_t::number_float and rhs_type == value_t::number_integer)
+			else if (lhs_type == value_t::number_f32 and rhs_type == value_t::number_integer)
 			{
-				return (lhs.m_value.number_float == static_cast<number_float_t>(rhs.m_value.number_integer));
+				return (lhs.m_value.number_f32 == static_cast<number_f32_t>(rhs.m_value.number_integer));
 			}
-			else if (lhs_type == value_t::number_unsigned and rhs_type == value_t::number_float)
+			else if (lhs_type == value_t::number_unsigned and rhs_type == value_t::number_f32)
 			{
-				return (static_cast<number_float_t>(lhs.m_value.number_unsigned) == rhs.m_value.number_float);
+				return (static_cast<number_f32_t>(lhs.m_value.number_unsigned) == rhs.m_value.number_f32);
 			}
-			else if (lhs_type == value_t::number_float and rhs_type == value_t::number_unsigned)
+			else if (lhs_type == value_t::number_f32 and rhs_type == value_t::number_unsigned)
 			{
-				return (lhs.m_value.number_float == static_cast<number_float_t>(rhs.m_value.number_unsigned));
+				return (lhs.m_value.number_f32 == static_cast<number_f32_t>(rhs.m_value.number_unsigned));
 			}
 			else if (lhs_type == value_t::number_unsigned and rhs_type == value_t::number_integer)
 			{
@@ -12506,7 +12506,7 @@ namespace nlohmann
 		rhs according to the following rules:
 		- If @a lhs and @a rhs have the same type, the values are compared using
 		the default `<` operator.
-		- Integer and floating-point numbers are automatically converted before
+		- Integer and f32ing-point numbers are automatically converted before
 		comparison
 		- In case @a lhs and @a rhs have different types, the values are ignored
 		and the order of the types is considered, see
@@ -12555,28 +12555,28 @@ namespace nlohmann
 				case value_t::number_unsigned:
 					return lhs.m_value.number_unsigned < rhs.m_value.number_unsigned;
 
-				case value_t::number_float:
-					return lhs.m_value.number_float < rhs.m_value.number_float;
+				case value_t::number_f32:
+					return lhs.m_value.number_f32 < rhs.m_value.number_f32;
 
 				default:
 					return false;
 				}
 			}
-			else if (lhs_type == value_t::number_integer and rhs_type == value_t::number_float)
+			else if (lhs_type == value_t::number_integer and rhs_type == value_t::number_f32)
 			{
-				return static_cast<number_float_t>(lhs.m_value.number_integer) < rhs.m_value.number_float;
+				return static_cast<number_f32_t>(lhs.m_value.number_integer) < rhs.m_value.number_f32;
 			}
-			else if (lhs_type == value_t::number_float and rhs_type == value_t::number_integer)
+			else if (lhs_type == value_t::number_f32 and rhs_type == value_t::number_integer)
 			{
-				return lhs.m_value.number_float < static_cast<number_float_t>(rhs.m_value.number_integer);
+				return lhs.m_value.number_f32 < static_cast<number_f32_t>(rhs.m_value.number_integer);
 			}
-			else if (lhs_type == value_t::number_unsigned and rhs_type == value_t::number_float)
+			else if (lhs_type == value_t::number_unsigned and rhs_type == value_t::number_f32)
 			{
-				return static_cast<number_float_t>(lhs.m_value.number_unsigned) < rhs.m_value.number_float;
+				return static_cast<number_f32_t>(lhs.m_value.number_unsigned) < rhs.m_value.number_f32;
 			}
-			else if (lhs_type == value_t::number_float and rhs_type == value_t::number_unsigned)
+			else if (lhs_type == value_t::number_f32 and rhs_type == value_t::number_unsigned)
 			{
-				return lhs.m_value.number_float < static_cast<number_float_t>(rhs.m_value.number_unsigned);
+				return lhs.m_value.number_f32 < static_cast<number_f32_t>(rhs.m_value.number_unsigned);
 			}
 			else if (lhs_type == value_t::number_integer and rhs_type == value_t::number_unsigned)
 			{
@@ -13144,7 +13144,7 @@ namespace nlohmann
 		number_unsigned | 256..65535                                 | Unsigned integer (2 bytes follow)  | 0x19
 		number_unsigned | 65536..4294967295                          | Unsigned integer (4 bytes follow)  | 0x1a
 		number_unsigned | 4294967296..18446744073709551615           | Unsigned integer (8 bytes follow)  | 0x1b
-		number_float    | *any value*                                | Double-Precision Float             | 0xfb
+		number_f32    | *any value*                                | f64-Precision f32             | 0xfb
 		string          | *length*: 0..23                            | UTF-8 string                       | 0x60..0x77
 		string          | *length*: 23..255                          | UTF-8 string (1 byte follow)       | 0x78
 		string          | *length*: 256..65535                       | UTF-8 string (2 bytes follow)      | 0x79
@@ -13176,12 +13176,12 @@ namespace nlohmann
 		- date/time (0xc0..0xc1)
 		- bignum (0xc2..0xc3)
 		- decimal fraction (0xc4)
-		- bigfloat (0xc5)
+		- bigf32 (0xc5)
 		- tagged items (0xc6..0xd4, 0xd8..0xdb)
 		- expected conversions (0xd5..0xd7)
 		- simple values (0xe0..0xf3, 0xf8)
 		- undefined (0xf7)
-		- half and single-precision floats (0xf9-0xfa)
+		- half and single-precision f32s (0xf9-0xfa)
 		- break (0xff)
 
 		@param[in] j  JSON value to serialize
@@ -13246,7 +13246,7 @@ namespace nlohmann
 		number_unsigned | 256..65535                        | uint 16          | 0xcd
 		number_unsigned | 65536..4294967295                 | uint 32          | 0xce
 		number_unsigned | 4294967296..18446744073709551615  | uint 64          | 0xcf
-		number_float    | *any value*                       | float 64         | 0xcb
+		number_f32    | *any value*                       | f32 64         | 0xcb
 		string          | *length*: 0..31                   | fixstr           | 0xa0..0xbf
 		string          | *length*: 32..255                 | str 8            | 0xd9
 		string          | *length*: 256..65535              | str 16           | 0xda
@@ -13269,7 +13269,7 @@ namespace nlohmann
 		@note The following MessagePack types are not used in the conversion:
 		- bin 8 - bin 32 (0xc4..0xc6)
 		- ext 8 - ext 32 (0xc7..0xc9)
-		- float 32 (0xca)
+		- f32 32 (0xca)
 		- fixext 1 - fixext 16 (0xd4..0xd8)
 
 		@note Any MessagePack output created @ref to_msgpack can be successfully
@@ -13353,9 +13353,9 @@ namespace nlohmann
 		False                  | `false`         | 0xf4
 		True                   | `true`          | 0xf5
 		Nill                   | `null`          | 0xf6
-		Half-Precision Float   | number_float    | 0xf9
-		Single-Precision Float | number_float    | 0xfa
-		Double-Precision Float | number_float    | 0xfb
+		Half-Precision f32   | number_f32    | 0xf9
+		Single-Precision f32 | number_f32    | 0xfa
+		f64-Precision f32 | number_f32    | 0xfb
 
 		@warning The mapping is **incomplete** in the sense that not all CBOR
 		types can be converted to a JSON value. The following CBOR types
@@ -13364,7 +13364,7 @@ namespace nlohmann
 		- date/time (0xc0..0xc1)
 		- bignum (0xc2..0xc3)
 		- decimal fraction (0xc4)
-		- bigfloat (0xc5)
+		- bigf32 (0xc5)
 		- tagged items (0xc6..0xd4, 0xd8..0xdb)
 		- expected conversions (0xd5..0xd7)
 		- simple values (0xe0..0xf3, 0xf8)
@@ -13435,8 +13435,8 @@ namespace nlohmann
 		nil              | `null`          | 0xc0
 		false            | `false`         | 0xc2
 		true             | `true`          | 0xc3
-		float 32         | number_float    | 0xca
-		float 64         | number_float    | 0xcb
+		f32 32         | number_f32    | 0xca
+		f32 64         | number_f32    | 0xcb
 		uint 8           | number_unsigned | 0xcc
 		uint 16          | number_unsigned | 0xcd
 		uint 32          | number_unsigned | 0xce

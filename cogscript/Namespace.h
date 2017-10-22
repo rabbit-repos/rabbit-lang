@@ -4,7 +4,7 @@
 #include "Symbol.h"
 #include "VirtualList.h"
 
-class SymbolMapIndices
+class NamespaceMapIndices
 {
 public:
 	static constexpr u8 MinValue = static_cast<u8>(TokenID::FirstValid);
@@ -12,11 +12,11 @@ public:
 	static constexpr u8 ArraySize = MaxValue - MinValue + 1;
 };
 
-class SymbolMap final : private StringMap<SymbolMap, Ptr<Symbol>, SymbolMapIndices::ArraySize>
+class Namespace final : private StringMap<Namespace, Ptr<Symbol>, NamespaceMapIndices::ArraySize>
 {
 public:
-	SymbolMap();
-	~SymbolMap();
+	Namespace();
+	~Namespace();
 
 	template <typename TSymbolType>
 	void AddSymbol(RValue<TSymbolType> aSymbol);
@@ -27,7 +27,7 @@ protected:
 };
 
 template <typename TSymbolType>
-void SymbolMap::AddSymbol(RValue<TSymbolType> aSymbol)
+void Namespace::AddSymbol(RValue<TSymbolType> aSymbol)
 {
 	Ref<TSymbolType> newSymbol = myData.Emplace(std::move(aSymbol));
 	GetOrCreateValue(aSymbol.GetIdentifier()) = &newSymbol;

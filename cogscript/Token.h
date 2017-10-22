@@ -1,6 +1,8 @@
 #pragma once
 #include "TokenID.h"
 #include "TokenContext.h"
+#include "List.h"
+#include "ErrorCode.h"
 
 class Token
 {
@@ -16,13 +18,20 @@ public:
 	bool operator!=(Const<TokenID> aRight) const;
 
 	TokenID GetTokenID() const;
+
+	Ref<TokenContext> GetContext();
 	ConstRef<TokenContext> GetContext() const;
+
+	ConstRef<String> GetContextData() const;
 
 	Token Copy() const;
 
 	String TypeToString() const;
 
+	void AddError(Const<ErrorCode::Type> aErrorCode, ConstRef<String> aErrorMessage);
+
 private:
+	List<StringData> myErrorList;
 	TokenContext myContext;
 	TokenID myTokenID;
 };

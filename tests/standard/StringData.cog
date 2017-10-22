@@ -1,0 +1,16 @@
+
+global type StringData
+	-- A function with no parameters can ommit the parenthesis
+	global function Size returns i32
+		return myData.Size - 1;
+	end
+
+	function MakeSizeFor(i32 pAdditionalData)
+		mutable i32 newSize = mySize + pAdditionalData;
+		while newSize > mySize
+			mySize *= mySize;
+		end
+	end
+
+	List<char> myData;
+end

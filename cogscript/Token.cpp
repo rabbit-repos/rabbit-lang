@@ -34,9 +34,20 @@ TokenID Token::GetTokenID() const
 	return myTokenID;
 }
 
+Ref<TokenContext> Token::GetContext()
+{
+	return myContext;
+}
+
 ConstRef<TokenContext> Token::GetContext() const
 {
 	return myContext;
+}
+
+
+ConstRef<String> Token::GetContextData() const
+{
+	return myContext.GetData();
 }
 
 Token Token::Copy() const
@@ -50,7 +61,7 @@ String Token::TypeToString() const
 	switch (myTokenID)
 	{
 		return L"None";
-	case TokenID::Alphabet:
+	case TokenID::AlphabetStart:
 		return L"Alphabet";
 	case TokenID::Digits:
 		return L"Digits";
@@ -135,6 +146,11 @@ String Token::TypeToString() const
 	default:
 		abort();
 	}
+}
+
+void Token::AddError(Const<ErrorCode::Type> aErrorCode, ConstRef<String> aErrorMessage)
+{
+	myErrorList.Add(AppendString(ErrorCode::ToString(aErrorCode), L": ", aErrorMessage));
 }
 
 bool Token::operator==(Const<TokenID> aRight) const

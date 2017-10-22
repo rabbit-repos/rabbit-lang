@@ -1,0 +1,18 @@
+
+global type List<T>
+    global alias Capacity = myData.Size;
+
+    global function Size returns i32
+        return mySize;
+    end
+
+    global function Reserve(i32 pNeededSize)
+        if aNeededSize > Capacity
+            myData.Resize(pNeededSize);
+        end
+    end
+
+    -- Array<T>; is just as valid, although it would need to be accessed through Array<T>.* which is not anywhere near as clear
+    Array<T> myData;
+    i32 mySize;
+end

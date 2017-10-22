@@ -1,0 +1,25 @@
+{
+    "projectName" : "Standard Library",
+    "projectType" : "library",
+
+    "compilerParameters" : [
+        [ "StandardNamespace", "Cog" ]
+    ],
+
+    "filePrefix" : [
+        "--[[",
+        "   Sets the default namespace for this file; globals are exposed under \"Cog.*\" and symbols for in this file is first looked for in Cog, then it's parents (namespaces can be chained), the default namepsace is named Default and can be accessed under \"Default.\"",
+        "   In order to access Cog.* without specifying it explicitly outside itself or any of it's children you use \"mixin Cog.*;\", this will make add it to back of the list of symbol databases to check making it the last priority when finding symbols",
+        "   User-created namespaces are created under the Default namespace that is true for Default as well, it can be accessed like \"Default.Default.Default...\" and \"Cog\" could be accessed through Default.Cog.",
+        "   This works because symbols in Default never implicitly resolve down the namespace tree.",
+        "   This could also be solved by making \"ambigious\" symbols a compile error that can be specified file-wide by \"alias Thing = Apa.Thing;\" or just specifying Apa.Thing on the ambigious place.",
+        "]]",
+        "namespace #param(\"StandardNamespace\");"
+    ],
+
+    "outputDirectory" : "lib",
+
+    "sourceFiles" : [
+        "**.cog"
+    ]
+}

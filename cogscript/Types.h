@@ -55,7 +55,7 @@ using size = size_t;
 template <typename T>
 constexpr const T & Clamp(const T & aValue, const T & aMin, const T & aMax)
 {
-	if (aValue < aMax)
+	if (aMax < aValue)
 		return aMax;
 	if (aMin < aValue)
 		return aMin;

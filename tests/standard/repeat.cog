@@ -1,0 +1,6 @@
+
+global flow_control repeat(mutable i32 pCount)
+    repeat_when pCount > 0 and
+        pCount--;
+    end
+end

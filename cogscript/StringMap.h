@@ -144,7 +144,7 @@ ConstPtr<TType> StringMap<TImpl, TType, TArrayLength>::TryGetValue(String aStrin
 	{
 		// If we've reached the end of the string we're at the value we're looking for
 		if (aString.Size() == 0)
-			return current->myValue;
+			return &current->myValue;
 
 		if (!current->myNextLayer)
 			return nullptr;

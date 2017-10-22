@@ -1,0 +1,14 @@
+global type Optional<type T>
+    global function Value returns Ref<T>
+        static if Cog.Debugger.EnableNullCheck
+            if !myHasValue
+                RuntimeError(caller.DescribeLocation(), "Tried to access an optional value that was not set");
+            end
+        end
+
+        return myValue;
+    end
+
+    T myValue;
+    bool myHasValue;
+end
