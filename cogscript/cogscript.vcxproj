@@ -74,21 +74,25 @@
     <TargetName>cogscript</TargetName>
     <IntDir>..\temp\$(Configuration)\</IntDir>
     <OutDir>$(SolutionDir)bin\$(PlatformTarget)\</OutDir>
+    <IncludePath>$(SolutionDir)extlibs;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <TargetName>cogscript</TargetName>
     <IntDir>..\temp\$(Configuration)\</IntDir>
     <OutDir>$(SolutionDir)bin\$(PlatformTarget)\</OutDir>
+    <IncludePath>$(SolutionDir)extlibs;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <TargetName>cogscript</TargetName>
     <IntDir>..\temp\$(Platform)\$(Configuration)\</IntDir>
     <OutDir>$(SolutionDir)bin\$(PlatformTarget)\</OutDir>
+    <IncludePath>$(SolutionDir)extlibs;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <TargetName>cogscript</TargetName>
     <IntDir>..\temp\$(Platform)\$(Configuration)\</IntDir>
     <OutDir>$(SolutionDir)bin\$(PlatformTarget)\</OutDir>
+    <IncludePath>$(SolutionDir)extlibs;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -214,7 +218,6 @@
     <ClInclude Include="Config.h" />
     <ClInclude Include="ErrorCode.h" />
     <ClInclude Include="Interpreter.h" />
-    <ClInclude Include="json.h" />
     <ClInclude Include="Array.h" />
     <ClInclude Include="CodeTokens.h" />
     <ClInclude Include="KeywordID.h" />

@@ -54,7 +54,7 @@ VirtualList<T> VirtualList<T>::Copy() const
 		Const<ptrdiff> offset = static_cast<ptrdiff>(reinterpret_cast<ConstPtr<u8>>(myObjects[i]) - myData.GetAddress());
 #ifdef _DEBUG
 		if (offset < 0 || static_cast<size>(offset) >= myData.Size())
-			abort();
+			FatalError();
 #endif
 		myCopyFunctions[i](&copy.myData[offset], const_cast<Ptr<u8>>(&myData[offset]), VirtualListCopyMode::CopyConstruct);
 	}

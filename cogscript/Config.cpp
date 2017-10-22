@@ -48,7 +48,7 @@ json ReadFile(ConstRef<String> aPath)
 	{
 		// TODO: Find suitable project file within directory
 		PrintLine(L"Not implemented");
-		abort();
+		FatalError();
 	}
 
 	std::wifstream file(FilePath, std::ios::in);
@@ -92,7 +92,7 @@ bool ReadValue(ConstRef<json> aNode, ConstRef<String> aProperty, Out<T> aValueTo
 	if (it == aNode.end())
 	{
 		if (&aNode == &gDefaultConfig)
-			abort();
+			FatalError();
 
 		return ReadValue(gDefaultConfig, aProperty, aValueToSet);
 	}

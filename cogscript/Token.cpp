@@ -144,7 +144,7 @@ String Token::TypeToString() const
 	case TokenID::Count:
 	case TokenID::Invalid:
 	default:
-		abort();
+		FatalError();
 	}
 }
 

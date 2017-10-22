@@ -130,7 +130,7 @@ void List<T>::Resize(Const<i32> aLength)
 {
 #ifdef _DEBUG
 	if (aLength < 0)
-		abort();
+		FatalError();
 #endif
 
 	myData.Resize(aLength);
@@ -153,7 +153,7 @@ void List<T>::RemoveAtIndex(Const<i32> aIndex)
 {
 #ifdef _DEBUG
 	if (mySize <= 0)
-		abort();
+		FatalError();
 #endif
 
 	for (size i = aIndex + 1; i < mySize; ++i)
@@ -217,7 +217,7 @@ void List<T>::SetLength(Const<i32> aLength)
 {
 #ifdef _DEBUG
 	if (aLength < 0 || aLength > Capacity())
-		abort();
+		FatalError();
 #endif
 
 	mySize = aLength;

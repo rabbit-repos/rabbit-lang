@@ -16,7 +16,7 @@ i32 Namespace::Map(Const<Char> aCharacter, Const<i32> aIndex) const
 	if (mappedValue == TokenID::Invalid)
 	{
 		// This value was not able to be mapped to a symbol
-		abort();
+		FatalError();
 	}
 	return static_cast<u8>(mappedValue);
 }

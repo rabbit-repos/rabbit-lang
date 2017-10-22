@@ -128,7 +128,7 @@ Ref<T> ResizableArray<T>::operator[](Const<size> aIndex)
 {
 #ifdef _DEBUG
 	if (aIndex >= mySize)
-		abort();
+		FatalError();
 #endif
 	return *(GetAddress() + aIndex);
 }
@@ -138,7 +138,7 @@ ConstRef<T> ResizableArray<T>::operator[](Const<size> aIndex) const
 {
 #ifdef _DEBUG
 	if (aIndex >= mySize)
-		abort();
+		FatalError();
 #endif
 	return *(GetAddress() + aIndex);
 }

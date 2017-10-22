@@ -4,7 +4,7 @@
 TokenizerContext::TokenizerContext(ConstPtr<StringData> aCode, Ref<CodeTokens> aTokens)
 {
 	if (aCode == null)
-		abort();
+		FatalError();
 
 	myCode = aCode;
 	myTokens = &aTokens;

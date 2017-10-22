@@ -66,7 +66,7 @@ StringData::~StringData()
 	if (myNumReferences > 0)
 	{
 		PrintLine(L"There are still references remaining!");
-		abort();
+		FatalError();
 	}
 #endif
 }
@@ -77,7 +77,7 @@ Ref<StringData> StringData::operator=(RValue<StringData> aOther)
 	if (aOther.myNumReferences > 0)
 	{
 		PrintLine(L"There are still references remaining!");
-		abort();
+		FatalError();
 	}
 
 	myNumReferences = 0;
@@ -112,7 +112,7 @@ void StringData::Resize(Const<i32> aLength)
 {
 #ifdef _DEBUG
 	if (aLength < 0)
-		abort();
+		FatalError();
 #endif
 	myData.Resize(aLength + 1);
 	myData[Size()] = L'\0';
@@ -122,7 +122,7 @@ bool StringData::Reserve(Const<i32> aLength)
 {
 #ifdef _DEBUG
 	if (aLength < 0)
-		abort();
+		FatalError();
 #endif
 	return myData.Reserve(aLength + 1);
 }
@@ -261,7 +261,7 @@ void StringData::CheckForReferences() const
 	if (myNumReferences > 0)
 	{
 		PrintLine(L"This operation is not allowed while there are references to this data!");
-		abort();
+		FatalError();
 	}
 #endif
 }
@@ -285,7 +285,7 @@ ConstPtr<Char> StringData::ToCString() const
 		return L"";
 #ifdef _DEBUG
 	if (myData[Size()] != L'\0')
-		abort();
+		FatalError();
 #endif
 	return myData.GetAddress();
 }

@@ -18,7 +18,7 @@ ResizableArrayBase::ResizableArrayBase(Const<size> aSize, Const<bool> aClearMemo
 		myData = static_cast<Ptr<u8>>(malloc(aSize));
 
 	if (!myData)
-		abort();
+		FatalError();
 
 	mySize = aSize;
 }
@@ -37,7 +37,7 @@ ResizableArrayBase ResizableArrayBase::Copy() const
 	{
 		copy.myData = reinterpret_cast<Ptr<u8>>(malloc(mySize));
 		if (!copy.myData)
-			abort();
+			FatalError();
 		memcpy(copy.myData, myData, mySize);
 	}
 	else
@@ -63,7 +63,7 @@ void ResizableArrayBase::Resize(Const<size> aSize, Const<bool> aClearMemory/* = 
 		myData = static_cast<Ptr<u8>>(malloc(aSize));
 
 	if (!myData)
-		abort();
+		FatalError();
 
 	if (oldData)
 	{

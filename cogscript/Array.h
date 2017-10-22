@@ -142,7 +142,7 @@ Ref<T> Array<T, N>::operator[](const i32 aIndex)
 {
 #ifdef _DEBUG
 	if (aIndex < 0 || aIndex >= N)
-		abort();
+		FatalError();
 #endif
 	return *reinterpret_cast<Ptr<T>>(ArrayBase::GetAddress() + sizeof T * aIndex);
 }
@@ -152,7 +152,7 @@ ConstRef<T> Array<T, N>::operator[](const i32 aIndex) const
 {
 #ifdef _DEBUG
 	if (aIndex < 0 || aIndex >= N)
-		abort();
+		FatalError();
 #endif
 	return *reinterpret_cast<ConstPtr<T>>(ArrayBase::GetAddress() + sizeof T * aIndex);
 }

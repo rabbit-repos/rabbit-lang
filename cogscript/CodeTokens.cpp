@@ -34,7 +34,7 @@ void CodeTokens::AddToken(Token aToken)
 	if (aToken.GetTokenID() == TokenID::Invalid)
 	{
 		PrintLine(L"The Tokenizer may not generate tokens with TokenID set to TokenID::Invalid");
-		abort();
+		FatalError();
 	}
 
 	myTokens.Add(std::move(aToken));

@@ -29,7 +29,7 @@ InterpretationResult Interpreter::Interpret(ConstRef<CodeTokens> aCodeTokens) co
 		if (endCursor == beginCursor)
 		{
 			PrintLine(L"Interpreter did not progress at token \"", context.At().TypeToString(), L"\" (Data = \"", context.At().GetContext().GetData(), L"\")");
-			abort();
+			FatalError();
 		}
 	} while (!context.IsAtEnd());
 

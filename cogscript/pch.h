@@ -4,9 +4,11 @@
 	#define LOOP_HINT(n) _Pragma("loop ( hint_parallel(n) )")
 	// Ignore vector dependencies, should be used together with LOOP_HINT
 	#define LOOP_HINT_IVDEP() _Pragma("loop ( ivdep )")
+	#define FatalError() { __debugbreak(); abort(); }
 #else
 	#define LOOP_HINT(n)
 	#define LOOP_HINT_IVDEP()
+	#define FatalError() abort();
 #endif
 
 #include <string>
@@ -33,14 +35,14 @@
 
 #pragma warning ( push )
 #pragma warning ( disable : 4706 )
-#include "json.h"
+#include <json.h>
 using json = nlohmann::json;
 #pragma warning ( pop )
 
 #define wcout __USE__PRINT
 #define cout __USE__PRINT
 
-#define ERROR(e) { PrintLine(e); abort(); }
+#define ERROR(e) { PrintLine(e); FatalError(); }
 
 constexpr size_t KiloByte = 1024;
 constexpr size_t MegaByte = KiloByte * 1024;

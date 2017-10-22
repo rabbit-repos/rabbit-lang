@@ -12,7 +12,7 @@ String ErrorCode::ToString(Const<Type> aErrorCode)
 
 	default:
 #ifdef _DEBUG
-		abort();
+		FatalError();
 #else
 		return L"Unknown";
 #endif
@@ -30,7 +30,7 @@ String ErrorCode::GetDefaultMessage(Const<Type> aErrorCode)
 
 	default:
 #ifdef _DEBUG
-		abort();
+		FatalError();
 #else
 		return L"";
 #endif

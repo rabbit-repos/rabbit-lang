@@ -118,7 +118,7 @@ CodeTokens Tokenizer::TokenizeCode(ConstRef<StringData> aCode)
 		if (context.CursorLocation() == initialLocation)
 		{
 			PrintLine(L"Tokenizer did not progress at: \"", context.Peek(5), L"\"...");
-			abort();
+			FatalError();
 		}
 	}
 

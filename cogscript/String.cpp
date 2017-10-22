@@ -28,7 +28,7 @@ String::String(ConstRef<String> aString, Const<i32> aNumberOfCharacters)
 	: String()
 {
 	if (aNumberOfCharacters > aString.Size())
-		abort();
+		FatalError();
 	myData = aString.GetAddress();
 }
 
@@ -86,7 +86,7 @@ String String::ChopLeft(Const<i32> aEnd) const
 {
 #ifdef _DEBUG
 	if (aEnd < 0 || aEnd > mySize)
-		abort();
+		FatalError();
 #endif
 	return MakeView(0, aEnd);
 }
@@ -95,7 +95,7 @@ String String::ChopRight(Const<i32> aBegin) const
 {
 #ifdef _DEBUG
 	if (aBegin < 0 || aBegin > mySize)
-		abort();
+		FatalError();
 #endif
 	return MakeView(aBegin, mySize - aBegin);
 }
@@ -195,7 +195,7 @@ ConstRef<Char> String::operator[](Const<i32> aIndex) const
 {
 #ifdef _DEBUG
 	if (aIndex < 0 || aIndex >= mySize)
-		abort();
+		FatalError();
 #endif
 	return myData[aIndex];
 }
@@ -204,7 +204,7 @@ String String::SubString(Const<i32> aStart, Const<i32> aLength) const
 {
 #ifdef _DEBUG
 	if (aStart < 0 || aStart + aLength > mySize)
-		abort();
+		FatalError();
 #endif
 
 	return MakeView(aStart, aLength);
